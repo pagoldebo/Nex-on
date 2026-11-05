@@ -1,0 +1,35 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    --------------------------------------------------------------------------
+    1. SECURITY: Block direct access to sensitive system files
+    --------------------------------------------------------------------------
+    <FilesMatch "^\.(env|git|editorconfig|phpunit)">
+        Require all denied
+    </FilesMatch>
+
+    <FilesMatch "^(artisan|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|vite\.config\.js)$">
+        Require all denied
+    </FilesMatch>
+
+    --------------------------------------------------------------------------
+    2. SECURITY: Block direct access to internal Laravel directories
+    --------------------------------------------------------------------------
+    RewriteRule ^(app|bootstrap|config|database|lang|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L,NC]
+
+    --------------------------------------------------------------------------
+    3. Handle Authorization Header for API & Bearer Tokens
+    --------------------------------------------------------------------------
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    --------------------------------------------------------------------------
+    4. REDIRECT: Silently forward all requests into the /public directory
+    --------------------------------------------------------------------------
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Disable Directory Browsing
+Options -Indexes
+

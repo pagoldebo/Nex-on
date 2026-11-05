@@ -1,4 +1,4 @@
-# Project Nex-on — Multi-Theme Luxury E-Commerce & Retail ERP
+# Project Nexon — Multi-Theme Luxury E-Commerce & Retail ERP
 
 [![Laravel 12](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
@@ -6,7 +6,7 @@
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
 [![Tests Passing](https://img.shields.io/badge/Tests-253%20Passed-brightgreen?style=for-the-badge)](tests)
 
-**Project Nex-on** is an enterprise-grade, multi-theme luxury e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
+**Project Nexon** is an enterprise-grade, multi-theme luxury e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
 
 ---
 
@@ -82,7 +82,7 @@ Switch between five fully realized luxury and lifestyle brand aesthetics in one 
 
 1. **Clone or Navigate to the Repository**:
    ```bash
-   cd c:\xampp\htdocs\public\ Nex-on
+   cd c:\xampp\htdocs\public\Nexon
    ```
 
 2. **Install Dependencies**:
@@ -93,21 +93,21 @@ Switch between five fully realized luxury and lifestyle brand aesthetics in one 
 3. **Configure Environment**:
    Copy `.env.example` to `.env` if not present and configure database & mail settings:
    ```env
-   APP_NAME="Project  Nex-on"
+   APP_NAME="Project Nexon"
    APP_ENV=local
    APP_KEY=
    APP_DEBUG=true
-   APP_URL=http://localhost/ Nexon/public
+   APP_URL=http://localhost/Nexon/public
 
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE= Nexon_db
+   DB_DATABASE=nexon_db
    DB_USERNAME=root
    DB_PASSWORD=
 
    MAIL_MAILER=log
-   MAIL_FROM_ADDRESS="support@ Nexon.app"
+   MAIL_FROM_ADDRESS="support@nexon.app"
    MAIL_FROM_NAME="${APP_NAME}"
    ```
 
@@ -137,7 +137,7 @@ Switch between five fully realized luxury and lifestyle brand aesthetics in one 
 
 | Role | Email | Password | Access URL |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@ Nexon.app` | `password` | `/admin` |
+| **Administrator** | `admin@nexon.app` | `password` | `/admin` |
 | **Customer / Patron** | `customer@example.com` | `password` | `/login` |
 
 *(Note: Sign-in requires OTP verification. In `local` environment with `MAIL_MAILER=log`, the OTP code is logged in `storage/logs/laravel.log` and stored on the `users.otp_code` column).*
@@ -146,7 +146,7 @@ Switch between five fully realized luxury and lifestyle brand aesthetics in one 
 
 ## 🧪 Testing
 
-Project  Nex-on includes a comprehensive test suite covering all storefront themes, authentication, ERP workflows, and APIs:
+Project Nexon includes a comprehensive test suite covering all storefront themes, authentication, ERP workflows, and APIs:
 
 ```bash
 php artisan test
@@ -162,7 +162,7 @@ php artisan test --filter=LoginEmailOtpTest
 ## 📁 Key Directory Structure
 
 ```
- Nex-on/
+Nexon/
 ├── app/
 │   ├── Http/Controllers/     # Storefront, Admin, POS, HRM, Invoicing Controllers
 │   ├── Models/               # Eloquent Models (Product, Order, Batch, User, etc.)

@@ -1,0 +1,56 @@
+{{-- resources/views/storefront/buttercup/order-confirmation.blade.php --}}
+<x-storefront-layout :theme="$theme" title="Order Confirmed">
+<div class="max-w-2xl mx-auto px-6 py-20 text-center">
+  <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background:#D89AA022">
+    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#D89AA0"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+  </div>
+  <h1 class="font-display text-4xl md:text-5xl mb-3 reveal text-[#4A3B3A]">Order Confirmed!</h1>
+  <p class="font-body opacity-60 mb-2 text-[#4A3B3A]">Thank you for shopping with Buttercup 🌼</p>
+  <p class="font-body text-sm opacity-40 mb-10 text-[#4A3B3A]">Order Reference: <span id="orderId" class="font-mono font-bold" style="color:#D89AA0">{{ $orderModel->reference ?? $order ?? '—' }}</span></p>
+
+  <div class="bg-[#FFFAF5] rounded-[28px] border p-6 text-left mb-8 shadow-xs" style="border-color:#D89AA022">
+    <h3 class="font-display text-lg mb-4 text-[#4A3B3A]">Items Ordered</h3>
+    <div id="orderItems" class="space-y-2 font-body text-sm text-[#4A3B3A]">
+      @if(isset($orderModel) && $orderModel)
+        @foreach($orderModel->items as $item)
+          <div class="flex justify-between opacity-80 py-1 border-b border-[#D89AA015]">
+            <span>{{ $item->product_name }} ({{ $item->color_name }}/{{ $item->size }}) ×{{ $item->qty }}</span>
+            <span class="font-bold">₹{{ number_format($item->line_total, 0) }}</span>
+          </div>
+        @endforeach
+      @endif
+    </div>
+    <div class="border-t mt-4 pt-4 flex justify-between font-bold" style="border-color:#D89AA022">
+      <span class="text-[#4A3B3A]">Total Paid</span>
+      <span id="orderTotal" style="color:#D89AA0">
+        {{ isset($orderModel) && $orderModel ? '₹' . number_format($orderModel->total, 0) : '₹0' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap justify-center gap-4">
+    <a href="{{ route('home') }}" class="px-8 py-3.5 text-xs font-bold uppercase tracking-widest bg-[#D89AA0] text-[#FFFAF5] hover:bg-[#B97680] rounded-full transition-colors shadow-md">Continue Shopping</a>
+    @auth
+      <a href="{{ route('account') }}" class="px-8 py-3.5 text-xs font-bold uppercase tracking-widest border border-[#D89AA0] text-[#4A3B3A] rounded-full hover:bg-white transition-colors">My Orders</a>
+    @endauth
+  </div>
+</div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const serverOrder = @json(isset($orderModel) && $orderModel ? true : false);
+  if (!serverOrder) {
+    const o = JSON.parse(sessionStorage.getItem('lc_last_order') || 'null');
+    if (!o) return;
+    document.getElementById('orderId').textContent = o.id || o.reference || '—';
+    document.getElementById('orderTotal').textContent = '₹' + Number(o.total || 0).toLocaleString('en-IN');
+    if (o.items?.length) {
+      document.getElementById('orderItems').innerHTML = o.items.map(i =>
+        `<div class="flex justify-between opacity-80 py-1"><span>${i.name} (${i.colorName}/${i.size}) ×${i.qty}</span><span class="font-bold">₹${(i.price*i.qty).toLocaleString('en-IN')}</span></div>`
+      ).join('');
+    }
+  }
+});
+</script>
+@endpush
+</x-storefront-layout>

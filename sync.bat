@@ -20,3 +20,4 @@ git push
 echo.
 echo Sync completed successfully!
 pause
+

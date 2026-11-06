@@ -77,7 +77,6 @@
             </nav>
 
             <div class="hidden lg:flex items-center gap-5">
-                @include('storefront.common.language-switcher')
                 <button onclick="openSearch()" class="text-[#4A3B3A] hover:text-[#B97680] transition-colors" aria-label="Search">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
                 </button>

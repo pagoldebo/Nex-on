@@ -10,7 +10,7 @@
                     <div class="relative overflow-hidden rounded-[32px] bg-slate-900 text-white p-8 md:p-16 lg:p-20 shadow-2xl flex flex-col justify-center items-center text-center">
                         <div class="relative z-10 max-w-3xl space-y-4">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/10 text-white/90 border border-white/20">
-                                Luxury Edit
+                                Curated Edit
                             </span>
                             <h1 class="text-3xl md:text-5xl lg:text-6xl font-black font-display tracking-tight leading-tight">
                                 {{ $block['headline'] ?? '' }}

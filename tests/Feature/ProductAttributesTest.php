@@ -23,15 +23,15 @@ class ProductAttributesTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.attributes@nexon.luxury',
+            'email' => 'admin.attributes@nexon.com',
             'role'  => 'admin',
         ]);
 
         Template::create(['key' => 'buttercup', 'name' => 'Buttercup', 'is_active' => true]);
 
         $category = Category::create([
-            'name'      => 'Luxury Apparel',
-            'slug'      => 'luxury-apparel',
+            'name'      => 'Premium Apparel',
+            'slug'      => 'premium-apparel',
             'is_active' => true,
         ]);
 

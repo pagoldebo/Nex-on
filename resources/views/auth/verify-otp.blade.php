@@ -81,7 +81,7 @@
                                     </div>
                                     <div>
                                         <h3 class="font-bold text-white text-xs">White-Glove Express Delivery</h3>
-                                        <p class="text-stone-400 text-[11px] mt-0.5 leading-relaxed">Insured priority dispatch with signature luxury keepsake packaging.</p>
+                                        <p class="text-stone-400 text-[11px] mt-0.5 leading-relaxed">Insured priority dispatch with signature keepsake packaging.</p>
                                     </div>
                                 </div>
 

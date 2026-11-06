@@ -118,7 +118,7 @@ class AdminAbandonedCartController extends Controller
         }
 
         return redirect()->route('cart')
-            ->with('success', 'Your luxury shopping bag has been completely restored! Please proceed to checkout.');
+            ->with('success', 'Your shopping bag has been completely restored! Please proceed to checkout.');
     }
 
     /**

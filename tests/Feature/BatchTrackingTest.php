@@ -29,8 +29,8 @@ class BatchTrackingTest extends TestCase
         ]);
 
         $category = Category::create([
-            'name'       => 'Luxury Lingerie',
-            'slug'       => 'luxury-lingerie',
+            'name'       => 'Pure Silk Lingerie',
+            'slug'       => 'pure-silk-lingerie',
             'is_active'  => true,
             'sort_order' => 1,
         ]);

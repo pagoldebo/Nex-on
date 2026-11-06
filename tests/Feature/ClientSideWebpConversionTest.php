@@ -18,7 +18,7 @@ class ClientSideWebpConversionTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin@nexon.luxury',
+            'email' => 'admin@nexon.com',
             'name'  => 'Admin User',
             'role'  => 'admin',
         ]);

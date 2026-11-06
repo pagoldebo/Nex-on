@@ -23,17 +23,17 @@ class FinanceExpensesTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.finance@nexon.luxury',
+            'email' => 'admin.finance@nexon.com',
             'role'  => 'admin',
         ]);
 
         Template::create(['key' => 'buttercup', 'name' => 'Buttercup', 'is_active' => true]);
 
         $this->category = ExpenseCategory::create([
-            'name'        => 'Packaging & Luxury Boxes',
-            'slug'        => 'packaging-luxury-boxes',
+            'name'        => 'Packaging & Premium Boxes',
+            'slug'        => 'packaging-premium-boxes',
             'color'       => '#10b981',
-            'description' => 'Branded luxury ribbon and boxes',
+            'description' => 'Branded ribbon and boxes',
             'is_active'   => true,
         ]);
     }

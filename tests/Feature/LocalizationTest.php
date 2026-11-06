@@ -17,7 +17,7 @@ class LocalizationTest extends TestCase
         parent::setUp();
         Template::create([
             'key'         => 'saaya',
-            'name'        => 'Saaya Luxury',
+            'name'        => 'Saaya',
             'is_active'   => true,
             'description' => 'Test Theme',
         ]);
@@ -98,7 +98,7 @@ class LocalizationTest extends TestCase
     {
         $product = new Product([
             'name'        => 'Home',
-            'description' => 'Luxury Silk Robe',
+            'description' => 'Mulberry Silk Robe',
         ]);
 
         app()->setLocale('hi');

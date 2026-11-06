@@ -32,7 +32,7 @@
                     <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-sm">N</span>
                     <span class="text-lg font-black tracking-tight text-slate-900">{{ config('app.name', 'Project Nexon') }}</span>
                 </div>
-                <p class="text-xs text-slate-500">Luxury Retail, Atelier &amp; Lifestyle Private Limited</p>
+                <p class="text-xs text-slate-500">Nexon Retail, Atelier &amp; Lifestyle Private Limited</p>
                 <p class="text-xs text-slate-400">GSTIN: 29AAAAA0000A1Z5 • CIN: U74999KA2026PTC123456</p>
             </div>
             <div class="text-right">

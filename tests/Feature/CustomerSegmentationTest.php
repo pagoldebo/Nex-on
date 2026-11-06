@@ -22,7 +22,7 @@ class CustomerSegmentationTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.rfm@nexon.luxury',
+            'email' => 'admin.rfm@nexon.com',
             'role'  => 'admin',
         ]);
 

@@ -21,7 +21,7 @@ class VisualPageBuilderTest extends TestCase
 
         Template::create([
             'key'         => 'saaya',
-            'name'        => 'Saaya Luxury',
+            'name'        => 'Saaya',
             'is_active'   => true,
             'description' => 'Test Theme',
         ]);
@@ -46,7 +46,7 @@ class VisualPageBuilderTest extends TestCase
         $payload = [
             'title'            => 'Bridal Silk Trousseau Edit',
             'slug'             => 'bridal-silk-trousseau-edit',
-            'meta_title'       => 'Luxury Bridal Silk Sets 2026',
+            'meta_title'       => 'Bridal Silk Sets 2026',
             'meta_description' => 'Explore the handcrafted bridal edit in Varanasi mulberry silk.',
             'is_published'     => '1',
             'content_blocks'   => [
@@ -97,7 +97,7 @@ class VisualPageBuilderTest extends TestCase
             'content_blocks'   => [
                 [
                     'type'        => 'hero',
-                    'headline'    => 'Midnight Luxury Velvet',
+                    'headline'    => 'Midnight Velvet',
                     'subheadline' => 'Exquisite darkness in French velvet.',
                     'cta_text'    => 'View Collection',
                     'cta_link'    => '/category/velvet',
@@ -114,7 +114,7 @@ class VisualPageBuilderTest extends TestCase
         $response = $this->get(route('custom-page.show', $page->slug));
 
         $response->assertStatus(200);
-        $response->assertSee('Midnight Luxury Velvet');
+        $response->assertSee('Midnight Velvet');
         $response->assertSee('Countdown to Velvet');
         $response->assertSee('VELVETVIP');
     }

@@ -54,7 +54,7 @@ return new class extends Migration
             $table->index(['user_id', 'shift_date']);
         });
 
-        // Seed core luxury retail departments
+        // Seed core retail departments
         DB::table('departments')->insert([
             [
                 'name'        => 'Retail Store Sales',
@@ -77,7 +77,7 @@ return new class extends Migration
             [
                 'name'        => 'Atelier & Bespoke Tailoring',
                 'code'        => 'ATELIER',
-                'description' => 'Luxury garment alterations, custom silhouettes, and bespoke embroidery.',
+                'description' => 'Garment alterations, custom silhouettes, and bespoke embroidery.',
                 'color'       => 'rose',
                 'is_active'   => true,
                 'created_at'  => now(),

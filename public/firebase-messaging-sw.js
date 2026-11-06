@@ -13,7 +13,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', (event) => {
     let payload = {
-        title: 'Luxury Boutique Alert',
+        title: 'Boutique Alert',
         body: 'New exclusive drop is now live in store!',
         icon: '/images/favicon.png',
         data: { url: '/' }

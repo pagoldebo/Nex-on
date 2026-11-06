@@ -28,7 +28,7 @@ class SkuAndAddonSeeder extends Seeder
 
         if (Addon::count() === 0) {
             Addon::create([
-                'name'        => 'Discreet Luxury Box',
+                'name'        => 'Discreet Gift Box',
                 'description' => 'Plain exterior shipping box with silk tissue wrapping inside for total privacy.',
                 'price'       => 49.00,
                 'is_active'   => true,

@@ -107,7 +107,7 @@
         @empty
           <div class="bg-[#FFFAF5] rounded-[28px] border p-12 text-center" style="border-color:#D89AA022">
             <p class="font-display text-xl text-[#4A3B3A] mb-2">No orders placed yet</p>
-            <p class="font-body text-xs opacity-60 text-[#4A3B3A] mb-6">Explore our curated collections of soft luxury lingerie.</p>
+            <p class="font-body text-xs opacity-60 text-[#4A3B3A] mb-6">Explore our curated collections of soft lingerie.</p>
             <a href="{{ route('home') }}" class="py-3 px-8 rounded-full text-xs font-bold uppercase tracking-widest text-white inline-block transition-all" style="background:#D89AA0">
               Start Shopping &rarr;
             </a>

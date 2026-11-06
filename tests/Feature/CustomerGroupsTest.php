@@ -20,7 +20,7 @@ class CustomerGroupsTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.groups@nexon.luxury',
+            'email' => 'admin.groups@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -46,7 +46,7 @@ class CustomerGroupsTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.customer-groups.store'), [
             'name'           => 'VIP Platinum Tier',
             'code'           => 'vip-platinum',
-            'description'    => 'Exclusive 20% discount on entire luxury catalog',
+            'description'    => 'Exclusive 20% discount on entire catalog',
             'discount_type'  => 'percentage',
             'discount_value' => 20,
             'min_spend'      => 5000,

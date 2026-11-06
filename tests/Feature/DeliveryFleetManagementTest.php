@@ -22,9 +22,9 @@ class DeliveryFleetManagementTest extends TestCase
 
         Template::create([
             'key'         => 'saaya',
-            'name'        => 'Saaya Luxury',
+            'name'        => 'Saaya',
             'is_active'   => true,
-            'description' => 'Default Luxury Theme',
+            'description' => 'Default Theme',
         ]);
     }
 

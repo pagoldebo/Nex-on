@@ -14,7 +14,7 @@
                 <p class="font-display italic text-2xl font-black text-white mb-4 tracking-tighter">Lumière.</p>
             @endif
             <p class="text-sm leading-relaxed">
-                {{ \App\Models\Setting::get('footer_bio', 'Redefining everyday luxury through sustainable silk lingerie, made in India.') }}
+                {{ \App\Models\Setting::get('footer_bio', 'Redefining everyday elegance through sustainable silk lingerie, made in India.') }}
             </p>
             @php
               $fBadge1 = \App\Models\Setting::get('footer_badge1');

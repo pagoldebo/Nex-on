@@ -118,7 +118,7 @@
                 <div class="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300 flex flex-col items-center justify-center text-center">
                     <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-xs w-full max-w-[240px] text-center space-y-1">
                         <div x-show="showStoreName" class="text-[10px] font-black tracking-widest text-slate-800 uppercase" x-text="storeName"></div>
-                        <div class="text-[11px] font-bold text-slate-900 truncate">Sample Luxury Silk Robe</div>
+                        <div class="text-[11px] font-bold text-slate-900 truncate">Sample Silk Robe</div>
                         <div class="py-1 flex justify-center">
                             {!! $previewSvg !!}
                         </div>

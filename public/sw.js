@@ -3,7 +3,7 @@
  * Enables offline shell & assets caching while ensuring fresh live catalog/orders.
  */
 
-const CACHE_NAME = 'luxury-store-pwa-v1';
+const CACHE_NAME = 'nexon-store-pwa-v1';
 const urlsToCache = [
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png'

@@ -138,7 +138,7 @@ class StorefrontController extends Controller
             $query,
             'Featured Products',
             'featured-products',
-            'Explore our handcrafted selection of iconic luxury pieces and signature essentials.'
+            'Explore our handcrafted selection of iconic pieces and signature essentials.'
         );
     }
 
@@ -165,7 +165,7 @@ class StorefrontController extends Controller
             $query,
             'Sale & Special Offers',
             'collections/sale',
-            'Exclusive seasonal discounts and limited-time promotional offers on luxury lingerie.'
+            'Exclusive seasonal discounts and limited-time promotional offers on fine lingerie.'
         );
     }
 
@@ -181,7 +181,7 @@ class StorefrontController extends Controller
             $query,
             'New Arrivals & Launches',
             'new-arrivals',
-            'The freshest additions to our luxury range. Modern aesthetics, exquisite craftsmanship.'
+            'The freshest additions to our collection. Modern aesthetics, exquisite craftsmanship.'
         );
     }
 
@@ -199,7 +199,7 @@ class StorefrontController extends Controller
                 $this->productQuery(),
                 'All Products',
                 'collections/all',
-                'Explore our complete catalog of luxury pieces.'
+                'Explore our complete catalog of signature pieces.'
             ),
             default                           => Category::where('slug', $slug)->first()
                                                     ? $this->category($request, Category::where('slug', $slug)->firstOrFail())
@@ -370,7 +370,7 @@ class StorefrontController extends Controller
         try {
             Mail::send('emails.order-confirmation', ['order' => $order], function ($m) use ($order) {
                 $m->to($order->shipping_email, $order->shipping_name)
-                  ->subject('Order Confirmed: #' . $order->reference . ' — Saaya Luxury');
+                  ->subject('Order Confirmed: #' . $order->reference . ' — Saaya');
             });
 
             $adminEmail = Setting::get('support_email', 'support@saaya.in');
@@ -578,7 +578,7 @@ class StorefrontController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Thank you for subscribing to our private luxury newsletter!',
+            'message' => 'Thank you for subscribing to our private newsletter!',
         ]);
     }
 

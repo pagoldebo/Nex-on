@@ -46,7 +46,7 @@ class StoreLogoSettingsTest extends TestCase
         $file = UploadedFile::fake()->create('brand-logo.png', 50, 'image/png');
 
         $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
-            'store_name' => 'Nexon Luxury Atelier',
+            'store_name' => 'Nexon Atelier',
             'site_logo'  => $file,
         ]);
 
@@ -66,7 +66,7 @@ class StoreLogoSettingsTest extends TestCase
             $storefront = $this->get(route('home'));
             $storefront->assertStatus(200);
             $storefront->assertSee(asset('storage/' . $savedLogo));
-            $storefront->assertSee('Nexon Luxury Atelier');
+            $storefront->assertSee('Nexon Atelier');
         }
     }
 

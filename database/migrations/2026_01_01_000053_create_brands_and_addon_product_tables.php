@@ -37,10 +37,10 @@ return new class extends Migration
             $table->unique(['product_id', 'addon_id']);
         });
 
-        // 4. Seed initial curated luxury & artisan brands
+        // 4. Seed initial curated artisan brands
         $now = now();
         $initialBrands = [
-            ['name' => 'Nex-on Signature', 'slug' => 'nexon-signature', 'description' => 'Flagship couture & signature luxury collection.', 'is_active' => true, 'sort_order' => 1],
+            ['name' => 'Nex-on Signature', 'slug' => 'nexon-signature', 'description' => 'Flagship couture & signature collection.', 'is_active' => true, 'sort_order' => 1],
             ['name' => 'Sabyasachi Atelier', 'slug' => 'sabyasachi-atelier', 'description' => 'Opulent royal bridal lehengas, sarees, and heirloom ensembles.', 'is_active' => true, 'sort_order' => 2],
             ['name' => 'Raw Mango', 'slug' => 'raw-mango', 'description' => 'Contemporary handwoven Chanderi, Banarasi, and Mashru silks.', 'is_active' => true, 'sort_order' => 3],
             ['name' => 'Bespoke Heritage', 'slug' => 'bespoke-heritage', 'description' => 'Handcrafted pure tussar, linen, and artisanal handloom fabrics.', 'is_active' => true, 'sort_order' => 4],

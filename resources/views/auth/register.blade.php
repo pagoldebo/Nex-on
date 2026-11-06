@@ -28,7 +28,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
-                <!-- LEFT COLUMN: VIP Privilege Club & Luxury Experience -->
+                <!-- LEFT COLUMN: VIP Privilege Club & Premium Experience -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-stone-800/80 relative overflow-hidden" style="background-color: #000000 !important;">
 
@@ -75,7 +75,7 @@
                                     </div>
                                     <div>
                                         <h3 class="font-bold text-white text-xs">White-Glove Express Delivery</h3>
-                                        <p class="text-stone-400 text-[11px] mt-0.5 leading-relaxed">Insured priority dispatch with signature luxury keepsake packaging.</p>
+                                        <p class="text-stone-400 text-[11px] mt-0.5 leading-relaxed">Insured priority dispatch with signature keepsake packaging.</p>
                                     </div>
                                 </div>
 

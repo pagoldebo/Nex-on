@@ -24,7 +24,7 @@ class ScrollingAnnouncementTickerTest extends TestCase
             'key'         => 'vyra',
             'name'        => 'Vyra Noir',
             'is_active'   => true,
-            'description' => 'Dark luxury lingerie theme',
+            'description' => 'Dark lingerie theme',
         ]);
 
         Category::create([

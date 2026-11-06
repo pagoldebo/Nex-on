@@ -27,8 +27,8 @@ class ReportsSuiteTest extends TestCase
         ]);
 
         $category = Category::create([
-            'name'        => 'Luxury Bras',
-            'slug'        => 'luxury-bras',
+            'name'        => 'Silk Bras',
+            'slug'        => 'silk-bras',
             'is_active'   => true,
             'sort_order'  => 1,
         ]);

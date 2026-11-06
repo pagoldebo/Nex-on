@@ -15,7 +15,7 @@
 @props([
     'theme'    => null,
     'title'    => config('app.name', 'Project Nexon'),
-    'metaDesc' => config('app.name', 'Project Nexon') . ' - Luxury E-Commerce.',
+    'metaDesc' => config('app.name', 'Project Nexon') . ' - Online Store.',
 ])
 
 @php

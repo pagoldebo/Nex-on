@@ -1,5 +1,5 @@
 {{-- resources/views/storefront/saaya/about.blade.php --}}
-<x-storefront-layout :theme="$theme" title="About Saaya — The Atelier Story" metaDesc="Discover the heritage of Saaya Luxury intimate atelier, handcrafted with pure mulberry silk, zari embroidery, and heirloom silhouettes.">
+<x-storefront-layout :theme="$theme" title="About Saaya — The Atelier Story" metaDesc="Discover the heritage of Saaya intimate atelier, handcrafted with pure mulberry silk, zari embroidery, and heirloom silhouettes.">
 
 <div class="bg-ivory py-10 lg:py-16">
   <div class="max-w-7xl mx-auto px-6 lg:px-12">

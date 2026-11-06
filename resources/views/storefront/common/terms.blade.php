@@ -1,4 +1,4 @@
-<x-storefront-layout :theme="$theme" title="Terms of Service &amp; Purchase Agreement" metaDesc="Review the terms and conditions governing the purchase and delivery of our luxury intimate apparel.">
+<x-storefront-layout :theme="$theme" title="Terms of Service &amp; Purchase Agreement" metaDesc="Review the terms and conditions governing the purchase and delivery of our intimate apparel.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-4xl mx-auto px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">

@@ -36,7 +36,7 @@ class AccountRegistrationTest extends TestCase
         );
     }
 
-    public function test_register_page_renders_luxury_storefront_design(): void
+    public function test_register_page_renders_storefront_design(): void
     {
         $response = $this->get(route('register'));
 

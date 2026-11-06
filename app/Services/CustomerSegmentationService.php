@@ -85,7 +85,7 @@ class CustomerSegmentationService
                 'name'        => 'Champions',
                 'description' => 'Top tier shoppers: high frequency, high spend, ordered recently',
                 'badge_color' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
-                'action'      => 'Early VIP Collection Access & Luxury Gift Inclusions',
+                'action'      => 'Early VIP Collection Access & Premium Gift Inclusions',
             ];
         }
 

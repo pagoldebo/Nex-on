@@ -17,7 +17,7 @@ class CookieAnalyticsTagManagerTest extends TestCase
         parent::setUp();
         Template::create([
             'key'         => 'saaya',
-            'name'        => 'Saaya Luxury',
+            'name'        => 'Saaya',
             'is_active'   => true,
             'description' => 'Test Theme',
         ]);
@@ -74,7 +74,7 @@ class CookieAnalyticsTagManagerTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertStatus(200);
-        $response->assertSee('luxuryCookieManager', false);
+        $response->assertSee('cookieConsentManager', false);
         $response->assertSee('G-LIVEGA4TEST');
         $response->assertSee('GTM-STOREFRONT');
         $response->assertSee('Respecting Your Privacy');
@@ -88,7 +88,7 @@ class CookieAnalyticsTagManagerTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertStatus(200);
-        $response->assertDontSee('luxuryCookieManager');
+        $response->assertDontSee('cookieConsentManager');
         $response->assertDontSee('Respecting Your Privacy');
     }
 }

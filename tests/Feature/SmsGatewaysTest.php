@@ -63,7 +63,7 @@ class SmsGatewaysTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.settings.sms.test'), [
             'test_phone'   => '+919876543210',
-            'test_message' => 'Hello! This is a test SMS from Luxury Lingerie boutique.',
+            'test_message' => 'Hello! This is a test SMS from Nexon boutique.',
         ]);
 
         $response->assertRedirect();

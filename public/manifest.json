@@ -1,7 +1,7 @@
 {
-    "name": "Luxury Intimates & Couture",
+    "name": "Intimates & Couture",
     "short_name": "Store App",
-    "description": "Shop luxury fashion, intimate apparel, and signature collections.",
+    "description": "Shop fashion, intimate apparel, and signature collections.",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

@@ -1,12 +1,12 @@
 {{-- resources/views/storefront/common/pwa-prompt.blade.php
      Progressive Web App (PWA) Mobile App Installation Prompt
-     Matches Jonakee luxury reference design benchmark with 24h dismissal logic and native/iOS installation support. --}}
+     Matches Jonakee reference design benchmark with 24h dismissal logic and native/iOS installation support. --}}
 
 @php
     $pwaEnabled = \App\Models\Setting::get('pwa_prompt_enabled', '1') !== '0';
     $appName    = config('app.name', 'Project Nexon');
     $customTitle = \App\Models\Setting::get('pwa_prompt_title');
-    $pwaTitle   = (!empty($customTitle) && $customTitle !== 'Install Nexon Luxury App')  
+    $pwaTitle   = (!empty($customTitle) && $customTitle !== 'Install Nexon App')  
                     ? $customTitle 
                     : ('Install ' . $appName . ' App');
     $pwaDesc    = \App\Models\Setting::get('pwa_prompt_description', 'Get quick access to our collection! Install our app for a faster, better shopping experience on your device.');

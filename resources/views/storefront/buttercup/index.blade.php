@@ -36,7 +36,7 @@
                      : asset('storage/slider/buttercup/slide-3.jpg'),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_3_badge', 'Pure Indulgence'),
       'title'     => \App\Models\Setting::get('buttercup_slide_3_title', "Soft as a Whisper,\nCrafted for You"),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_3_subtitle', 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless luxury every day.'),
+      'subtitle'  => \App\Models\Setting::get('buttercup_slide_3_subtitle', 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.'),
       'btn1_text' => \App\Models\Setting::get('buttercup_slide_3_btn1_text', 'Explore Bestsellers'),
       'btn1_url'  => \App\Models\Setting::get('buttercup_slide_3_btn1_url', route('home') . '#products'),
       'btn2_text' => \App\Models\Setting::get('buttercup_slide_3_btn2_text', 'Discover More'),
@@ -118,7 +118,7 @@
     </div>
   @endforeach
 
-  {{-- LUXURY BLUSH GRADIENT / SCRIM OVERLAY (ASSURES TEXT READABILITY) --}}
+  {{-- BLUSH GRADIENT / SCRIM OVERLAY (ASSURES TEXT READABILITY) --}}
   <div class="absolute inset-0 z-20 pointer-events-none bg-gradient-to-r from-[#FBE7E4]/95 via-[#FBE7E4]/85 to-[#FBE7E4]/40 md:to-transparent"></div>
   <div class="absolute inset-0 z-20 pointer-events-none bg-radial-gradient from-transparent via-transparent to-[#FBE7E4]/30"></div>
 

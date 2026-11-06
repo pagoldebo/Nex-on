@@ -1,5 +1,5 @@
 {{-- resources/views/storefront/saaya/contact.blade.php --}}
-<x-storefront-layout :theme="$theme" title="Contact Concierge — Saaya Luxury" metaDesc="Reach out to the Saaya personal styling concierge for fit consultations, bespoke trousseau assistance, or order inquiries.">
+<x-storefront-layout :theme="$theme" title="Contact Concierge — Saaya" metaDesc="Reach out to the Saaya personal styling concierge for fit consultations, bespoke trousseau assistance, or order inquiries.">
 
 <div class="bg-ivory py-10 lg:py-16">
   <div class="max-w-7xl mx-auto px-6 lg:px-12">

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="space-y-6 pb-12" x-data="{
-    title: 'Flash Sale: 30% Off Luxury Silk Robes',
+    title: 'Flash Sale: 30% Off Silk Robes',
     body: 'Exclusive weekend offer for our VIP members. Use code LUXE30 at checkout.',
     actionUrl: '{{ url('/category/silk-lingerie') }}',
     imageUrl: ''
@@ -123,7 +123,7 @@
                             <div class="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
                                 V
                             </div>
-                            <span class="text-[11px] font-bold text-slate-300 font-mono">{{ config('app.name', 'LUXURY BOUTIQUE') }}</span>
+                            <span class="text-[11px] font-bold text-slate-300 font-mono">{{ config('app.name', 'NEXON BOUTIQUE') }}</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-mono">now</span>
                     </div>

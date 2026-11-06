@@ -123,7 +123,7 @@
         @empty
           <div class="bg-white rounded-3xl border border-pink-100 p-12 text-center shadow-sm shadow-pink-50">
             <p class="font-display italic text-2xl text-gray-900 mb-1">No orders yet</p>
-            <p class="text-sm text-gray-400 mb-6">Discover our French luxury silk lingerie collections.</p>
+            <p class="text-sm text-gray-400 mb-6">Discover our French silk lingerie collections.</p>
             <a href="{{ route('home') }}" class="inline-block py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">
               Explore Collections &rarr;
             </a>

@@ -24,7 +24,7 @@ class EnterpriseDemoSeeder extends Seeder
     {
         // 1. Seed Staff & Admin Accounts
         $admin = User::updateOrCreate(
-            ['email' => 'debo.admin@nexon.luxury'],
+            ['email' => 'debo.admin@nexon.com'],
             [
                 'name'              => 'Deborshi Karfa',
                 'password'          => Hash::make('admin123'),
@@ -34,7 +34,7 @@ class EnterpriseDemoSeeder extends Seeder
         );
 
         $staff = User::updateOrCreate(
-            ['email' => 'staff@nexon.luxury'],
+            ['email' => 'staff@nexon.com'],
             [
                 'name'              => 'Meera Kapoor',
                 'password'          => Hash::make('staff123'),
@@ -52,7 +52,7 @@ class EnterpriseDemoSeeder extends Seeder
                 'address'    => 'Ground Floor, Regal Circle, Colaba Causeway, Mumbai 400001',
                 'city'       => 'Mumbai',
                 'phone'      => '+91 22 2202 1100',
-                'email'      => 'colaba@nexon.luxury',
+                'email'      => 'colaba@nexon.com',
                 'is_central' => true,
                 'is_active'  => true,
                 'channel'    => 'all',
@@ -67,7 +67,7 @@ class EnterpriseDemoSeeder extends Seeder
                 'address'    => '100ft Road, HAL 2nd Stage, Indiranagar, Bengaluru 560038',
                 'city'       => 'Bengaluru',
                 'phone'      => '+91 80 4112 3344',
-                'email'      => 'bengaluru@nexon.luxury',
+                'email'      => 'bengaluru@nexon.com',
                 'is_central' => false,
                 'is_active'  => true,
                 'channel'    => 'pos',
@@ -82,7 +82,7 @@ class EnterpriseDemoSeeder extends Seeder
                 'address'    => 'Warehouse Bay 14, Mumbai-Nashik Expressway, Bhiwandi 421302',
                 'city'       => 'Bhiwandi',
                 'phone'      => '+91 2522 667788',
-                'email'      => 'warehouse@nexon.luxury',
+                'email'      => 'warehouse@nexon.com',
                 'is_central' => false,
                 'is_active'  => true,
                 'channel'    => 'online',
@@ -182,7 +182,7 @@ class EnterpriseDemoSeeder extends Seeder
                     ],
                     [
                         'type'        => 'testimonials',
-                        'quote'       => 'The craftsmanship of Saaya’s silk robe exceeded all expectations on my wedding morning. Pure royal luxury.',
+                        'quote'       => 'The craftsmanship of Saaya’s silk robe exceeded all expectations on my wedding morning. Pure royal elegance.',
                         'author'      => 'Aishwarya Rai Bachchan',
                         'location'    => 'Mumbai &amp; London',
                     ],
@@ -234,7 +234,7 @@ class EnterpriseDemoSeeder extends Seeder
             ['phone' => '9876543210'],
             [
                 'name'           => 'Rahul Sharma',
-                'email'          => 'rahul.courier@nexon.luxury',
+                'email'          => 'rahul.courier@nexon.com',
                 'vehicle_type'   => 'bike',
                 'vehicle_number' => 'MH 01 AB 1001',
                 'status'         => 'active',
@@ -245,7 +245,7 @@ class EnterpriseDemoSeeder extends Seeder
             ['phone' => '9876543211'],
             [
                 'name'           => 'Deepak Verma',
-                'email'          => 'deepak.courier@nexon.luxury',
+                'email'          => 'deepak.courier@nexon.com',
                 'vehicle_type'   => 'scooter',
                 'vehicle_number' => 'KA 05 EV 2020',
                 'status'         => 'active',
@@ -256,7 +256,7 @@ class EnterpriseDemoSeeder extends Seeder
             ['phone' => '9876543212'],
             [
                 'name'           => 'Sanjay Patil',
-                'email'          => 'sanjay.fleet@nexon.luxury',
+                'email'          => 'sanjay.fleet@nexon.com',
                 'vehicle_type'   => 'van',
                 'vehicle_number' => 'MH 04 VN 8888',
                 'status'         => 'active',

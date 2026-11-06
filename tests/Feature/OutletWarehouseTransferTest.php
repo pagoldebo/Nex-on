@@ -29,8 +29,8 @@ class OutletWarehouseTransferTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin']);
 
         $category = Category::create([
-            'name'       => 'Luxury Silk',
-            'slug'       => 'luxury-silk',
+            'name'       => 'Pure Silk',
+            'slug'       => 'pure-silk',
             'is_active'  => true,
             'sort_order' => 1,
         ]);

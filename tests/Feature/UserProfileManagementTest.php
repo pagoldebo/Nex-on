@@ -109,3 +109,4 @@ class UserProfileManagementTest extends TestCase
         $this->assertNull(User::find($user->id));
     }
 }
+

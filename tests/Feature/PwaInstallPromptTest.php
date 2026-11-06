@@ -91,14 +91,14 @@ class PwaInstallPromptTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.settings.update'), [
             'pwa_prompt_enabled'     => '1',
             'pwa_prompt_title'       => 'Install Jonakee VIP App',
-            'pwa_prompt_description' => 'Install our luxury app for member discounts.',
+            'pwa_prompt_description' => 'Install our mobile app for member discounts.',
         ]);
 
         $response->assertRedirect(route('admin.settings.index'));
 
         $this->assertEquals('1', Setting::get('pwa_prompt_enabled'));
         $this->assertEquals('Install Jonakee VIP App', Setting::get('pwa_prompt_title'));
-        $this->assertEquals('Install our luxury app for member discounts.', Setting::get('pwa_prompt_description'));
+        $this->assertEquals('Install our mobile app for member discounts.', Setting::get('pwa_prompt_description'));
     }
 
     public function test_pwa_install_popup_dynamically_inherits_app_name_from_config(): void
@@ -112,10 +112,10 @@ class PwaInstallPromptTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Install Project Nexon App');
 
-        config(['app.name' => 'Nexus Luxury']);
+        config(['app.name' => 'Nexus Retail']);
         $response2 = $this->get(route('home'));
         $response2->assertStatus(200);
-        $response2->assertSee('Install Nexus Luxury App');
+        $response2->assertSee('Install Nexus Retail App');
     }
 
     public function test_admin_panel_displays_app_name_and_initial_from_config(): void

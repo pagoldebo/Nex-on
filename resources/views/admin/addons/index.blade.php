@@ -103,7 +103,7 @@
                 :class="activeTab === 'addons' ? 'border-rose-600 text-rose-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
                 class="px-5 py-3 border-b-2 text-sm transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-            <span>Luxury Add-ons &amp; Packaging</span>
+            <span>Add-ons &amp; Packaging</span>
             <span class="px-2 py-0.5 rounded-full text-xs" :class="activeTab === 'addons' ? 'bg-rose-100 text-rose-700 font-bold' : 'bg-slate-100 text-slate-600'">{{ $addons->total() }}</span>
         </button>
     </div>
@@ -189,7 +189,7 @@
         </div>
     </div>
 
-    <!-- TAB 2: LUXURY ADD-ONS -->
+    <!-- TAB 2: ADD-ONS & PACKAGING -->
     <div x-show="activeTab === 'addons'" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-600">
@@ -270,7 +270,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Add-on Name *</label>
-                            <input type="text" name="name" x-model="addonForm.name" required placeholder="e.g. Discreet Luxury Box"
+                            <input type="text" name="name" x-model="addonForm.name" required placeholder="e.g. Discreet Gift Box"
                                    class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500">
                         </div>
 

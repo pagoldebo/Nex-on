@@ -38,7 +38,7 @@ class AdminSmsController extends Controller
 
             // MSG91
             'msg91_authkey'              => Setting::get('sms_msg91_authkey', ''),
-            'msg91_sender_id'            => Setting::get('sms_msg91_sender_id', 'LUXURY'),
+            'msg91_sender_id'            => Setting::get('sms_msg91_sender_id', 'NEXON'),
             'msg91_order_template'       => Setting::get('sms_msg91_order_confirmed_template_id', ''),
             'msg91_otp_template'         => Setting::get('sms_msg91_otp_login_template_id', ''),
 
@@ -75,7 +75,7 @@ class AdminSmsController extends Controller
 
             // MSG91
             'sms_msg91_authkey'                  => $request->input('sms_msg91_authkey', ''),
-            'sms_msg91_sender_id'                => $request->input('sms_msg91_sender_id', 'LUXURY'),
+            'sms_msg91_sender_id'                => $request->input('sms_msg91_sender_id', 'NEXON'),
             'sms_msg91_order_confirmed_template_id' => $request->input('sms_msg91_order_confirmed_template_id', ''),
             'sms_msg91_otp_login_template_id'       => $request->input('sms_msg91_otp_login_template_id', ''),
 

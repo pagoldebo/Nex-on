@@ -118,7 +118,7 @@
         <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-slate-600">
             <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
                 <span class="font-bold text-slate-900 block mb-1">Sales &amp; Revenue Ledgers:</span>
-                <div>&bull; Primary: <code>Sales - Luxury Apparel &amp; Lingerie</code></div>
+                <div>&bull; Primary: <code>Sales - Apparel &amp; Lingerie</code></div>
                 <div>&bull; Freight: <code>Courier Freight &amp; Delivery Income</code></div>
             </div>
             <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">

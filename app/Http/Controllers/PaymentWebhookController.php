@@ -155,7 +155,7 @@ class PaymentWebhookController extends Controller
             ],
             'upi_qr' => [
                 'enabled' => Setting::get('enable_upi_qr', '1') === '1',
-                'vpa'     => Setting::get('store_upi_vpa', 'luxurystore@okhdfcbank'),
+                'vpa'     => Setting::get('store_upi_vpa', 'nexonstore@okhdfcbank'),
             ],
         ]);
     }

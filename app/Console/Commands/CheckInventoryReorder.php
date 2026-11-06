@@ -49,7 +49,7 @@ class CheckInventoryReorder extends Command
             $defaultSupplier = Supplier::firstOrCreate(
                 ['code' => 'SUP-DEFAULT'],
                 [
-                    'name'           => 'Apex Luxury Textiles & Garments Ltd',
+                    'name'           => 'Apex Textiles & Garments Ltd',
                     'contact_name'   => 'Rajesh Singhania',
                     'email'          => 'procurement@apextextiles.com',
                     'phone'          => '+91 98200 11223',

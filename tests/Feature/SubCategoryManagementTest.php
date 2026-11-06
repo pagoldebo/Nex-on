@@ -19,7 +19,7 @@ class SubCategoryManagementTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'debo.admin@nexon.luxury',
+            'email' => 'debo.admin@nexon.com',
             'name' => 'Deborshi Karfa',
             'role' => 'admin',
         ]);

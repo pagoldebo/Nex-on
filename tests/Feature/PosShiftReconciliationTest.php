@@ -21,7 +21,7 @@ class PosShiftReconciliationTest extends TestCase
         parent::setUp();
 
         $this->cashier = User::factory()->create([
-            'email' => 'cashier.pos@nexon.luxury',
+            'email' => 'cashier.pos@nexon.com',
             'role'  => 'admin',
         ]);
 

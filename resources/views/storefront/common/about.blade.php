@@ -13,7 +13,7 @@
   $stat3Num = \App\Models\Setting::get("{$tKey}_stat3_num", '100%');
   $stat3Lbl = \App\Models\Setting::get("{$tKey}_stat3_label", 'Discreet Delivery');
 @endphp
-<x-storefront-layout :theme="$theme" title="About Us — The Atelier Story" metaDesc="Discover the heritage of our luxury intimate atelier, handcrafted with premium fabrics and silhouettes.">
+<x-storefront-layout :theme="$theme" title="About Us — The Atelier Story" metaDesc="Discover the heritage of our intimate atelier, handcrafted with premium fabrics and silhouettes.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-5xl mx-auto px-6 lg:px-8">
             <!-- Header -->
@@ -37,7 +37,7 @@
                 </div>
                 <div class="space-y-6">
                     <span class="text-xs font-mono text-slate-400 uppercase tracking-widest">{{ \App\Models\Setting::get("{$tKey}_about_philosophy_badge", 'Philosophy 01') }}</span>
-                    <h2 class="text-2xl lg:text-3xl font-serif text-slate-900">{{ \App\Models\Setting::get("{$tKey}_about_philosophy_heading", 'Uncompromising Luxury & Comfort') }}</h2>
+                    <h2 class="text-2xl lg:text-3xl font-serif text-slate-900">{{ \App\Models\Setting::get("{$tKey}_about_philosophy_heading", 'Uncompromising Quality & Comfort') }}</h2>
                     <p class="text-sm text-slate-600 leading-relaxed">
                         {{ $storyP1 }}
                     </p>
@@ -66,7 +66,7 @@
                 <div class="p-6 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-3">
                     <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-serif text-lg font-bold">1</div>
                     <h3 class="font-serif text-lg text-slate-900">{{ \App\Models\Setting::get("{$tKey}_pillar1_title", 'Private & Confidential') }}</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">{{ \App\Models\Setting::get("{$tKey}_pillar1_desc", 'Your privacy is sacred. All orders arrive in unmarked, tamper-evident luxury matte boxes with no brand indicators on the exterior shipping label.') }}</p>
+                    <p class="text-xs text-slate-500 leading-relaxed">{{ \App\Models\Setting::get("{$tKey}_pillar1_desc", 'Your privacy is sacred. All orders arrive in unmarked, tamper-evident matte boxes with no brand indicators on the exterior shipping label.') }}</p>
                 </div>
                 <div class="p-6 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-3">
                     <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-serif text-lg font-bold">2</div>

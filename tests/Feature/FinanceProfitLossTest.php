@@ -27,7 +27,7 @@ class FinanceProfitLossTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'cfo@nexon.luxury',
+            'email' => 'cfo@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -91,7 +91,7 @@ class FinanceProfitLossTest extends TestCase
         $cat = ExpenseCategory::create(['name' => 'Packaging', 'slug' => 'packaging', 'color' => '#10b981', 'is_active' => true]);
         Expense::create([
             'expense_category_id' => $cat->id,
-            'title'               => 'Luxury Ribbon & Gift Wraps',
+            'title'               => 'Silk Ribbon & Gift Wraps',
             'amount'              => 3500,
             'tax_amount'          => 630,
             'payment_method'      => 'bank_transfer',

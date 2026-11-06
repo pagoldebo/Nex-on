@@ -27,7 +27,7 @@
 
         <div style="background: #faf5ee; padding: 20px; text-align: center; border-top: 1px solid #ebd9c8; font-size: 11px; color: #8c7373;">
             <p style="margin: 0 0 6px 0;">You are receiving this exclusive invitation because you subscribed to {{ config('app.name', 'Project Nexon') }} VIP announcements.</p>
-            <p style="margin: 0;">Hand-finished bridal &amp; luxury lingerie.</p>
+            <p style="margin: 0;">Hand-finished bridal &amp; fine lingerie.</p>
         </div>
     </div>
 </body>

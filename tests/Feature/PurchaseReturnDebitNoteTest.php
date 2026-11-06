@@ -28,7 +28,7 @@ class PurchaseReturnDebitNoteTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.returns@nexon.luxury',
+            'email' => 'admin.returns@nexon.com',
             'role'  => 'admin',
         ]);
 

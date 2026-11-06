@@ -248,7 +248,7 @@ class LoginEmailOtpTest extends TestCase
         ]);
     }
 
-    public function test_email_otp_view_renders_luxury_template(): void
+    public function test_email_otp_view_renders_template(): void
     {
         $rendered = view('emails.two-factor-otp', [
             'otp'             => '7890',

@@ -110,3 +110,4 @@ class TwoFactorAuthenticationController extends Controller
         return back()->with('status', 'recovery-codes-generated');
     }
 }
+

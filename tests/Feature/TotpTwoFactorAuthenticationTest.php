@@ -196,3 +196,4 @@ class TotpTwoFactorAuthenticationTest extends TestCase
         $this->assertNotContains('recovery-code-alpha', $remaining);
     }
 }
+

@@ -23,8 +23,8 @@ class CheckoutPriceVerificationTest extends TestCase
         Setting::set('cod_charge', '40');
 
         $category = Category::create([
-            'name' => 'Luxury Silk',
-            'slug' => 'luxury-silk',
+            'name' => 'Pure Silk',
+            'slug' => 'pure-silk',
         ]);
 
         $product = Product::create([
@@ -55,8 +55,8 @@ class CheckoutPriceVerificationTest extends TestCase
             'shipping' => [
                 'name'     => 'Patron User',
                 'phone'    => '9876543210',
-                'email'    => 'patron@luxury.test',
-                'address1' => 'Suite 500, Luxury Towers',
+                'email'    => 'patron@nexon.test',
+                'address1' => 'Suite 500, Central Towers',
                 'city'     => 'Mumbai',
                 'state'    => 'Maharashtra',
                 'pincode'  => '400001',
@@ -132,7 +132,7 @@ class CheckoutPriceVerificationTest extends TestCase
         ]);
 
         $coupon = Coupon::create([
-            'code'             => 'LUXURY10',
+            'code'             => 'NEXON10',
             'type'             => 'percentage',
             'value'            => 10, // 10%
             'min_order_amount' => 1000,
@@ -143,14 +143,14 @@ class CheckoutPriceVerificationTest extends TestCase
             'shipping' => [
                 'name'     => 'Alice',
                 'phone'    => '9123456789',
-                'email'    => 'alice@luxury.test',
+                'email'    => 'alice@nexon.test',
                 'address1' => '10 Atelier Lane',
                 'city'     => 'Delhi',
                 'state'    => 'Delhi',
                 'pincode'  => '110001',
             ],
             'payment'     => 'cod',
-            'coupon_code' => 'LUXURY10',
+            'coupon_code' => 'NEXON10',
             'discount'    => 9999, // Tampered discount claiming 9999
             'items'       => [
                 [

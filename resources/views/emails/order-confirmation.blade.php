@@ -10,7 +10,7 @@
         <!-- Header -->
         <div style="background: #4A0E17; padding: 32px 24px; text-align: center;">
             <h1 style="color: #F8F4EE; font-family: Georgia, serif; font-size: 28px; margin: 0; letter-spacing: 2px;">SAAYA</h1>
-            <p style="color: #D4AF37; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; margin: 8px 0 0 0;">Luxury Lingerie &amp; Trousseau</p>
+            <p style="color: #D4AF37; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; margin: 8px 0 0 0;">Lingerie &amp; Trousseau</p>
         </div>
 
         <!-- Body -->

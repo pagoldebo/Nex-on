@@ -23,13 +23,13 @@ class HrmPerformanceTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.performance@nexon.luxury',
+            'email' => 'admin.performance@nexon.com',
             'role'  => 'admin',
         ]);
 
         $this->staff = User::factory()->create([
             'name'  => 'Ananya Sen',
-            'email' => 'ananya.sen@nexon.luxury',
+            'email' => 'ananya.sen@nexon.com',
             'role'  => 'vendor',
         ]);
 
@@ -72,7 +72,7 @@ class HrmPerformanceTest extends TestCase
         $payload = [
             'user_id'       => $this->staff->id,
             'title'         => 'Complete 100 Atelier Client Appointments',
-            'description'   => 'Provide personalized luxury garment fittings and styling advice.',
+            'description'   => 'Provide personalized garment fittings and styling advice.',
             'metric_type'   => 'numeric',
             'target_value'  => 100,
             'current_value' => 20,

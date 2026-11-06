@@ -80,7 +80,7 @@ Schema::create('products', function (Blueprint $table) {
 Schema::create('templates', function (Blueprint $table) {
     $table->id();
     $table->string('key')->unique();   // 'saaya', 'buttercup', 'vyra'
-    $table->string('label');           // "Saaya — Bridal Luxury"
+    $table->string('label');           // "Saaya — Bridal Atelier"
     $table->string('preview_image')->nullable();
     $table->boolean('is_active')->default(false); // only ONE row true at a time
     $table->timestamps();
@@ -142,7 +142,7 @@ php artisan migrate
 public function run(): void
 {
     $templates = [
-        ['key' => 'saaya',     'label' => 'Saaya — Bridal Luxury',   'is_active' => true],
+        ['key' => 'saaya',     'label' => 'Saaya — Bridal Atelier',   'is_active' => true],
         ['key' => 'buttercup', 'label' => 'Buttercup — Everyday Soft','is_active' => false],
         ['key' => 'vyra',      'label' => 'Vyra — Bold Modern',       'is_active' => false],
     ];

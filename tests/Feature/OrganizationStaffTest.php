@@ -23,13 +23,13 @@ class OrganizationStaffTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.org@nexon.luxury',
+            'email' => 'admin.org@nexon.com',
             'role'  => 'admin',
         ]);
 
         $this->staff = User::factory()->create([
             'name'  => 'Kavita Verma',
-            'email' => 'kavita.verma@nexon.luxury',
+            'email' => 'kavita.verma@nexon.com',
             'role'  => 'vendor',
         ]);
 
@@ -52,7 +52,7 @@ class OrganizationStaffTest extends TestCase
             'name'        => 'VIP Bespoke Atelier',
             'code'        => 'VIP-ATELIER',
             'head_user_id'=> $this->admin->id,
-            'description' => 'Luxury couture customizations.',
+            'description' => 'Haute couture customizations.',
             'color'       => 'rose',
             'is_active'   => 1,
         ];

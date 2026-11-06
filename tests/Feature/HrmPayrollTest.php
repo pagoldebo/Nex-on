@@ -21,13 +21,13 @@ class HrmPayrollTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.payroll@nexon.luxury',
+            'email' => 'admin.payroll@nexon.com',
             'role'  => 'admin',
         ]);
 
         $this->staff = User::factory()->create([
             'name'  => 'Priya Sharma',
-            'email' => 'priya.sharma@nexon.luxury',
+            'email' => 'priya.sharma@nexon.com',
             'role'  => 'vendor',
         ]);
 

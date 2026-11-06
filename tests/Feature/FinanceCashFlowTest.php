@@ -24,7 +24,7 @@ class FinanceCashFlowTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.cashflow@nexon.luxury',
+            'email' => 'admin.cashflow@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -44,7 +44,7 @@ class FinanceCashFlowTest extends TestCase
             'payment_status'    => 'paid',
             'shipping_name'     => 'Walk-in Retail Shopper',
             'shipping_phone'    => '9876543210',
-            'shipping_email'    => 'pos@nexon.luxury',
+            'shipping_email'    => 'pos@nexon.com',
             'shipping_address1' => 'Showroom Counter',
             'shipping_city'     => 'Mumbai',
             'shipping_state'    => 'Maharashtra',

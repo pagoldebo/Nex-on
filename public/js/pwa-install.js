@@ -7,7 +7,7 @@
     'use strict';
 
     let deferredPrompt = null;
-    const STORAGE_KEY = 'luxury-pwa-prompt-dismissed';
+    const STORAGE_KEY = 'nexon-pwa-prompt-dismissed';
     const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
     // Detect if running as installed standalone app

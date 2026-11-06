@@ -22,7 +22,7 @@ class BarcodeLabelPrintTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.barcode@nexon.luxury',
+            'email' => 'admin.barcode@nexon.com',
             'role'  => 'admin',
         ]);
 

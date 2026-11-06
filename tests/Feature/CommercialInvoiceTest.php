@@ -24,7 +24,7 @@ class CommercialInvoiceTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'billing@nexon.luxury',
+            'email' => 'billing@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -49,7 +49,7 @@ class CommercialInvoiceTest extends TestCase
         CommercialInvoice::create([
             'type'             => 'tax_invoice',
             'invoice_date'     => now()->format('Y-m-d'),
-            'client_name'      => 'Oberoi Luxury Hotels Ltd',
+            'client_name'      => 'Oberoi Grand Hotels Ltd',
             'company_name'     => 'The Oberoi Mumbai',
             'client_gstin'     => '27AABCO9988D1Z4',
             'subtotal'         => 50000,
@@ -66,7 +66,7 @@ class CommercialInvoiceTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('B2B Tax Invoices &amp; Credit Notes', false);
-        $response->assertSee('Oberoi Luxury Hotels Ltd');
+        $response->assertSee('Oberoi Grand Hotels Ltd');
         $response->assertSee('59,000.00');
         $response->assertSee('39,000.00'); // Outstanding balance (59,000 - 20,000)
     }
@@ -198,7 +198,7 @@ class CommercialInvoiceTest extends TestCase
         $invoice = CommercialInvoice::create([
             'type'             => 'tax_invoice',
             'invoice_date'     => now()->format('Y-m-d'),
-            'client_name'      => 'ITC Grand Chola Luxury Suites',
+            'client_name'      => 'ITC Grand Chola Royal Suites',
             'company_name'     => 'ITC Limited',
             'client_gstin'     => '33AABCI5678K1ZQ',
             'billing_address'  => 'Guindy, Chennai, Tamil Nadu 600032',
@@ -225,7 +225,7 @@ class CommercialInvoiceTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('admin.invoices.print', $invoice));
 
         $response->assertStatus(200);
-        $response->assertSee('ITC Grand Chola Luxury Suites');
+        $response->assertSee('ITC Grand Chola Royal Suites');
         $response->assertSee('118,000.00');
         $response->assertSee('Original for Recipient');
     }

@@ -21,7 +21,7 @@ class CategoryImageTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin@nexon.luxury',
+            'email' => 'admin@nexon.com',
             'name'  => 'Admin User',
             'role'  => 'admin',
         ]);
@@ -39,8 +39,8 @@ class CategoryImageTest extends TestCase
         $image = UploadedFile::fake()->create('men-collection.jpg', 100, 'image/jpeg');
 
         $response = $this->actingAs($this->admin)->post(route('admin.categories.store'), [
-            'name'       => 'Men Luxury',
-            'slug'       => 'men-luxury',
+            'name'       => 'Men Premium',
+            'slug'       => 'men-premium',
             'parent_id'  => '',
             'sort_order' => 1,
             'image'      => $image,
@@ -49,7 +49,7 @@ class CategoryImageTest extends TestCase
         $response->assertRedirect(route('admin.categories.index'));
         $response->assertSessionHas('success');
 
-        $category = Category::where('slug', 'men-luxury')->firstOrFail();
+        $category = Category::where('slug', 'men-premium')->firstOrFail();
         $this->assertNotNull($category->image);
         Storage::disk('public')->assertExists($category->image);
         $this->assertStringContainsString('storage/' . $category->image, $category->image_url);
@@ -71,7 +71,7 @@ class CategoryImageTest extends TestCase
         $newImage = UploadedFile::fake()->create('new-pic.jpg', 100, 'image/jpeg');
 
         $response = $this->actingAs($this->admin)->put(route('admin.categories.update', $category), [
-            'name'       => 'Women Luxury Collection',
+            'name'       => 'Women Premium Collection',
             'slug'       => 'women-collection',
             'parent_id'  => '',
             'sort_order' => 2,

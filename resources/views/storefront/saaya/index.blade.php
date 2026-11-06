@@ -21,7 +21,7 @@
         {!! nl2br(e(\App\Models\Setting::get('saaya_hero_title', "Draped in\nGold & Grace"))) !!}
       </h1>
       <p class="font-body text-ivory/70 text-base lg:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 mb-10">
-        {{ \App\Models\Setting::get('saaya_hero_subtitle', 'Luxury Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.') }}
+        {{ \App\Models\Setting::get('saaya_hero_subtitle', 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.') }}
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
         <a href="{{ route('search') }}" class="gold-btn py-4 px-10 text-xs font-body font-semibold tracking-widest uppercase">
@@ -222,7 +222,7 @@
 
 
 {{-- ═══════════════════════════════════════════════
-     CURATED FEATURED PICKS  —  warm ivory luxury grid
+     CURATED FEATURED PICKS  —  warm ivory grid
 ═══════════════════════════════════════════════ --}}
 @php
   $curatedProducts = ($featured && $featured->count()) ? $featured : $featuredProducts;
@@ -279,7 +279,7 @@
     <div class="text-center mb-6 sm:mb-8 reveal">
       <p class="font-display italic text-gold text-lg lg:text-xl mb-1">{{ \App\Models\Setting::get('saaya_sale_kicker', 'Limited Time Deals') }}</p>
       <h2 class="font-display text-4xl lg:text-5xl text-maroon">{{ \App\Models\Setting::get('saaya_sale_title', 'Special Sale Offers') }}</h2>
-      <p class="font-body text-maroon/60 text-xs md:text-sm max-w-lg mx-auto mt-2">{{ \App\Models\Setting::get('saaya_sale_subtitle', 'Exclusive luxury heirlooms and seasonal lingerie edits at celebratory promotional prices.') }}</p>
+      <p class="font-body text-maroon/60 text-xs md:text-sm max-w-lg mx-auto mt-2">{{ \App\Models\Setting::get('saaya_sale_subtitle', 'Exclusive heirlooms and seasonal lingerie edits at celebratory promotional prices.') }}</p>
     </div>
 
     {{-- Category filter tabs matching Reference Design --}}

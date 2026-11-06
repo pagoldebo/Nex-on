@@ -55,7 +55,7 @@ class SmsService
      */
     public function sendOrderConfirmation(Order $order): array
     {
-        $storeName = Setting::get('store_name', config('app.name', 'LUXURY STORE'));
+        $storeName = Setting::get('store_name', config('app.name', 'NEXON STORE'));
         $trackUrl = url("/order-confirmation/{$order->reference}");
         
         $message = "Dear {$order->shipping_name}, your order #{$order->reference} for {$order->formatted_total} has been confirmed with {$storeName}! Track your order here: {$trackUrl}";
@@ -68,8 +68,8 @@ class SmsService
      */
     public function sendOrderDispatched(Order $order): array
     {
-        $storeName = Setting::get('store_name', config('app.name', 'LUXURY STORE'));
-        $courier = $order->courier ?: 'Express Luxury Courier';
+        $storeName = Setting::get('store_name', config('app.name', 'NEXON STORE'));
+        $courier = $order->courier ?: 'Express Courier';
         $awb = $order->tracking_number ?: 'AWB-LIVE';
 
         $message = "Great news! Your order #{$order->reference} has been dispatched via {$courier} (Tracking: {$awb}). Thank you for shopping with {$storeName}!";
@@ -93,7 +93,7 @@ class SmsService
             'is_verified' => false,
         ]);
 
-        $storeName = Setting::get('store_name', config('app.name', 'LUXURY STORE'));
+        $storeName = Setting::get('store_name', config('app.name', 'NEXON STORE'));
         $message = "Your {$storeName} verification code is {$otp}. Valid for 10 minutes. Do not share this OTP with anyone.";
 
         $result = $this->send($phone, $message, 'otp_login');
@@ -169,7 +169,7 @@ class SmsService
     protected function sendViaMsg91(string $phone, string $message, string $templateType): array
     {
         $authKey = Setting::get('sms_msg91_authkey', '');
-        $senderId = Setting::get('sms_msg91_sender_id', 'LUXURY');
+        $senderId = Setting::get('sms_msg91_sender_id', 'NEXON');
 
         if (empty($authKey)) {
             return $this->sendViaLog($phone, $message, 'MSG91 credentials missing; fallen back to log.');

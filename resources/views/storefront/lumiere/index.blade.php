@@ -16,7 +16,7 @@
         Silk that<br><span class="text-pink-600">feels like light.</span>
       </h1>
       <p class="text-gray-700 max-w-md mb-8 leading-relaxed">
-        Sustainably made silk lingerie, finished by hand in India. Everyday luxury, no compromise.
+        Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.
       </p>
       <div class="flex flex-wrap gap-4">
         <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm">Shop the Edit</a>
@@ -224,7 +224,7 @@
     <div class="text-center mb-10 reveal">
       <p class="text-pink-600 text-[10px] font-black uppercase tracking-widest mb-2">{{ \App\Models\Setting::get('lumiere_sale_kicker', 'Limited Time Deals') }}</p>
       <h2 class="font-display italic text-3xl md:text-5xl text-gray-900">{{ \App\Models\Setting::get('lumiere_sale_title', 'Special Sale Offers') }}</h2>
-      <p class="text-gray-500 text-xs md:text-sm max-w-xl mx-auto mt-2 leading-relaxed">{{ \App\Models\Setting::get('lumiere_sale_subtitle', 'Hand-finished French lace, fine silk, and luxury nightwear at celebratory promotional prices.') }}</p>
+      <p class="text-gray-500 text-xs md:text-sm max-w-xl mx-auto mt-2 leading-relaxed">{{ \App\Models\Setting::get('lumiere_sale_subtitle', 'Hand-finished French lace, fine silk, and fine nightwear at celebratory promotional prices.') }}</p>
     </div>
 
     {{-- Category filter tabs matching Reference Design --}}
@@ -334,7 +334,7 @@
         {{ \App\Models\Setting::get('lumiere_story_badge', 'Our Story') }}
       </p>
       <h2 class="font-display italic text-3xl md:text-5xl text-gray-900 mb-6 leading-tight">
-        {!! nl2br(e(\App\Models\Setting::get('lumiere_story_title', "Everyday luxury,\nmade responsibly"))) !!}
+        {!! nl2br(e(\App\Models\Setting::get('lumiere_story_title', "Everyday elegance,\nmade responsibly"))) !!}
       </h2>
       <p class="text-gray-600 leading-relaxed mb-4">
         {{ \App\Models\Setting::get('lumiere_story_p1', 'Lumière began with a single loom and a simple belief: the things closest to your skin should be the best you own. Every piece is cut from sustainably sourced silk and finished by artisans who have done this for generations.') }}

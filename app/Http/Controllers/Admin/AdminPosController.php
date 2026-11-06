@@ -79,9 +79,9 @@ class AdminPosController extends Controller
             ->get(['id', 'name', 'email']);
 
         $settings = [
-            'store_name'    => Setting::get('store_name', config('app.name', 'LUXURY STORE')),
+            'store_name'    => Setting::get('store_name', config('app.name', 'NEXON STORE')),
             'store_phone'   => Setting::get('store_phone', '+91 98765 43210'),
-            'store_address' => Setting::get('store_address', '101, Luxury Galleria, Indiranagar, Bengaluru, KA - 560038'),
+            'store_address' => Setting::get('store_address', '101, Central Galleria, Indiranagar, Bengaluru, KA - 560038'),
             'store_gstin'   => Setting::get('store_gstin', '29AAAAA0000A1Z5'),
             'currency'      => '₹',
         ];

@@ -17,7 +17,7 @@ class TallyPrimeService
         $date = $order->created_at->format('Ymd');
         $effectiveDate = $order->created_at->format('d-M-Y');
         $ref = htmlspecialchars($order->reference, ENT_XML1);
-        $companyName = htmlspecialchars(Setting::get('store_name', config('app.name', 'LUXURY CMS STORE')), ENT_XML1);
+        $companyName = htmlspecialchars(Setting::get('store_name', config('app.name', 'NEXON CMS STORE')), ENT_XML1);
 
         $partyLedger = $order->payment_method === 'cash' 
             ? 'Cash' 
@@ -46,7 +46,7 @@ class TallyPrimeService
         $xml[] = "        <PARTYNAME>{$partyLedger}</PARTYNAME>";
         $xml[] = "        <PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>";
         $xml[] = "        <ISINVOICE>Yes</ISINVOICE>";
-        $xml[] = "        <NARRATION>Online Luxury Store Sale - Ref #{$ref} via " . strtoupper($order->payment_method) . " (Channel: {$order->channel})</NARRATION>";
+        $xml[] = "        <NARRATION>Online Store Sale - Ref #{$ref} via " . strtoupper($order->payment_method) . " (Channel: {$order->channel})</NARRATION>";
 
         // 1. Party Ledger (Debit total)
         $xml[] = '        <ALLLEDGERENTRIES.LIST>';
@@ -57,7 +57,7 @@ class TallyPrimeService
 
         // 2. Sales Account (Credit net taxable)
         $xml[] = '        <ALLLEDGERENTRIES.LIST>';
-        $xml[] = '          <LEDGERNAME>Sales - Luxury Apparel &amp; Lingerie</LEDGERNAME>';
+        $xml[] = '          <LEDGERNAME>Sales - Apparel &amp; Lingerie</LEDGERNAME>';
         $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
         $xml[] = "          <AMOUNT>{$netTaxable}</AMOUNT>";
         $xml[] = '        </ALLLEDGERENTRIES.LIST>';
@@ -237,7 +237,7 @@ class TallyPrimeService
       <REQUESTDESC>
         <REPORTNAME>Vouchers</REPORTNAME>
         <STATICVARIABLES>
-          <SVCURRENTCOMPANY>Luxury Retail Operations</SVCURRENTCOMPANY>
+          <SVCURRENTCOMPANY>Retail Operations</SVCURRENTCOMPANY>
         </STATICVARIABLES>
       </REQUESTDESC>
       <REQUESTDATA>

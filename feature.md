@@ -1,6 +1,6 @@
 # Project Feature Master Matrix: Implemented vs. Pending Roadmap
 
-> **Project Name:** Multi-Theme Luxury E-Commerce CMS (`Nexon`)  
+> **Project Name:** Multi-Theme E-Commerce CMS (`Nexon`)  
 > **Location:** `c:\xampp\htdocs\public\Nexon`  
 > **Framework:** Laravel 12 / Blade / TailwindCSS / Alpine.js  
 > **Audit & Reference Baseline:** Production Benchmark (`jonakee.in`) + Enterprise Multi-Channel Automation Benchmark (`ShopKing`)  
@@ -15,7 +15,7 @@
 │                     SYSTEM MATURITY                         │
 ├──────────────────────────────┬──────────────────────────────┤
 │ ✅ IMPLEMENTED (100% LIVE)    │ ⏳ PENDING (ROADMAP TO BUILD)│
-│ • 4 Switchable Luxury Themes │ • None (0 Pending Items)     │
+│ • 4 Switchable Themes │ • None (0 Pending Items)     │
 │ • Advance POS Cashier & Print│   All 43 target modules from │
 │ • Supplier POs & Auto-Reorder│   Phases 1, 2, 3 & 4         │
 │ • Multi-Gateway (Stripe/Rzp) │   completed and verified!    │
@@ -45,10 +45,10 @@
 
 The following modules, subsystems, and features are **100% developed, active in source code, and verified** within the codebase:
 
-### 1. 4-Theme Dynamic Luxury Storefront Engine
+### 1. 4-Theme Dynamic Storefront Engine
 - **One-Click Theme Switcher:** Active theme switched instantly in Admin (`/admin/themes`) via `Template::setActive()` without database or URL alterations.
-- **4 Custom Luxury Design Palettes:**
-  - **Saaya:** Heritage luxury (Burgundy `#4A1521`, Gold `#C9A24B`, Ivory `#FDFBF7`).
+- **4 Custom Design Palettes:**
+  - **Saaya:** Heritage elegance (Burgundy `#4A1521`, Gold `#C9A24B`, Ivory `#FDFBF7`).
   - **Buttercup:** Playful whimsical boutique (Sorbet `#FFF9E6`, Lavender `#8B5CF6`, Pink `#EC4899`).
   - **Vyra:** Modern bold neon (Jet Black `#0A0A0A`, Violet `#7C3AED`, Fuchsia `#F43F5E`).
   - **Lumière:** Parisian minimalist high-fashion (Charcoal `#1E293B`, Sage `#84CC16`, Alabaster `#F8FAFC`).
@@ -100,7 +100,7 @@ The following modules, subsystems, and features are **100% developed, active in 
 
 ### 7. Coupons, Promotions & Add-On Services
 - **Promotional Coupon Engine:** `coupons` table with discount percentage / fixed amount, min purchase requirement, expiry date, usage limit, and instant AJAX validation (`/coupon/apply`, `/coupon/remove`).
-- **Add-on Services:** Custom luxury packaging options (`addons` table) such as Premium Gift Wrap, Handwritten Greeting Cards, and Silk Pouches selectable during cart/checkout.
+- **Add-on Services:** Custom premium packaging options (`addons` table) such as Premium Gift Wrap, Handwritten Greeting Cards, and Silk Pouches selectable during cart/checkout.
 - **Bulk Catalog Price Adjuster:** Single-transaction price adjuster in `/admin/settings/adjust-bulk-prices` adjusting prices by % or fixed ₹ across an entire category or the whole catalog.
 
 ### 8. Transactional Email & Broadcast Engine
@@ -366,7 +366,7 @@ All 28 modules from Phase 4 have been fully built, unit/feature tested, and inte
 
 | Metric | Implemented State | Target Parity State |
 |---|:---:|:---:|
-| **Storefront Themes** | 4 Luxury Switchable (Saaya, Buttercup, Vyra, Lumière) | ✅ 100% Parity |
+| **Storefront Themes** | 4 Switchable (Saaya, Buttercup, Vyra, Lumière) | ✅ 100% Parity |
 | **Sales Channels** | Online Storefront + In-Store POS + Multi-Branch Warehousing | ✅ 100% Parity |
 | **Inventory Control** | Central SKU Center + Supplier POs + FIFO Batches & Expiry + Inter-Store Transfers | ✅ 100% Parity |
 | **Payment Options** | Multi-Gateway (Razorpay, Stripe, PhonePe, PayPal + COD) | ✅ 100% Parity |

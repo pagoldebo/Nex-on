@@ -1,4 +1,4 @@
-# Project Nexon — Multi-Theme Luxury E-Commerce & Retail ERP
+# Project Nexon — Multi-Theme E-Commerce & Retail ERP
 
 [![Laravel 12](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
@@ -6,23 +6,23 @@
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
 [![Tests Passing](https://img.shields.io/badge/Tests-253%20Passed-brightgreen?style=for-the-badge)](tests)
 
-**Project Nexon** is an enterprise-grade, multi-theme luxury e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
+**Project Nexon** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
 
 ---
 
 ## 🌟 Key Features
 
 ### 1. Five Interchangeable Storefront Themes
-Switch between five fully realized luxury and lifestyle brand aesthetics in one click without altering database records or business logic:
+Switch between five fully realized lifestyle brand aesthetics in one click without altering database records or business logic:
 * **Vyra**: High-impact modern noir & streetwear aesthetic (dark mode `#0E0E10`, electric coral `#FF3D5A`, lime `#D4FF3D`, video hero sliders).
 * **Buttercup**: Cloud-soft, pastel comfort intimates (blush `#FBE7E4`, rose, sage `#A8B89A`).
 * **Saaya**: Royal Indian trousseau & heritage silk (deep burgundy `#4A0E17`, antique gold `#D4AF37`, silk cream `#fdfbf7`).
 * **Lumière**: Minimalist, French-inspired pure silk atelier (`#FAFAFA`, editorial typography).
-* **Organic**: Clean living & eco-luxury marketplace (signature cream `#F9F8F3`, organic greens `#699E4B`, citrus accents).
+* **Organic**: Clean living & eco-lifestyle marketplace (signature cream `#F9F8F3`, organic greens `#699E4B`, citrus accents).
 
 ### 2. Patron Security & Two-Factor Email OTP
 * **Email Verification OTP**: Secure 4-digit numeric code dispatched on every sign-in attempt (workflow inspired by *jonakee.in*).
-* **Luxury OTP Verification View**: Set against the `#F9F8F3` background with a solid jet-black (`#000000`) Maison Privilege card.
+* **OTP Verification View**: Set against the `#F9F8F3` background with a solid jet-black (`#000000`) Maison Privilege card.
 * **Auto-Submit & Resend Cooldown**: Auto-submits on 4 digits typed/pasted, paired with a 60-second AJAX resend timer.
 * **Responsive HTML Mail Theme**: Polished email template with prominent code block, expiration countdown, and security warnings. Preview available at `/preview-mail/otp`.
 

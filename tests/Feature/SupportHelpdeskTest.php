@@ -27,7 +27,7 @@ class SupportHelpdeskTest extends TestCase
 
         $this->admin = User::factory()->create([
             'name'  => 'Head Concierge Admin',
-            'email' => 'concierge.admin@nexon.luxury',
+            'email' => 'concierge.admin@nexon.com',
             'role'  => 'admin',
         ]);
 

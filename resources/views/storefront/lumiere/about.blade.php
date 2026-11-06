@@ -1,5 +1,5 @@
 {{-- resources/views/storefront/lumiere/about.blade.php --}}
-<x-storefront-layout :theme="$theme" title="Our Story — Lumière Atelier" metaDesc="Lumière crafts sustainably made silk lingerie, finished by hand by master artisans in India. Everyday luxury, made responsibly.">
+<x-storefront-layout :theme="$theme" title="Our Story — Lumière Atelier" metaDesc="Lumière crafts sustainably made silk lingerie, finished by hand by master artisans in India. Everyday elegance, made responsibly.">
 
 <div class="py-12 lg:py-20 bg-white">
   <div class="max-w-7xl mx-auto px-6 md:px-12">
@@ -17,7 +17,7 @@
         {{ \App\Models\Setting::get('lumiere_story_badge', 'Our Story') }}
       </p>
       <h1 class="font-display italic text-4xl lg:text-6xl text-gray-900 leading-tight">
-        {!! nl2br(e(\App\Models\Setting::get('lumiere_story_title', "Everyday luxury,\nmade responsibly"))) !!}
+        {!! nl2br(e(\App\Models\Setting::get('lumiere_story_title', "Everyday elegance,\nmade responsibly"))) !!}
       </h1>
       <div class="flex justify-center mt-4">
         <div class="w-32 h-0.5 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>

@@ -13,7 +13,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-black text-slate-900 tracking-tight">Suppliers &amp; Vendors Directory</h1>
-            <p class="text-xs text-slate-500 mt-1">Manage luxury garment mills, fabric suppliers &amp; procurement lead times</p>
+            <p class="text-xs text-slate-500 mt-1">Manage garment mills, fabric suppliers &amp; procurement lead times</p>
         </div>
 
         <div class="flex items-center gap-2.5">
@@ -95,7 +95,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Company / Supplier Name *</label>
-                        <input type="text" name="name" required placeholder="e.g. Apex Luxury Mills"
+                        <input type="text" name="name" required placeholder="e.g. Apex Mills"
                                class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>

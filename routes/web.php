@@ -80,13 +80,13 @@ Route::get('/collections/{slug}',              [StorefrontController::class, 'co
 // PWA Mobile App Manifest
 Route::get('/manifest.json', function () {
     $storeName = \App\Models\Setting::get('store_name');
-    if (empty($storeName) || $storeName === 'Nexon Luxury') {
+    if (empty($storeName) || $storeName === 'Nexon') {
         $storeName = config('app.name', 'Project Nexon');
     }
     return response()->json([
-        'name' => $storeName . ' – Luxury Store',
+        'name' => $storeName . ' – Online Store',
         'short_name' => $storeName,
-        'description' => 'Shop luxury apparel, bridal trousseau, and signature edits at ' . $storeName,
+        'description' => 'Shop apparel, bridal trousseau, and signature edits at ' . $storeName,
         'start_url' => '/',
         'scope' => '/',
         'display' => 'standalone',
@@ -366,7 +366,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/integrations/tally/export-stock',       [AdminTallyController::class, 'exportStockXml'])->name('integrations.tally.exportStock');
     Route::post('/integrations/tally/orders/{order}/sync', [AdminTallyController::class, 'syncSingleOrder'])->name('integrations.tally.syncOrder');
 
-    // Luxury Add-ons & Brands Management
+    // Add-ons & Brands Management
     Route::patch('/addons/{addon}/toggle', [AdminAddonController::class, 'toggle'])->name('addons.toggle');
     Route::resource('addons', AdminAddonController::class)->except(['create', 'show', 'edit']);
     Route::post('/brands', [AdminAddonController::class, 'storeBrand'])->name('brands.store');

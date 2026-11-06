@@ -31,7 +31,7 @@ A single Laravel application that serves **four completely independent storefron
 
 | Key        | Name      | Personality                        | Primary Font          | Palette               |
 |------------|-----------|------------------------------------|-----------------------|-----------------------|
-| `saaya`    | Saaya     | Luxury / bridal / artisanal        | Cormorant Garamond    | Maroon · Gold · Ivory |
+| `saaya`    | Saaya     | Bridal / artisanal        | Cormorant Garamond    | Maroon · Gold · Ivory |
 | `buttercup`| Buttercup | Soft pastels / everyday wear       | Fraunces              | Rose · Sage · Cream   |
 | `vyra`     | Vyra      | Bold Gen-Z / streetwear            | Archivo Black         | Coral · Lime · Noir   |
 | `lumiere`  | Lumière   | Premium boutique / French-inspired | Playfair Display      | Pink · Cream · Gold   |

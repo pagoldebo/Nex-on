@@ -448,7 +448,7 @@
                             3 => [
                                 'badge' => 'Pure Indulgence',
                                 'title' => "Soft as a Whisper,\nCrafted for You",
-                                'desc'  => 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless luxury every day.',
+                                'desc'  => 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.',
                                 'btn1'  => 'Explore Bestsellers',
                                 'url1'  => '#products',
                                 'btn2'  => 'Discover More',
@@ -755,7 +755,7 @@
                             <div>
                                 <label class="block text-xs text-slate-600 mb-1">Hero Subtitle</label>
                                 <textarea name="lumiere_hero_subtitle" rows="3" 
-                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">{{ $settings['lumiere_hero_subtitle'] ?? 'Sustainably made silk lingerie, finished by hand in India. Everyday luxury, no compromise.' }}</textarea>
+                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">{{ $settings['lumiere_hero_subtitle'] ?? 'Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.' }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -819,7 +819,7 @@
                         <div>
                             <label class="block text-xs text-slate-600 mb-1 font-medium">Sale Section Subtitle</label>
                             <input type="text" name="lumiere_sale_subtitle" 
-                                   value="{{ $settings['lumiere_sale_subtitle'] ?? 'Hand-finished French lace, fine silk, and luxury nightwear at celebratory promotional prices.' }}" 
+                                   value="{{ $settings['lumiere_sale_subtitle'] ?? 'Hand-finished French lace, fine silk, and fine nightwear at celebratory promotional prices.' }}" 
                                    class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">
                         </div>
                     </div>
@@ -917,7 +917,7 @@
                             <div>
                                 <label class="block text-xs text-slate-600 mb-1">Hero Subtitle</label>
                                 <textarea name="saaya_hero_subtitle" rows="3" 
-                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-600 outline-none">{{ $settings['saaya_hero_subtitle'] ?? 'Luxury Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.' }}</textarea>
+                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-600 outline-none">{{ $settings['saaya_hero_subtitle'] ?? 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.' }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -981,7 +981,7 @@
                         <div>
                             <label class="block text-xs text-slate-600 mb-1 font-medium">Sale Section Subtitle</label>
                             <input type="text" name="saaya_sale_subtitle" 
-                                   value="{{ $settings['saaya_sale_subtitle'] ?? 'Exclusive luxury heirlooms and seasonal lingerie edits at celebratory promotional prices.' }}" 
+                                   value="{{ $settings['saaya_sale_subtitle'] ?? 'Exclusive heirlooms and seasonal lingerie edits at celebratory promotional prices.' }}" 
                                    class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-600 outline-none">
                         </div>
                     </div>
@@ -2072,7 +2072,7 @@
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
                         <span class="font-bold">Lumière Theme — About Us Page &amp; Artisanal Silk Roots</span>
-                        <span class="font-serif italic text-[10px] text-pink-600">Everyday Luxury, Made Responsibly</span>
+                        <span class="font-serif italic text-[10px] text-pink-600">Everyday Elegance, Made Responsibly</span>
                     </div>
                     <a href="{{ route('about') }}?theme=lumiere" target="_blank" class="inline-flex items-center gap-1 text-xs text-pink-600 hover:underline font-semibold">
                         <span>Preview Live About Page</span>
@@ -2097,7 +2097,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Hero Main Title (Supports line breaks)</label>
-                        <textarea name="lumiere_story_title" rows="2" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-bold bg-white focus:border-pink-400 outline-none">{{ $settings['lumiere_story_title'] ?? "Everyday luxury,\nmade responsibly" }}</textarea>
+                        <textarea name="lumiere_story_title" rows="2" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-bold bg-white focus:border-pink-400 outline-none">{{ $settings['lumiere_story_title'] ?? "Everyday elegance,\nmade responsibly" }}</textarea>
                     </div>
                 </div>
 
@@ -2202,7 +2202,7 @@
 
                 {{-- Sub-section 4: 3 Brand Pillars --}}
                 <div class="p-5 rounded-2xl bg-[#FFF9FA] border border-pink-100 space-y-4">
-                    <label class="block text-xs font-bold text-gray-900 uppercase tracking-wider">4. Three Brand Pillars (Responsible Luxury)</label>
+                    <label class="block text-xs font-bold text-gray-900 uppercase tracking-wider">4. Three Brand Pillars (Responsible Sourcing)</label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="p-4 bg-white border border-pink-200 rounded-xl space-y-2">
                             <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF0F3] text-pink-600">Pillar 01</span>
@@ -3049,7 +3049,7 @@
                            class="w-4 h-4 mt-0.5 text-red-600 rounded border-slate-300 focus:ring-red-500">
                     <div>
                         <span class="block text-sm font-semibold text-slate-900">Enable "Install Mobile App" Storefront Prompt</span>
-                        <span class="block text-xs text-slate-500 mt-0.5">Shows the floating luxury installation card on mobile &amp; desktop with automated once-per-24h dismissal logic and native iOS/Android support</span>
+                        <span class="block text-xs text-slate-500 mt-0.5">Shows the floating app installation card on mobile &amp; desktop with automated once-per-24h dismissal logic and native iOS/Android support</span>
                     </div>
                 </label>
 

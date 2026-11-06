@@ -8,8 +8,8 @@
 {{-- Promo marquee --}}
 <div class="bg-maroon overflow-hidden whitespace-nowrap py-2 relative z-[100]">
   <div class="marquee-track text-gold text-[9px] uppercase font-body tracking-[0.3em] select-none">
-    <span>{{ $saayaAnnouncement }} &nbsp;•&nbsp; Handcrafted Luxury &nbsp;•&nbsp; {{ $saayaAnnouncement }} &nbsp;•&nbsp; &nbsp;</span>
-    <span>{{ $saayaAnnouncement }} &nbsp;•&nbsp; Handcrafted Luxury &nbsp;•&nbsp; {{ $saayaAnnouncement }} &nbsp;•&nbsp; &nbsp;</span>
+    <span>{{ $saayaAnnouncement }} &nbsp;•&nbsp; Handcrafted Elegance &nbsp;•&nbsp; {{ $saayaAnnouncement }} &nbsp;•&nbsp; &nbsp;</span>
+    <span>{{ $saayaAnnouncement }} &nbsp;•&nbsp; Handcrafted Elegance &nbsp;•&nbsp; {{ $saayaAnnouncement }} &nbsp;•&nbsp; &nbsp;</span>
   </div>
 </div>
 

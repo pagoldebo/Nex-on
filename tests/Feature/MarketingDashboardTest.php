@@ -21,7 +21,7 @@ class MarketingDashboardTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'cmo@nexon.luxury',
+            'email' => 'cmo@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -60,7 +60,7 @@ class MarketingDashboardTest extends TestCase
 
         // 2. Create Newsletter Subscriber
         Subscriber::create([
-            'email'     => 'vip.patron@nexon.luxury',
+            'email'     => 'vip.patron@nexon.com',
             'is_active' => true,
         ]);
 
@@ -75,7 +75,7 @@ class MarketingDashboardTest extends TestCase
         \App\Models\PushCampaign::create([
             'title'      => 'Diwali Couture Drop',
             'body'       => 'Exclusive festive collection now live.',
-            'action_url' => 'https://nexon.luxury/new-arrivals',
+            'action_url' => 'https://nexon.com/new-arrivals',
             'sent_count' => 125,
             'status'     => 'sent',
         ]);

@@ -50,7 +50,7 @@
               </div>
               <div>
                 <div class="font-bold text-[#4A3B3A]">Email Us</div>
-                @php $supportEmail = \App\Models\Setting::get('support_email', 'care@buttercup.luxury'); @endphp
+                @php $supportEmail = \App\Models\Setting::get('support_email', 'care@buttercup.com'); @endphp
                 <a href="mailto:{{ $supportEmail }}" class="text-[#4A3B3A]/70 hover:text-[#B97680] transition">{{ $supportEmail }}</a>
               </div>
             </div>

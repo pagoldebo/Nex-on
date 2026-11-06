@@ -158,7 +158,7 @@
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Registered DLT Sender ID *</label>
-                        <input type="text" name="sms_msg91_sender_id" value="{{ $settings['msg91_sender_id'] }}" placeholder="LUXURY"
+                        <input type="text" name="sms_msg91_sender_id" value="{{ $settings['msg91_sender_id'] }}" placeholder="NEXON"
                                class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono text-slate-900 focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
@@ -239,7 +239,7 @@
             @csrf
             <input type="text" name="test_phone" required placeholder="Mobile Number (e.g. 9876543210)"
                    class="w-full sm:w-64 px-3.5 py-2 rounded-xl border border-slate-200 font-mono text-slate-900 focus:outline-none focus:border-indigo-500">
-            <input type="text" name="test_message" value="Hello! This is a test SMS from Luxury CMS Store via {{ strtoupper($settings['active_driver']) }}."
+            <input type="text" name="test_message" value="Hello! This is a test SMS from Nexon CMS Store via {{ strtoupper($settings['active_driver']) }}."
                    class="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:border-indigo-500">
             <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition whitespace-nowrap">
                 Dispatch Test SMS

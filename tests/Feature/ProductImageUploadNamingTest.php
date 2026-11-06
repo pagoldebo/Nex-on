@@ -28,7 +28,7 @@ class ProductImageUploadNamingTest extends TestCase
         Storage::fake('public');
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.images@nexon.luxury',
+            'email' => 'admin.images@nexon.com',
             'role'  => 'admin',
         ]);
 

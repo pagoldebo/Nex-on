@@ -183,9 +183,9 @@ class AdminPosShiftController extends Controller
         $reportType = $request->input('type', $shift->status === 'open' ? 'x' : 'z');
 
         $storeInfo = [
-            'name'    => Setting::get('store_name', config('app.name', 'NEXON LUXURY POS')),
+            'name'    => Setting::get('store_name', config('app.name', 'NEXON POS')),
             'phone'   => Setting::get('store_phone', '+91 98765 43210'),
-            'address' => Setting::get('store_address', '101, Luxury Galleria, Indiranagar, Bengaluru'),
+            'address' => Setting::get('store_address', '101, Central Galleria, Indiranagar, Bengaluru'),
             'gstin'   => Setting::get('store_gstin', '29AAAAA0000A1Z5'),
         ];
 

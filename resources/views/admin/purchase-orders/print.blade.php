@@ -170,7 +170,7 @@
         <div class="meta-card">
             <h3>Shipping / Delivery Destination</h3>
             <strong>{{ $storeInfo['name'] }} — Central Warehouse</strong><br>
-            101, Luxury Galleria, Indiranagar<br>
+            101, Central Galleria, Indiranagar<br>
             Bengaluru, Karnataka - 560038<br>
             <strong>Expected Delivery Date:</strong> {{ $purchaseOrder->expected_delivery_date ? $purchaseOrder->expected_delivery_date->format('d/m/Y') : 'Earliest' }}<br>
             <strong>Status:</strong> {{ strtoupper($purchaseOrder->status) }}

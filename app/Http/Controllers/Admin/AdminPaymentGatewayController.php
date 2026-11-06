@@ -21,9 +21,9 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Accept UPI, Debit/Credit Cards, Netbanking & Wallets across India.',
                 'enabled'        => Setting::get('gateway_razorpay_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_razorpay_mode', 'test'), // test or live
-                'key_id'         => Setting::get('gateway_razorpay_key_id', 'rzp_test_luxury12345'),
-                'key_secret'     => Setting::get('gateway_razorpay_key_secret', 'sec_test_luxurySecretKey'),
-                'webhook_secret' => Setting::get('gateway_razorpay_webhook_secret', 'whsec_rzpLuxury2026'),
+                'key_id'         => Setting::get('gateway_razorpay_key_id', 'rzp_test_12345'),
+                'key_secret'     => Setting::get('gateway_razorpay_key_secret', 'sec_test_SecretKey'),
+                'webhook_secret' => Setting::get('gateway_razorpay_webhook_secret', 'whsec_rzp2026'),
                 'webhook_url'    => url('/webhook/razorpay'),
             ],
             'stripe' => [
@@ -31,9 +31,9 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Global credit card payments, Apple Pay, Google Pay & multi-currency billing.',
                 'enabled'        => Setting::get('gateway_stripe_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_stripe_mode', 'test'),
-                'publishable_key'=> Setting::get('gateway_stripe_publishable_key', 'pk_test_51LuxuryStoreStripeDemoKey'),
-                'secret_key'     => Setting::get('gateway_stripe_secret_key', 'sk_test_51LuxuryStoreSecretDemoKey'),
-                'webhook_secret' => Setting::get('gateway_stripe_webhook_secret', 'whsec_stripeLuxuryDemo'),
+                'publishable_key'=> Setting::get('gateway_stripe_publishable_key', 'pk_test_51StoreStripeDemoKey'),
+                'secret_key'     => Setting::get('gateway_stripe_secret_key', 'sk_test_51StoreSecretDemoKey'),
+                'webhook_secret' => Setting::get('gateway_stripe_webhook_secret', 'whsec_stripeDemo'),
                 'webhook_url'    => url('/webhook/stripe'),
             ],
             'phonepe' => [
@@ -41,7 +41,7 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Direct Indian UPI app intent flow & QR code checkout.',
                 'enabled'        => Setting::get('gateway_phonepe_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_phonepe_mode', 'sandbox'),
-                'merchant_id'    => Setting::get('gateway_phonepe_merchant_id', 'M22LUXURYDEMOUAT'),
+                'merchant_id'    => Setting::get('gateway_phonepe_merchant_id', 'M22STOREDEMOUAT'),
                 'salt_key'       => Setting::get('gateway_phonepe_salt_key', 'd3b07384d113edec49eaa6238ad5ff00'),
                 'salt_index'     => Setting::get('gateway_phonepe_salt_index', '1'),
                 'webhook_url'    => url('/webhook/phonepe'),
@@ -51,15 +51,15 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'International shoppers checkout with PayPal wallet & international cards.',
                 'enabled'        => Setting::get('gateway_paypal_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_paypal_mode', 'sandbox'),
-                'client_id'      => Setting::get('gateway_paypal_client_id', 'AX_demo_luxury_paypal_client_id'),
-                'secret'         => Setting::get('gateway_paypal_secret', 'EP_demo_luxury_paypal_secret'),
+                'client_id'      => Setting::get('gateway_paypal_client_id', 'AX_demo_paypal_client_id'),
+                'secret'         => Setting::get('gateway_paypal_secret', 'EP_demo_paypal_secret'),
                 'webhook_url'    => url('/webhook/paypal'),
             ],
             'offline' => [
                 'enable_cod'     => Setting::get('enable_cod', '1') === '1',
                 'cod_charge'     => (int) Setting::get('cod_charge', 40),
                 'enable_upi_qr'  => Setting::get('enable_upi_qr', '1') === '1',
-                'upi_vpa'        => Setting::get('store_upi_vpa', 'luxurystore@okhdfcbank'),
+                'upi_vpa'        => Setting::get('store_upi_vpa', 'nexonstore@okhdfcbank'),
             ],
         ];
 
@@ -103,7 +103,7 @@ class AdminPaymentGatewayController extends Controller
             'enable_cod'                      => $request->has('enable_cod') ? '1' : '0',
             'cod_charge'                      => (int) $request->input('cod_charge', 40),
             'enable_upi_qr'                   => $request->has('enable_upi_qr') ? '1' : '0',
-            'store_upi_vpa'                   => $request->input('store_upi_vpa', 'luxurystore@okhdfcbank'),
+            'store_upi_vpa'                   => $request->input('store_upi_vpa', 'nexonstore@okhdfcbank'),
         ];
 
         foreach ($fields as $key => $value) {

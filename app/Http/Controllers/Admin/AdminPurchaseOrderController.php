@@ -242,7 +242,7 @@ class AdminPurchaseOrderController extends Controller
         $defaultSupplier = Supplier::firstOrCreate(
             ['code' => 'SUP-DEFAULT'],
             [
-                'name'           => 'Apex Luxury Textiles & Garments Ltd',
+                'name'           => 'Apex Textiles & Garments Ltd',
                 'contact_name'   => 'Rajesh Singhania',
                 'email'          => 'procurement@apextextiles.com',
                 'phone'          => '+91 98200 11223',
@@ -322,11 +322,11 @@ class AdminPurchaseOrderController extends Controller
         $purchaseOrder->load(['supplier', 'creator', 'items.variant.product', 'items.variant.color']);
 
         $storeInfo = [
-            'name'    => Setting::get('store_name', config('app.name', 'LUXURY CMS STORE')),
+            'name'    => Setting::get('store_name', config('app.name', 'NEXON CMS STORE')),
             'phone'   => Setting::get('store_phone', '+91 98765 43210'),
-            'address' => Setting::get('store_address', '101, Luxury Galleria, Indiranagar, Bengaluru, KA - 560038'),
+            'address' => Setting::get('store_address', '101, Central Galleria, Indiranagar, Bengaluru, KA - 560038'),
             'gstin'   => Setting::get('store_gstin', '29AAAAA0000A1Z5'),
-            'email'   => Setting::get('store_email', 'procurement@nexon-luxury.com'),
+            'email'   => Setting::get('store_email', 'procurement@nexon.com'),
         ];
 
         return view('admin.purchase-orders.print', compact('purchaseOrder', 'storeInfo'));

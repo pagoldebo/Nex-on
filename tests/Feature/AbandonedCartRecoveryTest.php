@@ -24,7 +24,7 @@ class AbandonedCartRecoveryTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'retention@nexon.luxury',
+            'email' => 'retention@nexon.com',
             'role'  => 'admin',
         ]);
 

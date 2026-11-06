@@ -321,6 +321,6 @@ class CatalogueSeeder extends Seeder
             }
         }
 
-        $this->command->info('Catalogue seeded: ' . count($productsData) . ' multi-variant luxury products with local storage images.');
+        $this->command->info('Catalogue seeded: ' . count($productsData) . ' multi-variant products with local storage images.');
     }
 }

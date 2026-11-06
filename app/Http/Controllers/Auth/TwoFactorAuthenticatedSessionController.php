@@ -102,3 +102,4 @@ class TwoFactorAuthenticatedSessionController extends Controller
         return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . $user->name . '!');
     }
 }
+

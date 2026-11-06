@@ -13,7 +13,7 @@
                 <span class="text-xs text-slate-400 font-medium">Phase 3 &bull; Modular Landing Pages</span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-1">Custom Pages &amp; Landing Microsites</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Build high-converting luxury campaign landing pages, drop countdowns, and brand stories using modular drag-and-drop blocks.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Build high-converting campaign landing pages, drop countdowns, and brand stories using modular drag-and-drop blocks.</p>
         </div>
 
         <div class="flex items-center gap-3">

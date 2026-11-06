@@ -22,13 +22,13 @@ class LoyaltyRewardsProgramTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'loyalty.lead@nexon.luxury',
+            'email' => 'loyalty.lead@nexon.com',
             'role'  => 'admin',
         ]);
 
         $this->customer = User::factory()->create([
             'name'  => 'Kiara Advani',
-            'email' => 'kiara@luxury.in',
+            'email' => 'kiara@nexon.in',
             'role'  => 'customer',
         ]);
 

@@ -27,7 +27,7 @@ class SupplierInvoiceMatchingTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.supplier.invoices@nexon.luxury',
+            'email' => 'admin.supplier.invoices@nexon.com',
             'role'  => 'admin',
         ]);
 

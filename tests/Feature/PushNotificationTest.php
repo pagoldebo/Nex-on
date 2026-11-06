@@ -97,8 +97,8 @@ class PushNotificationTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.push.send'), [
             'title'      => 'Weekend Flash Sale 40% Off',
-            'body'       => 'Enjoy 40% discount on all luxury collections this weekend.',
-            'action_url' => 'http://localhost/category/luxury-bras',
+            'body'       => 'Enjoy 40% discount on all collections this weekend.',
+            'action_url' => 'http://localhost/category/bras',
         ]);
 
         $response->assertRedirect();

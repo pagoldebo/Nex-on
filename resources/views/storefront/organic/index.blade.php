@@ -363,7 +363,7 @@
             {{ \App\Models\Setting::get('organic_story_title', 'Nurturing Soil, Empowering Farmers, Nourishing Families') }}
           </h2>
           <p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
-            {{ \App\Models\Setting::get('organic_story_p1', 'Every apple, leaf of spinach, and drop of oil you order supports smallholder farmers practicing holistic natural farming. We believe true luxury is knowing exactly who grew your food and that it was harvested with reverence for the earth.') }}
+            {{ \App\Models\Setting::get('organic_story_p1', 'Every apple, leaf of spinach, and drop of oil you order supports smallholder farmers practicing holistic natural farming. We believe true peace of mind is knowing exactly who grew your food and that it was harvested with reverence for the earth.') }}
           </p>
 
           <div class="grid grid-cols-2 gap-4 pt-2">

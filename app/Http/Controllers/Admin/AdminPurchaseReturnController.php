@@ -147,11 +147,11 @@ class AdminPurchaseReturnController extends Controller
         $purchaseReturn->load(['supplier', 'purchaseOrder', 'creator', 'items.variant.product']);
 
         $storeInfo = [
-            'name'    => Setting::get('store_name', config('app.name', 'NEXON LUXURY RETAIL PVT LTD')),
-            'address' => Setting::get('store_address', '101, Luxury Galleria, Indiranagar, Bengaluru'),
+            'name'    => Setting::get('store_name', config('app.name', 'NEXON RETAIL PVT LTD')),
+            'address' => Setting::get('store_address', '101, Central Galleria, Indiranagar, Bengaluru'),
             'gstin'   => Setting::get('store_gstin', '29AAAAA0000A1Z5'),
             'phone'   => Setting::get('store_phone', '+91 98765 43210'),
-            'email'   => Setting::get('store_email', 'accounts@nexon.luxury'),
+            'email'   => Setting::get('store_email', 'accounts@nexon.com'),
         ];
 
         return view('admin.purchases.debit-note', compact('purchaseReturn', 'storeInfo'));

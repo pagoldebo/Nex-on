@@ -9,7 +9,7 @@
 @endphp
 
 @if($cookieBannerEnabled)
-<div x-data="luxuryCookieManager({
+<div x-data="cookieConsentManager({
     gtmId: '{{ $gtmId }}',
     ga4Id: '{{ $ga4Id }}',
     metaPixelId: '{{ $metaPixelId }}',
@@ -38,7 +38,7 @@
                     <button @click="showBanner = false" class="text-white/40 hover:text-white text-base">&times;</button>
                 </div>
                 <p class="text-xs text-white/70 leading-relaxed">
-                    We use cookies and privacy-first tracking to tailor your boutique shopping experience, preserve your luxury cart, and optimize performance.
+                    We use cookies and privacy-first tracking to tailor your boutique shopping experience, preserve your shopping cart, and optimize performance.
                     <a href="{{ $privacyUrl }}" class="underline text-white/90 hover:text-white ml-0.5">Privacy Policy</a>.
                 </p>
 
@@ -112,7 +112,7 @@
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="font-bold text-slate-900">Marketing &amp; Personalization</div>
-                        <div class="text-[11px] text-slate-500 mt-0.5">Meta Pixel, TikTok, and luxury collection recommendations.</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">Meta Pixel, TikTok, and collection recommendations.</div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" x-model="prefs.marketing" class="sr-only peer">
@@ -138,7 +138,7 @@
 
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('luxuryCookieManager', (config) => ({
+    Alpine.data('cookieConsentManager', (config) => ({
         showBanner: false,
         showModal: false,
         prefs: {
@@ -148,7 +148,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         init() {
-            const saved = localStorage.getItem('luxury_cookie_consent');
+            const saved = localStorage.getItem('nexon_cookie_consent');
             if (!saved) {
                 setTimeout(() => { this.showBanner = true; }, 800);
             } else {
@@ -164,19 +164,19 @@ document.addEventListener('alpine:init', () => {
 
         acceptAll() {
             this.prefs = { necessary: true, analytics: true, marketing: true };
-            localStorage.setItem('luxury_cookie_consent', JSON.stringify(this.prefs));
+            localStorage.setItem('nexon_cookie_consent', JSON.stringify(this.prefs));
             this.showBanner = false;
             this.injectScripts();
         },
 
         rejectNonEssential() {
             this.prefs = { necessary: true, analytics: false, marketing: false };
-            localStorage.setItem('luxury_cookie_consent', JSON.stringify(this.prefs));
+            localStorage.setItem('nexon_cookie_consent', JSON.stringify(this.prefs));
             this.showBanner = false;
         },
 
         savePreferences() {
-            localStorage.setItem('luxury_cookie_consent', JSON.stringify(this.prefs));
+            localStorage.setItem('nexon_cookie_consent', JSON.stringify(this.prefs));
             this.showModal = false;
             this.showBanner = false;
             this.injectScripts();

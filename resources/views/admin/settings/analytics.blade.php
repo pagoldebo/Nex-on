@@ -32,7 +32,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-sm font-bold text-slate-900">GDPR &amp; ePrivacy Cookie Consent Banner</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Displays a floating luxury consent banner on storefront allowing visitors to accept, decline, or customize tracking preferences.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Displays a floating consent banner on storefront allowing visitors to accept, decline, or customize tracking preferences.</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" name="cookie_banner_enabled" value="1" class="sr-only peer" {{ $settings['cookie_banner_enabled'] ? 'checked' : '' }}>
@@ -94,7 +94,7 @@
                     </div>
                     <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">Ads &amp; ROAS</span>
                 </div>
-                <p class="text-[11px] text-slate-500">Measure advertising performance and build high-intent luxury retargeting audiences.</p>
+                <p class="text-[11px] text-slate-500">Measure advertising performance and build high-intent retargeting audiences.</p>
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Meta Pixel ID</label>
                     <input type="text" name="analytics_meta_pixel_id" value="{{ $settings['analytics_meta_pixel_id'] }}" placeholder="e.g. 123456789012345"
@@ -111,7 +111,7 @@
                     </div>
                     <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">Social</span>
                 </div>
-                <p class="text-[11px] text-slate-500">Track short-form video shopping and visual luxury inspiration conversions.</p>
+                <p class="text-[11px] text-slate-500">Track short-form video shopping and visual inspiration conversions.</p>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">TikTok Pixel ID</label>

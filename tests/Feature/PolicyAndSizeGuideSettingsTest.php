@@ -27,7 +27,7 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
             'key'         => 'vyra',
             'name'        => 'Vyra Noir',
             'is_active'   => true,
-            'description' => 'Dark luxury lingerie theme',
+            'description' => 'Dark lingerie theme',
         ]);
 
         Category::create([
@@ -96,7 +96,7 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
             // Shipping policy updates
             'shipping_policy_badge'    => 'Fast & Tracked Dispatch',
             'shipping_policy_title'    => 'VIP Doorstep Shipping',
-            'shipping_policy_subtitle' => 'Express air cargo in unmarked protective luxury packaging.',
+            'shipping_policy_subtitle' => 'Express air cargo in unmarked protective premium packaging.',
             'shipping_banner_badge'    => 'Discreet Security',
             'shipping_banner_title'    => '100% Plain Exterior Parcel Promise',
             'shipping_banner_desc'     => 'Zero branding on carton with discreet sender name.',

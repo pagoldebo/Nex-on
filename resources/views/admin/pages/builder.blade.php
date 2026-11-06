@@ -19,7 +19,7 @@
             this.blocks.push({
                 type: 'featured_grid',
                 title: 'Curated Designer Edit',
-                subtitle: 'Handpicked luxury pieces trending this week',
+                subtitle: 'Handpicked pieces trending this week',
                 limit: 4
             });
         } else if (type === 'countdown') {
@@ -44,7 +44,7 @@
                 type: 'faq',
                 title: 'Frequently Asked Questions',
                 items: [
-                    { q: 'What is your discreet packaging policy?', a: 'All shipments arrive in unbranded, unmarked luxury matte black gift boxes.' },
+                    { q: 'What is your discreet packaging policy?', a: 'All shipments arrive in unbranded, unmarked matte black gift boxes.' },
                     { q: 'How do I choose the correct cup and band size?', a: 'Refer to our comprehensive interactive Size Guide or book a complimentary virtual consultation.' }
                 ]
             });
@@ -129,7 +129,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">SEO Meta Title (Optional)</label>
-                    <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title) }}" placeholder="Luxury Bridal Lingerie & Silk Sets"
+                    <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title) }}" placeholder="Bridal Lingerie & Silk Sets"
                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500">
                 </div>
 

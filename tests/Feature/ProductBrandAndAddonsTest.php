@@ -26,7 +26,7 @@ class ProductBrandAndAddonsTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create([
-            'email' => 'admin.brandaddons@nexon.luxury',
+            'email' => 'admin.brandaddons@nexon.com',
             'role'  => 'admin',
         ]);
 
@@ -47,7 +47,7 @@ class ProductBrandAndAddonsTest extends TestCase
 
         $this->addon1 = Addon::create([
             'name'        => 'Velvet Gift Pouch',
-            'description' => 'Luxury embossed satin lined velvet pouch',
+            'description' => 'Embossed satin lined velvet pouch',
             'price'       => 149.00,
             'is_active'   => true,
         ]);

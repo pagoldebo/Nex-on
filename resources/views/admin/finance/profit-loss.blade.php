@@ -99,7 +99,7 @@
         <div class="p-6 border-b border-slate-100 flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-bold text-slate-900">Consolidated Income Statement</h2>
-                <p class="text-xs text-slate-500">Compliant with Indian Accounting Standards (Ind AS) for luxury retail merchandising.</p>
+                <p class="text-xs text-slate-500">Compliant with Indian Accounting Standards (Ind AS) for retail merchandising.</p>
             </div>
             <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700">Currency: INR (₹)</span>
         </div>

@@ -1,5 +1,5 @@
 @php
-    $cookieBannerEnabled = \App\Models\Setting::get('cookie_banner_enabled', '1') === '1';
+    $cookieBannerEnabled = \App\Models\Setting::get('cookie_banner_enabled', '0') === '1';
     $gtmId               = \App\Models\Setting::get('analytics_gtm_id', '');
     $ga4Id               = \App\Models\Setting::get('analytics_ga4_id', '');
     $metaPixelId         = \App\Models\Setting::get('analytics_meta_pixel_id', '');

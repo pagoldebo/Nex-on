@@ -16,7 +16,7 @@ class AdminAnalyticsController extends Controller
     public function index(): View
     {
         $settings = [
-            'cookie_banner_enabled'    => Setting::get('cookie_banner_enabled', '1') === '1',
+            'cookie_banner_enabled'    => Setting::get('cookie_banner_enabled', '0') === '1',
             'analytics_gtm_id'         => Setting::get('analytics_gtm_id', ''),
             'analytics_ga4_id'         => Setting::get('analytics_ga4_id', ''),
             'analytics_meta_pixel_id'  => Setting::get('analytics_meta_pixel_id', ''),

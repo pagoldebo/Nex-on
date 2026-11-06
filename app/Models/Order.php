@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Order extends Model
@@ -200,108 +201,166 @@ class Order extends Model
     }
 
     /**
-     * Build an order from the sessionStorage payload the front-end POSTs.
-     * $data mirrors the lc_last_order JS object shape.
+     * Build an order from the checkout payload with strict server-side price & coupon verification.
+     * Prevents client-side price tampering by resolving actual product variant prices from the database.
      */
     public static function createFromCheckout(array $data, ?int $userId = null): static
     {
-        $sub        = (int) ($data['subtotal'] ?? 0);
-        $method     = $data['payment'] ?? $data['payment_method'] ?? 'upi';
-        $discount   = (int) ($data['discount'] ?? 0);
-        $couponCode = !empty($data['coupon_code']) ? strtoupper(trim($data['coupon_code'])) : null;
-        
-        $freeThreshold = (int) Setting::get('free_shipping_threshold', 1499);
-        $standardShip  = (int) Setting::get('shipping_cost', 99);
-        $shippingCharge= isset($data['shipping_charge']) ? (int) $data['shipping_charge'] : ($sub >= $freeThreshold ? 0 : $standardShip);
-        
-        $codFeeSetting = (int) Setting::get('cod_charge', 40);
-        $codCharge     = $method === 'cod' ? (isset($data['cod_charge']) ? (int) $data['cod_charge'] : $codFeeSetting) : 0;
-        
-        $total         = isset($data['total']) ? (int) $data['total'] : max(0, $sub + $shippingCharge + $codCharge - $discount);
-        $shipping      = $data['shipping'] ?? [];
+        return DB::transaction(function () use ($data, $userId) {
+            $method     = $data['payment'] ?? $data['payment_method'] ?? 'upi';
+            $couponCode = !empty($data['coupon_code']) ? strtoupper(trim($data['coupon_code'])) : null;
 
-        $order = static::create([
-            'user_id'          => $userId,
-            'status'           => self::STATUS_PENDING,
-            'subtotal'         => $sub,
-            'shipping_charge'  => $shippingCharge,
-            'cod_charge'       => $codCharge,
-            'discount'         => $discount,
-            'coupon_code'      => $couponCode,
-            'total'            => $total,
-            'payment_method'   => $method,
-            'payment_status'   => self::PAYMENT_PENDING,
-            'shipping_name'    => $shipping['name']     ?? $data['customer_name']    ?? '',
-            'shipping_phone'   => $shipping['phone']    ?? $data['customer_phone']   ?? '',
-            'shipping_email'   => $shipping['email']    ?? $data['customer_email']   ?? '',
-            'shipping_address1'=> $shipping['address1'] ?? $data['shipping_address'] ?? $data['shipping_address1'] ?? '',
-            'shipping_address2'=> $shipping['address2'] ?? $data['shipping_address2']?? null,
-            'shipping_city'    => $shipping['city']     ?? $data['shipping_city']    ?? '',
-            'shipping_state'   => $shipping['state']    ?? $data['shipping_state']   ?? '',
-            'shipping_pincode' => $shipping['pincode']  ?? $data['shipping_pincode'] ?? '',
-        ]);
+            $freeThreshold = (int) Setting::get('free_shipping_threshold', 1499);
+            $standardShip  = (int) Setting::get('shipping_cost', 99);
+            $codFeeSetting = (int) Setting::get('cod_charge', 40);
+            $codCharge     = $method === 'cod' ? $codFeeSetting : 0;
 
-        foreach (($data['items'] ?? []) as $item) {
-            $productId = $item['productId'] ?? $item['product_id'] ?? null;
-            $variantId = $item['productVariantId'] ?? $item['product_variant_id'] ?? null;
-            $colorId   = $item['productColorId'] ?? $item['product_color_id'] ?? null;
-            $colorName = $item['colorName'] ?? $item['color_name'] ?? $item['color'] ?? '';
-            $qty       = max(1, (int) ($item['qty'] ?? 1));
+            $verifiedSubtotal = 0;
+            $resolvedItems    = [];
 
-            // Variant lookup and stock deduction
-            $variant = null;
-            if ($variantId) {
-                $variant = ProductVariant::find($variantId);
-            } elseif ($productId && !empty($item['size'])) {
-                $colorQuery = ProductColor::where('product_id', $productId);
-                if (!empty($colorName)) {
-                    $colorQuery->where('name', $colorName);
+            // 1. Resolve every item from DB to ensure authentic pricing and prevent tampering
+            foreach (($data['items'] ?? []) as $item) {
+                $productId = $item['productId'] ?? $item['product_id'] ?? null;
+                $variantId = $item['productVariantId'] ?? $item['product_variant_id'] ?? null;
+                $colorId   = $item['productColorId'] ?? $item['product_color_id'] ?? null;
+                $colorName = $item['colorName'] ?? $item['color_name'] ?? $item['color'] ?? '';
+                $qty       = max(1, (int) ($item['qty'] ?? 1));
+
+                $variant = null;
+                if ($variantId) {
+                    $variant = ProductVariant::find($variantId);
+                } elseif ($productId && !empty($item['size'])) {
+                    $colorQuery = ProductColor::where('product_id', $productId);
+                    if (!empty($colorName)) {
+                        $colorQuery->where('name', $colorName);
+                    }
+                    $color = $colorQuery->first();
+                    if ($color) {
+                        $colorId = $color->id;
+                        $variant = ProductVariant::where('product_color_id', $color->id)
+                            ->where('size', $item['size'])
+                            ->first();
+                    }
                 }
-                $color = $colorQuery->first();
-                if ($color) {
-                    $colorId = $color->id;
-                    $variant = ProductVariant::where('product_color_id', $color->id)
-                        ->where('size', $item['size'])
-                        ->first();
+
+                $itemSku = null;
+                $product = $productId ? Product::find($productId) : null;
+
+                if ($variant) {
+                    $variantId      = $variant->id;
+                    $colorId        = $colorId ?? $variant->product_color_id;
+                    $itemSku        = $variant->sku;
+                    $unitPrice      = (int) round($variant->price);
+                    $compareAtPrice = $variant->compare_at_price !== null ? (int) round($variant->compare_at_price) : null;
+                } elseif ($product) {
+                    $itemSku        = $product->sku;
+                    $unitPrice      = (int) round($product->starting_price ?? ($item['price'] ?? 0));
+                    $compareAtPrice = $product->starting_compare_at_price !== null
+                        ? (int) round($product->starting_compare_at_price)
+                        : (isset($item['compareAtPrice']) ? (int) $item['compareAtPrice'] : (isset($item['compare_at_price']) ? (int) $item['compare_at_price'] : null));
+                } else {
+                    $unitPrice      = (int) ($item['price'] ?? 0);
+                    $compareAtPrice = isset($item['compareAtPrice']) ? (int) $item['compareAtPrice'] : (isset($item['compare_at_price']) ? (int) $item['compare_at_price'] : null);
+                }
+
+                $lineTotal         = $unitPrice * $qty;
+                $verifiedSubtotal += $lineTotal;
+
+                $resolvedItems[] = [
+                    'product_id'         => $productId,
+                    'product_color_id'   => $colorId,
+                    'product_variant_id' => $variantId,
+                    'sku'                => $itemSku,
+                    'product_name'       => $item['name'] ?? $product?->name ?? '',
+                    'product_slug'       => $item['slug'] ?? $product?->slug ?? '',
+                    'color_name'         => $colorName,
+                    'color_hex'          => $item['colorHex'] ?? $item['color_hex'] ?? null,
+                    'size'               => $item['size'] ?? '',
+                    'cover_image'        => $item['image'] ?? $item['cover_image'] ?? $product?->cover_image ?? null,
+                    'price'              => $unitPrice,
+                    'compare_at_price'   => $compareAtPrice,
+                    'qty'                => $qty,
+                    'line_total'         => $lineTotal,
+                    'variant'            => $variant,
+                ];
+            }
+
+            // 2. Re-verify coupon discount against the server-verified subtotal
+            $verifiedDiscount = 0;
+            $validCoupon      = null;
+            if ($couponCode) {
+                $coupon = Coupon::where('code', $couponCode)->first();
+                if ($coupon) {
+                    $check = $coupon->isValidForAmount((float) $verifiedSubtotal);
+                    if ($check['valid']) {
+                        $validCoupon      = $coupon;
+                        $verifiedDiscount = (int) round($coupon->calculateDiscount((float) $verifiedSubtotal));
+                    } else {
+                        $couponCode = null;
+                    }
+                } else {
+                    $couponCode = null;
                 }
             }
 
-            $itemSku = null;
-            if ($variant) {
-                $variantId = $variant->id;
-                $colorId   = $colorId ?? $variant->product_color_id;
-                $itemSku   = $variant->sku;
-                if ($variant->stock > 0) {
-                    $deductQty = min($qty, $variant->stock);
+            // 3. Compute verified shipping & total charges
+            $shippingCharge = $verifiedSubtotal >= $freeThreshold ? 0 : $standardShip;
+            $total          = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
+            $shipping       = $data['shipping'] ?? [];
+
+            // 4. Create the verified Order record
+            $order = static::create([
+                'user_id'          => $userId,
+                'status'           => self::STATUS_PENDING,
+                'subtotal'         => $verifiedSubtotal,
+                'shipping_charge'  => $shippingCharge,
+                'cod_charge'       => $codCharge,
+                'discount'         => $verifiedDiscount,
+                'coupon_code'      => $couponCode,
+                'total'            => $total,
+                'payment_method'   => $method,
+                'payment_status'   => self::PAYMENT_PENDING,
+                'shipping_name'    => $shipping['name']     ?? $data['customer_name']    ?? '',
+                'shipping_phone'   => $shipping['phone']    ?? $data['customer_phone']   ?? '',
+                'shipping_email'   => $shipping['email']    ?? $data['customer_email']   ?? '',
+                'shipping_address1'=> $shipping['address1'] ?? $data['shipping_address'] ?? $data['shipping_address1'] ?? '',
+                'shipping_address2'=> $shipping['address2'] ?? $data['shipping_address2']?? null,
+                'shipping_city'    => $shipping['city']     ?? $data['shipping_city']    ?? '',
+                'shipping_state'   => $shipping['state']    ?? $data['shipping_state']   ?? '',
+                'shipping_pincode' => $shipping['pincode']  ?? $data['shipping_pincode'] ?? '',
+            ]);
+
+            // 5. Create Order Items & atomically adjust inventory
+            foreach ($resolvedItems as $res) {
+                $variant = $res['variant'];
+                if ($variant && $variant->stock > 0) {
+                    $deductQty = min($res['qty'], $variant->stock);
                     $variant->adjustStock(-$deductQty, 'order_deduction', "Order #{$order->reference}", $userId);
                 }
-            } elseif ($productId) {
-                $prod = Product::find($productId);
-                $itemSku = $prod?->sku;
+
+                $order->items()->create([
+                    'product_id'         => $res['product_id'],
+                    'product_color_id'   => $res['product_color_id'],
+                    'product_variant_id' => $res['product_variant_id'],
+                    'sku'                => $res['sku'],
+                    'product_name'       => $res['product_name'],
+                    'product_slug'       => $res['product_slug'],
+                    'color_name'         => $res['color_name'],
+                    'color_hex'          => $res['color_hex'],
+                    'size'               => $res['size'],
+                    'cover_image'        => $res['cover_image'],
+                    'price'              => $res['price'],
+                    'compare_at_price'   => $res['compare_at_price'],
+                    'qty'                => $res['qty'],
+                    'line_total'         => $res['line_total'],
+                ]);
             }
 
-            $order->items()->create([
-                'product_id'         => $productId,
-                'product_color_id'   => $colorId,
-                'product_variant_id' => $variantId,
-                'sku'                => $itemSku,
-                'product_name'       => $item['name']             ?? '',
-                'product_slug'       => $item['slug']             ?? '',
-                'color_name'         => $colorName,
-                'color_hex'          => $item['colorHex']         ?? $item['color_hex'] ?? null,
-                'size'               => $item['size']             ?? '',
-                'cover_image'        => $item['image']            ?? $item['cover_image'] ?? null,
-                'price'              => (int) ($item['price']     ?? 0),
-                'compare_at_price'   => isset($item['compareAtPrice']) ? (int) $item['compareAtPrice'] : (isset($item['compare_at_price']) ? (int) $item['compare_at_price'] : null),
-                'qty'                => $qty,
-                'line_total'         => (int) ($item['price'] ?? 0) * $qty,
-            ]);
-        }
+            if ($validCoupon && $verifiedDiscount > 0) {
+                $validCoupon->increment('used_count');
+            }
 
-        if ($couponCode) {
-            Coupon::where('code', $couponCode)->increment('used_count');
-        }
-
-        return $order;
+            return $order;
+        });
     }
 }

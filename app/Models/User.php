@@ -31,6 +31,9 @@ class User extends Authenticatable
         'deactivated_at',
         'otp_code',
         'otp_expires_at',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -42,6 +45,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'otp_code',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -52,10 +57,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'deactivated_at'    => 'datetime',
-            'otp_expires_at'    => 'datetime',
-            'password'          => 'hashed',
+            'email_verified_at'        => 'datetime',
+            'deactivated_at'           => 'datetime',
+            'otp_expires_at'           => 'datetime',
+            'two_factor_confirmed_at'  => 'datetime',
+            'password'                 => 'hashed',
         ];
     }
 
@@ -88,6 +94,42 @@ class User extends Authenticatable
             'otp_code'       => null,
             'otp_expires_at' => null,
         ]);
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !empty($this->two_factor_secret) && !empty($this->two_factor_confirmed_at);
+    }
+
+    public function getRecoveryCodes(): array
+    {
+        if (empty($this->two_factor_recovery_codes)) {
+            return [];
+        }
+        try {
+            return json_decode(decrypt($this->two_factor_recovery_codes), true) ?: [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public function replaceRecoveryCode(string $code): bool
+    {
+        $codes = $this->getRecoveryCodes();
+        $code = trim($code);
+
+        foreach ($codes as $idx => $storedCode) {
+            if (hash_equals($storedCode, $code)) {
+                unset($codes[$idx]);
+                $this->forceFill([
+                    'two_factor_recovery_codes' => encrypt(json_encode(array_values($codes))),
+                ])->save();
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isDeactivated(): bool

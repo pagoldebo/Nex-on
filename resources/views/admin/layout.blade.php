@@ -1611,10 +1611,12 @@
 
                     <!-- User Pill -->
                     <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                            {{ mb_strtoupper(mb_substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                        </div>
-                        <span class="hidden sm:inline text-xs font-semibold text-slate-700">{{ Auth::user()->name ?? 'Administrator' }}</span>
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 hover:opacity-80 transition group" title="Account Security & Profile">
+                            <div class="w-7 h-7 rounded-full bg-indigo-600 group-hover:bg-indigo-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                                {{ mb_strtoupper(mb_substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            </div>
+                            <span class="hidden sm:inline text-xs font-semibold text-slate-700 group-hover:text-indigo-600">{{ Auth::user()->name ?? 'Administrator' }}</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="text-xs text-rose-500 hover:text-rose-700 font-medium ml-1">Exit</button>

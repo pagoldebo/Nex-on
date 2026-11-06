@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 /*
@@ -33,13 +35,25 @@ Route::middleware('guest')->group(function () {
             'password' => ['required'],
         ]);
 
+        $throttleKey = Str::transliterate(Str::lower($credentials['email']) . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->withErrors([
+                'email' => 'Too many login attempts. Please try again in ' . $seconds . ' seconds.',
+            ])->onlyInput('email');
+        }
+
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            RateLimiter::hit($throttleKey, 60);
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',
             ])->onlyInput('email');
         }
+
+        RateLimiter::clear($throttleKey);
 
         if ($user->isDeactivated()) {
             return back()->withErrors([
@@ -47,7 +61,25 @@ Route::middleware('guest')->group(function () {
             ])->onlyInput('email');
         }
 
-        // Generate 4-digit OTP & 10 min expiry (like in jonakee.in)
+        // Branch 1: If user has enabled RFC 6238 TOTP App (Google Authenticator / Authy)
+        if ($user->hasTwoFactorEnabled()) {
+            session([
+                'login.id'       => $user->id,
+                'login.remember' => $request->boolean('remember'),
+            ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'  => true,
+                    'redirect' => route('two-factor.login'),
+                    'message'  => 'Please enter the 6-digit code from your authenticator app.',
+                ]);
+            }
+
+            return redirect()->route('two-factor.login');
+        }
+
+        // Branch 2: Standard Email OTP (default for patrons)
         $otp = $user->generateOtp(10);
 
         session([
@@ -268,11 +300,33 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', function (Request $request) {
         return redirect()->route('login')->with('status', 'Password reset successfully.');
     })->name('password.store');
+
+    // Two-Factor Authenticator Challenge (TOTP RFC 6238)
+    Route::get('/two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+    Route::post('/two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorAuthenticatedSessionController::class, 'store'])->middleware('throttle:6,1');
 });
 
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/');
-})->middleware('auth')->name('logout');
+Route::middleware('auth')->group(function () {
+    // User Profile Management (/profile)
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Two-Factor Authenticator App (TOTP) Management
+    Route::post('/user/two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'store'])
+        ->name('two-factor.enable');
+    Route::post('/user/confirmed-two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'confirm'])
+        ->name('two-factor.confirm');
+    Route::delete('/user/two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'destroy'])
+        ->name('two-factor.disable');
+    Route::post('/user/two-factor-recovery-codes', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'regenerateRecoveryCodes'])
+        ->name('two-factor.regenerate-recovery-codes');
+
+    Route::post('/logout', function (Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    })->name('logout');
+});

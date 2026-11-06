@@ -66,7 +66,7 @@ Route::get('/',                           [StorefrontController::class, 'index']
 Route::get('/products/{product:slug}',    [StorefrontController::class, 'product'])->name('product.show');
 Route::get('/category/{category:slug}',   [StorefrontController::class, 'category'])->name('category.show');
 
-// Curated Collections & Discovery Links (matching Jonakee & Shopify patterns)
+// Curated Collections & Discovery Links (Shopify patterns)
 Route::get('/featured-products',               [StorefrontController::class, 'featuredProducts'])->name('featured.products');
 Route::get('/collections/featured-products',   [StorefrontController::class, 'featuredProducts'])->name('collections.featured');
 Route::get('/collections/sale',                [StorefrontController::class, 'saleProductsList'])->name('collections.sale');

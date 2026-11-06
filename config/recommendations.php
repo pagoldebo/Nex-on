@@ -49,7 +49,7 @@ return [
     | Cookie name and lifetime for tracking guest user views.
     |
     */
-    'cookie_name' => 'jonakee_session_id',
+    'cookie_name' => 'nexon_session_id',
     'cookie_days' => 30,
 
     /*

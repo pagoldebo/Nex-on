@@ -40,7 +40,7 @@
   </div>
 </section>
 
-{{-- Scrolling Announcement Band (Jonakee reference ticker) --}}
+{{-- Scrolling Announcement Band --}}
 @include('storefront.common.scrolling-band')
 
 {{-- Delicate Silk Divider --}}

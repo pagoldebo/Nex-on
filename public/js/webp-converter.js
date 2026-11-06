@@ -5,7 +5,7 @@
  * directly on the uploader's device (client machine) before transmitting to the server.
  * This eliminates server CPU spikes and keeps server memory clean and lightning fast.
  * 
- * Modeled after jonakee.in/public_html/back/webp-converter.js
+ * Client-Side WebP converter and image optimizer.
  * 
  * Features:
  * - Auto-detects all file inputs containing images

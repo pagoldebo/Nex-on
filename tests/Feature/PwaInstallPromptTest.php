@@ -24,12 +24,12 @@ class PwaInstallPromptTest extends TestCase
 
     public function test_manifest_json_returns_valid_pwa_configuration(): void
     {
-        Setting::set('store_name', 'Jonakee');
+        Setting::set('store_name', 'Nex-on');
 
         $response = $this->get('/manifest.json');
         $response->assertStatus(200);
         $response->assertJson([
-            'short_name'  => 'Jonakee',
+            'short_name'  => 'Nex-on',
             'display'     => 'standalone',
             'theme_color' => '#7f1d1d',
         ]);
@@ -40,9 +40,9 @@ class PwaInstallPromptTest extends TestCase
 
     public function test_pwa_install_popup_renders_across_all_themes(): void
     {
-        Setting::set('store_name', 'Jonakee');
+        Setting::set('store_name', 'Nex-on');
         Setting::set('pwa_prompt_enabled', '1');
-        Setting::set('pwa_prompt_title', 'Install Jonakee App');
+        Setting::set('pwa_prompt_title', 'Install Nex-on App');
         Setting::set('pwa_prompt_description', 'Get quick access to our collection! Install our app for a faster, better shopping experience on your device.');
 
         $themes = ['saaya', 'buttercup', 'vyra', 'lumiere'];
@@ -65,7 +65,7 @@ class PwaInstallPromptTest extends TestCase
             $response->assertSee('id="pwaCloseBtn"', false);
             $response->assertSee('id="pwaInstallBtn"', false);
             $response->assertSee('id="pwaMaybeLaterBtn"', false);
-            $response->assertSee('Install Jonakee App');
+            $response->assertSee('Install Nex-on App');
             $response->assertSee('Install App');
             $response->assertSee('Maybe Later');
 
@@ -90,14 +90,14 @@ class PwaInstallPromptTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.settings.update'), [
             'pwa_prompt_enabled'     => '1',
-            'pwa_prompt_title'       => 'Install Jonakee VIP App',
+            'pwa_prompt_title'       => 'Install Nex-on VIP App',
             'pwa_prompt_description' => 'Install our mobile app for member discounts.',
         ]);
 
         $response->assertRedirect(route('admin.settings.index'));
 
         $this->assertEquals('1', Setting::get('pwa_prompt_enabled'));
-        $this->assertEquals('Install Jonakee VIP App', Setting::get('pwa_prompt_title'));
+        $this->assertEquals('Install Nex-on VIP App', Setting::get('pwa_prompt_title'));
         $this->assertEquals('Install our mobile app for member discounts.', Setting::get('pwa_prompt_description'));
     }
 

@@ -1,6 +1,6 @@
 {{-- resources/views/storefront/common/pwa-prompt.blade.php
      Progressive Web App (PWA) Mobile App Installation Prompt
-     Matches Jonakee reference design benchmark with 24h dismissal logic and native/iOS installation support. --}}
+     PWA installation prompt with 24h dismissal logic and native/iOS installation support. --}}
 
 @php
     $pwaEnabled = \App\Models\Setting::get('pwa_prompt_enabled', '1') !== '0';

@@ -1431,7 +1431,7 @@
             @endforeach
         </div>
 
-        <!-- Main Slider Bottom Scrolling Announcement Ticker (Jonakee Bar) -->
+        <!-- Main Slider Bottom Scrolling Announcement Ticker -->
         <div id="ticker-settings" class="bg-white rounded-2xl shadow-xs border border-slate-200/80 p-6 sm:p-8 space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 gap-3">
                 <div class="flex items-center gap-3">
@@ -3038,7 +3038,7 @@
                 </div>
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Mobile App (PWA) &amp; Install Prompt</h2>
-                    <p class="text-xs text-slate-500">Configure the floating mobile app installation prompt dialog (matching Jonakee design benchmark) across all 4 themes</p>
+                    <p class="text-xs text-slate-500">Configure the floating mobile app installation prompt dialog (matching mobile design benchmark) across all 4 themes</p>
                 </div>
             </div>
 

@@ -1,6 +1,6 @@
 /**
  * Progressive Web App (PWA) Mobile App Installation Controller
- * Matches Jonakee PWA benchmark with 24h dismissal logic and native iOS/Android handlers.
+ * PWA installation prompt with 24h dismissal logic and native iOS/Android handlers.
  */
 
 (function () {

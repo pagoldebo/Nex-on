@@ -186,7 +186,7 @@ class StorefrontController extends Controller
     }
 
     /**
-     * Generic Shopify/Jonakee collection resolver (/collections/{slug}).
+     * Generic collection resolver (/collections/{slug}).
      */
     public function collectionBySlug(Request $request, string $slug)
     {

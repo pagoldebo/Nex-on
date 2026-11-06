@@ -1,5 +1,5 @@
 {{-- resources/views/storefront/common/scrolling-band.blade.php
-     Scrolling Announcement Band / Ticker (Jonakee reference design) --}}
+     Scrolling Announcement Band / Ticker --}}
 @php
     $freeShipping = \App\Models\Setting::get('free_shipping_threshold', '1499');
     $supportPhone = \App\Models\Setting::get('support_phone', '+91 98765 43210');

@@ -3,7 +3,7 @@
 > **Project Name:** Multi-Theme E-Commerce CMS (`Nexon`)  
 > **Location:** `c:\xampp\htdocs\public\Nexon`  
 > **Framework:** Laravel 12 / Blade / TailwindCSS / Alpine.js  
-> **Audit & Reference Baseline:** Production Benchmark (`jonakee.in`) + Enterprise Multi-Channel Automation Benchmark (`ShopKing`)  
+> **Audit & Reference Baseline:** Enterprise Multi-Channel Automation Benchmark (`ShopKing`)  
 > **Last Updated:** October 30, 2026  
 
 ---

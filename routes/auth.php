@@ -107,7 +107,7 @@ Route::middleware('guest')->group(function () {
             ->with('status', 'A verification code has been sent to your email.');
     });
 
-    // Two-Step Email OTP Verification Routes (like in jonakee.in)
+    // Two-Step Email OTP Verification Routes
     $showVerifyForm = function () {
         $pendingUserId = session('pending_2fa_user_id');
         if (!$pendingUserId) {

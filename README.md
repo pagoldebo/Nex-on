@@ -21,7 +21,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Organic**: Clean living & eco-lifestyle marketplace (signature cream `#F9F8F3`, organic greens `#699E4B`, citrus accents).
 
 ### 2. Patron Security & Two-Factor Email OTP
-* **Email Verification OTP**: Secure 4-digit numeric code dispatched on every sign-in attempt (workflow inspired by *jonakee.in*).
+* **Email Verification OTP**: Secure 4-digit numeric code dispatched on every sign-in attempt.
 * **OTP Verification View**: Set against the `#F9F8F3` background with a solid jet-black (`#000000`) Maison Privilege card.
 * **Auto-Submit & Resend Cooldown**: Auto-submits on 4 digits typed/pasted, paired with a 60-second AJAX resend timer.
 * **Responsive HTML Mail Theme**: Polished email template with prominent code block, expiration countdown, and security warnings. Preview available at `/preview-mail/otp`.

@@ -114,7 +114,7 @@ class AdminSettingController extends Controller
 
     /**
      * Bulk adjust prices across an entire category or all products.
-     * Modeled after Jonakee's adjustBulkPrices.
+     * Adjust bulk prices.
      */
     public function adjustBulkPrices(Request $request): RedirectResponse
     {

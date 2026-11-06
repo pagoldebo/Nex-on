@@ -1,4 +1,4 @@
-# Project Nexon — Multi-Theme E-Commerce & Retail ERP
+# Nex-on — Multi-Theme E-Commerce & Retail ERP
 
 [![Laravel 12](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
@@ -6,7 +6,7 @@
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
 [![Tests Passing](https://img.shields.io/badge/Tests-253%20Passed-brightgreen?style=for-the-badge)](tests)
 
-**Project Nexon** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
+**Nex-on** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
 
 ---
 
@@ -93,7 +93,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 3. **Configure Environment**:
    Copy `.env.example` to `.env` if not present and configure database & mail settings:
    ```env
-   APP_NAME="Project Nexon"
+   APP_NAME="Nex-on"
    APP_ENV=local
    APP_KEY=
    APP_DEBUG=true
@@ -146,7 +146,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 
 ## 🧪 Testing
 
-Project Nexon includes a comprehensive test suite covering all storefront themes, authentication, ERP workflows, and APIs:
+Nex-on includes a comprehensive test suite covering all storefront themes, authentication, ERP workflows, and APIs:
 
 ```bash
 php artisan test

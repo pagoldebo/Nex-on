@@ -1,4 +1,4 @@
-<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Sign In — {{ config('app.name', 'Project Nexon') }}" metaDesc="Sign in to your {{ config('app.name', 'Project Nexon') }} patron account to view order history, track bespoke shipments, and access your private wishlist.">
+<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Sign In — {{ config('app.name', 'Nex-on') }}" metaDesc="Sign in to your {{ config('app.name', 'Nex-on') }} patron account to view order history, track bespoke shipments, and access your private wishlist.">
 
     <style>
         body, #mainContent {
@@ -32,7 +32,7 @@
 
                             <div>
                                 <h2 class="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-white leading-snug">
-                                    Step into the World of {{ config('app.name', 'Project Nexon') }}
+                                    Step into the World of {{ config('app.name', 'Nex-on') }}
                                 </h2>
                                 <p class="text-xs sm:text-sm text-stone-300 mt-3 leading-relaxed font-light">
                                     Register as an esteemed patron to unlock curated seasonal drops, bespoke tailor fittings, and personal concierge services.

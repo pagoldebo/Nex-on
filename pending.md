@@ -1,6 +1,6 @@
 # NexStore Business Suite: Master Pending Jobs Backlog & Architectural Blueprint
 
-> **Target Application:** Multi-Theme E-Commerce CMS (`Project Nexon`)  
+> **Target Application:** Multi-Theme E-Commerce CMS (`Nex-on`)  
 > **Workspace Path:** `c:\xampp\htdocs\public\Nexon`  
 > **Framework:** Laravel 12 / PHP 8.2+ / Blade / TailwindCSS / Alpine.js  
 > **Documentation Type:** Master Backlog & Technical Specification  

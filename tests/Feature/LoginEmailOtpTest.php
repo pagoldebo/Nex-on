@@ -253,7 +253,7 @@ class LoginEmailOtpTest extends TestCase
         $rendered = view('emails.two-factor-otp', [
             'otp'             => '7890',
             'user'            => (object) ['name' => 'Patron Eleanor'],
-            'appName'         => 'Project Nexon',
+            'appName'         => 'Nex-on',
             'storeLogo'       => null,
             'supportEmail'    => 'concierge@nexon.app',
             'supportPhone'    => '+91 98765 43210',
@@ -262,7 +262,7 @@ class LoginEmailOtpTest extends TestCase
 
         $this->assertStringContainsString('7890', $rendered);
         $this->assertStringContainsString('Patron Eleanor', $rendered);
-        $this->assertStringContainsString('Project Nexon', $rendered);
+        $this->assertStringContainsString('Nex-on', $rendered);
         $this->assertStringContainsString('concierge@nexon.app', $rendered);
         $this->assertStringContainsString('#F9F8F3', $rendered);
         $this->assertStringContainsString('#000000', $rendered);

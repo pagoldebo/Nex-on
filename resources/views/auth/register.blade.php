@@ -1,4 +1,4 @@
-<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Create an Account — {{ config('app.name', 'Project Nexon') }}" metaDesc="Join {{ config('app.name', 'Project Nexon') }} to unlock private salon privileges, personal styling concierge, and exclusive seasonal releases.">
+<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Create an Account — {{ config('app.name', 'Nex-on') }}" metaDesc="Join {{ config('app.name', 'Nex-on') }} to unlock private salon privileges, personal styling concierge, and exclusive seasonal releases.">
 
     <style>
         body, #mainContent {
@@ -40,7 +40,7 @@
 
                             <div>
                                 <h2 class="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-white leading-snug">
-                                    Step into the World of {{ config('app.name', 'Project Nexon') }}
+                                    Step into the World of {{ config('app.name', 'Nex-on') }}
                                 </h2>
                                 <p class="text-xs sm:text-sm text-stone-300 mt-3 leading-relaxed font-light">
                                     Register as an esteemed patron to unlock curated seasonal drops, bespoke tailor fittings, and personal concierge services.

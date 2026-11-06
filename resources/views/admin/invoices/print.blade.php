@@ -272,7 +272,7 @@
             <div class="bank-box">
                 <div class="entity-title">Bank Remittance Instructions</div>
                 <div>Bank Name: <strong>HDFC Bank Ltd</strong></div>
-                <div>Account Name: <strong>Project Nexon Retail Operations</strong></div>
+                <div>Account Name: <strong>Nex-on Retail Operations</strong></div>
                 <div>Account Number: <strong>50200088991234</strong></div>
                 <div>IFSC Code: <strong>HDFC0000123</strong></div>
                 <div>Branch: <strong>Bandra West, Mumbai 400050</strong></div>

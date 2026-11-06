@@ -30,7 +30,7 @@ class ProfileController extends Controller
         if ($user->two_factor_secret) {
             try {
                 $secretKey = decrypt($user->two_factor_secret);
-                $qrCodeSvgUrl = $totp->getQrCodeSvgUrl(config('app.name', 'Project Nexon'), $user->email, $secretKey);
+                $qrCodeSvgUrl = $totp->getQrCodeSvgUrl(config('app.name', 'Nex-on'), $user->email, $secretKey);
                 $recoveryCodes = $user->getRecoveryCodes();
             } catch (\Throwable $e) {
                 // If decryption fails, safely leave null

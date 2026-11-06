@@ -28,7 +28,7 @@ class Setting extends Model
     public static function appName(): string
     {
         return static::get('store_name') 
-            ?: (config('app.name') ?: env('APP_NAME', 'Project Nexon'));
+            ?: (config('app.name') ?: env('APP_NAME', 'Nex-on'));
     }
 
     /**

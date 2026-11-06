@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Admin Panel' }} — {{ config('app.name', 'Project Nexon') }}</title>
+    <title>{{ $title ?? 'Admin Panel' }} — {{ config('app.name', 'Nex-on') }}</title>
     
     <!-- Instant Theme Detection (Prevents FOUC / Light Flash) -->
     <script>
@@ -592,7 +592,7 @@
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 font-bold tracking-tight min-w-0">
             <div class="w-8 h-8 flex items-center justify-center shrink-0 text-slate-900">
                 <x-admin-logo class="w-8 h-8" />
-                <span class="sr-only">{{ mb_strtoupper(mb_substr(config('app.name', 'Project Nexon'), 0, 1)) }}</span>
+                <span class="sr-only">{{ mb_strtoupper(mb_substr(config('app.name', 'Nex-on'), 0, 1)) }}</span>
             </div>
             <div class="flex flex-col">
                 <span class="text-sm font-extrabold text-slate-900 tracking-tight leading-snug truncate">{{ $platformName ?? \App\Http\Middleware\EnsurePlatformBranding::PLATFORM_NAME }}</span>
@@ -700,7 +700,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 font-bold tracking-tight min-w-0" :class="sidebarCollapsed ? 'md:justify-center' : ''">
                     <div class="w-9 h-9 flex items-center justify-center shrink-0 text-slate-900">
                         <x-admin-logo class="w-9 h-9" />
-                        <span class="sr-only">{{ mb_strtoupper(mb_substr(config('app.name', 'Project Nexon'), 0, 1)) }}</span>
+                        <span class="sr-only">{{ mb_strtoupper(mb_substr(config('app.name', 'Nex-on'), 0, 1)) }}</span>
                     </div>
                     <div class="flex flex-col min-w-0" x-show="!sidebarCollapsed" x-transition.opacity.duration.200ms>
                         <span class="text-sm font-extrabold text-slate-900 tracking-tight leading-snug truncate">{{ $platformName ?? \App\Http\Middleware\EnsurePlatformBranding::PLATFORM_NAME }}</span>

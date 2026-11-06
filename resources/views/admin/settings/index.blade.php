@@ -90,8 +90,8 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Store / Brand Name</label>
                         <input type="text" name="store_name" 
-                               value="{{ $settings['store_name'] ?? config('app.name', 'Project Nexon') }}" 
-                               placeholder="e.g. {{ config('app.name', 'Project Nexon') }}"
+                               value="{{ $settings['store_name'] ?? config('app.name', 'Nex-on') }}" 
+                               placeholder="e.g. {{ config('app.name', 'Nex-on') }}"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
                         <p class="text-[11px] text-slate-400 mt-1.5">Used as logo alt text, fallback brand typography, invoice titles, and SMS/email headers.</p>
                     </div>
@@ -2979,7 +2979,7 @@
                 <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Invoice / Bill Thank You Footer Note</label>
                 <input type="text" name="invoice_footer" 
                        value="{{ $settings['invoice_footer'] ?? \App\Models\Setting::invoiceFooter() }}" 
-                       placeholder="e.g. Thank you for choosing Project Nexon!"
+                       placeholder="e.g. Thank you for choosing Nex-on!"
                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
                 <p class="text-[11px] text-slate-400 mt-1">Leave blank to automatically display "Thank you for choosing [Store Name]!"</p>
             </div>
@@ -3057,8 +3057,8 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Prompt Headline</label>
                         <input type="text" name="pwa_prompt_title" 
-                               value="{{ $settings['pwa_prompt_title'] ?? 'Install ' . ($settings['store_name'] ?? config('app.name', 'Project Nexon')) . ' App' }}" 
-                               placeholder="Install {{ config('app.name', 'Project Nexon') }} App"
+                               value="{{ $settings['pwa_prompt_title'] ?? 'Install ' . ($settings['store_name'] ?? config('app.name', 'Nex-on')) . ' App' }}" 
+                               placeholder="Install {{ config('app.name', 'Nex-on') }} App"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none">
                     </div>
 

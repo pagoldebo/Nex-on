@@ -44,7 +44,7 @@
         </div>
 
         <div style="background: #faf5ee; padding: 16px; text-align: center; border-top: 1px solid #ebd9c8; font-size: 11px; color: #8c7373;">
-            <p style="margin: 0;">Thank you for shopping with us. {{ config('app.name', 'Project Nexon') }}.</p>
+            <p style="margin: 0;">Thank you for shopping with us. {{ config('app.name', 'Nex-on') }}.</p>
         </div>
     </div>
 </body>

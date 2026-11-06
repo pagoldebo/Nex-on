@@ -281,7 +281,7 @@ Route::middleware('guest')->group(function () {
 
         Auth::login($user);
 
-        return redirect()->intended(route('home'))->with('success', 'Welcome to ' . config('app.name', 'Project Nexon') . '! Your account has been created.');
+        return redirect()->intended(route('home'))->with('success', 'Welcome to ' . config('app.name', 'Nex-on') . '! Your account has been created.');
     });
 
     Route::get('/forgot-password', function () {

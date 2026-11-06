@@ -1,4 +1,4 @@
-<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Two-Factor Authenticator Challenge — {{ config('app.name', 'Project Nexon') }}" metaDesc="Verify your two-factor authenticator app code to securely access your {{ config('app.name', 'Project Nexon') }} account.">
+<x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Two-Factor Authenticator Challenge — {{ config('app.name', 'Nex-on') }}" metaDesc="Verify your two-factor authenticator app code to securely access your {{ config('app.name', 'Nex-on') }} account.">
 
     <style>
         body, #mainContent {

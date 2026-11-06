@@ -81,7 +81,7 @@ Route::get('/collections/{slug}',              [StorefrontController::class, 'co
 Route::get('/manifest.json', function () {
     $storeName = \App\Models\Setting::get('store_name');
     if (empty($storeName) || $storeName === 'Nexon') {
-        $storeName = config('app.name', 'Project Nexon');
+        $storeName = config('app.name', 'Nex-on');
     }
     return response()->json([
         'name' => $storeName . ' – Online Store',

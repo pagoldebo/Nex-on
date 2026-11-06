@@ -4,7 +4,7 @@
 
 @php
     $pwaEnabled = \App\Models\Setting::get('pwa_prompt_enabled', '1') !== '0';
-    $appName    = config('app.name', 'Project Nexon');
+    $appName    = config('app.name', 'Nex-on');
     $customTitle = \App\Models\Setting::get('pwa_prompt_title');
     $pwaTitle   = (!empty($customTitle) && $customTitle !== 'Install Nexon App')  
                     ? $customTitle 
@@ -22,7 +22,7 @@
         transform: translateX(-50%);
         width: calc(100% - 32px);
         max-width: 410px;
-        background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+        background: linear-gradient(135deg, #000000ff 0%, #998c1bff 100%);
         color: #ffffff;
         padding: 24px;
         border-radius: 22px;
@@ -125,7 +125,7 @@
 
     .pwa-install-button {
         background: #ffffff;
-        color: #7f1d1d;
+        color: #000000ff;
         font-weight: 700;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
@@ -160,7 +160,7 @@
 
     .pwa-got-it {
         background: #ffffff !important;
-        color: #7f1d1d !important;
+        color: #998c1bff !important;
         font-weight: 700 !important;
     }
 </style>

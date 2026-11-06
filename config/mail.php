@@ -112,7 +112,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', env('SUPPORT_EMAIL', 'support@nexon.app')),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Project Nexon')),
+        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Nex-on')),
     ],
 
     /*

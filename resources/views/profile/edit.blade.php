@@ -10,7 +10,7 @@
         </div>
     @endsection
 @else
-    <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Account & Security Profile — {{ config('app.name', 'Project Nexon') }}">
+    <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Account & Security Profile — {{ config('app.name', 'Nex-on') }}">
         <div class="py-10 lg:py-16 bg-[#F9F8F3] min-h-[calc(100vh-140px)]">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                 <!-- Breadcrumbs -->

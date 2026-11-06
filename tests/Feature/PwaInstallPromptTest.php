@@ -103,14 +103,14 @@ class PwaInstallPromptTest extends TestCase
 
     public function test_pwa_install_popup_dynamically_inherits_app_name_from_config(): void
     {
-        config(['app.name' => 'Project Nexon']);
+        config(['app.name' => 'Nex-on']);
         Setting::set('pwa_prompt_enabled', '1');
         \App\Models\Setting::where('key', 'pwa_prompt_title')->delete();
         \Illuminate\Support\Facades\Cache::forget('setting_pwa_prompt_title');
 
         $response = $this->get(route('home'));
         $response->assertStatus(200);
-        $response->assertSee('Install Project Nexon App');
+        $response->assertSee('Install Nex-on App');
 
         config(['app.name' => 'Nexus Retail']);
         $response2 = $this->get(route('home'));
@@ -120,12 +120,12 @@ class PwaInstallPromptTest extends TestCase
 
     public function test_admin_panel_displays_app_name_and_initial_from_config(): void
     {
-        config(['app.name' => 'Project Nexon']);
+        config(['app.name' => 'Nex-on']);
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
         $response->assertStatus(200);
-        $response->assertSee('Project Nexon');
-        $response->assertSee('>P<', false);
+        $response->assertSee('Nex-on');
+        $response->assertSee('>N<', false);
     }
 }

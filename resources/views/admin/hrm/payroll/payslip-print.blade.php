@@ -30,7 +30,7 @@
             <div>
                 <div class="flex items-center gap-2 mb-1">
                     <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-sm">N</span>
-                    <span class="text-lg font-black tracking-tight text-slate-900">{{ config('app.name', 'Project Nexon') }}</span>
+                    <span class="text-lg font-black tracking-tight text-slate-900">{{ config('app.name', 'Nex-on') }}</span>
                 </div>
                 <p class="text-xs text-slate-500">Nexon Retail, Atelier &amp; Lifestyle Private Limited</p>
                 <p class="text-xs text-slate-400">GSTIN: 29AAAAA0000A1Z5 • CIN: U74999KA2026PTC123456</p>
@@ -141,7 +141,7 @@
         <!-- Signatures & Legal Disclaimer -->
         <div class="flex justify-between items-end border-t border-slate-200 pt-6 text-xs text-slate-500">
             <div>
-                <p class="text-[10px] text-slate-400">Generated automatically by {{ config('app.name', 'Project Nexon') }} HRM Suite.</p>
+                <p class="text-[10px] text-slate-400">Generated automatically by {{ config('app.name', 'Nex-on') }} HRM Suite.</p>
                 <p class="text-[10px] text-slate-400">Confidential document intended solely for the named employee.</p>
             </div>
             <div class="text-center">

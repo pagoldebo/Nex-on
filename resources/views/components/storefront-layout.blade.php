@@ -14,8 +14,8 @@
 --}}
 @props([
     'theme'    => null,
-    'title'    => config('app.name', 'Project Nexon'),
-    'metaDesc' => config('app.name', 'Project Nexon') . ' - Online Store.',
+    'title'    => config('app.name', 'Nex-on'),
+    'metaDesc' => config('app.name', 'Nex-on') . ' - Online Store.',
 ])
 
 @php

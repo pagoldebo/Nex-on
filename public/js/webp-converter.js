@@ -1,5 +1,5 @@
 /**
- * Client-Side WebP Image Converter & Optimizer for Project Nexon
+ * Client-Side WebP Image Converter & Optimizer for Nex-on
  * 
  * Automatically converts all uploaded images (JPEG, JPG, PNG, etc.) to WebP format
  * directly on the uploader's device (client machine) before transmitting to the server.

@@ -31,7 +31,7 @@ class AdminProfitLossController extends Controller
     public function print(Request $request): View
     {
         $pl = $this->calculateProfitLoss($request);
-        $storeName = Setting::get('store_name', 'Project Nexon');
+        $storeName = Setting::get('store_name', 'Nex-on');
         $gstin = Setting::get('gstin', '27AABCS1429B1ZB');
         $storeAddress = Setting::get('store_address', '101 Fashion Boulevard, Mumbai');
 

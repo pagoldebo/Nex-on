@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/organic/compare.blade.php
-     Organic Market Side-by-Side Produce Comparison Page. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: MULTI-PRODUCT COMPARISON MATRIX
+    ======================================================================
+    File: resources/views/storefront/organic/compare.blade.php
+    Controller: App\Http\Controllers\StorefrontController@compare
+    Route Context: GET /compare
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+    Responsibility: Side-by-side specification, pricing, and variant comparison
+    Features:
+      - Multi-column comparison grid synchronized with sessionStorage.compare_items
+      - Side-by-side spec alignment: Fabric, Fit, Care, Country of Origin, Price
+      - Instant Add to Bag button per column and one-click remove item
+      - Empty state with recommendations to browse categories
+    Operations & Maintenance:
+      - Client-driven table using Alpine.js and local storage cache
+--}}
 <x-storefront-layout :theme="$theme" title="Compare Produce">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

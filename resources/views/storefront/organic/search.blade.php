@@ -1,5 +1,24 @@
-{{-- resources/views/storefront/organic/search.blade.php
-     Organic Market Search Page: Search Bar, Results Grid, and Popular Produce Tags. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: CATALOG SEARCH RESULTS
+    ======================================================================
+    File: resources/views/storefront/organic/search.blade.php
+    Controller: App\Http\Controllers\StorefrontController@search
+    Route Context: GET /search
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $query: Search keyword string
+      - $products: Paginated search result collection
+    Responsibility: Product discovery search results page with filter tools
+    Features:
+      - Keyword matching across product title, description, SKU, and category
+      - Keyword term highlighting and matching result counter
+      - Faceted filtering: Category, Price slider, In-stock only
+      - Helpful empty state with recommended popular products when no results match
+    Operations & Maintenance:
+      - Search query sanitized via SqlSafetyService against wildcard abuse
+--}}
 <x-storefront-layout :theme="$theme" title="Search Organic Produce">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

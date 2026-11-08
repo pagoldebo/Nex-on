@@ -1,4 +1,23 @@
-{{-- resources/views/storefront/buttercup/account.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: CUSTOMER ACCOUNT & ORDERS DASHBOARD
+    ======================================================================
+    File: resources/views/storefront/buttercup/account.blade.php
+    Controller: App\Http\Controllers\StorefrontController@account
+    Route Context: GET /account (Auth Middleware Guard: customer)
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+      - $orders: Customer's order collection with shipment status
+    Responsibility: Patron self-service dashboard for orders, addresses, and settings
+    Features:
+      - Order history listing with fulfillment status and invoice download links
+      - Shipping & billing address book manager
+      - Customer security controls (Password update, 2FA OTP status)
+      - Loyalty rewards points balance and redemption history
+    Operations & Maintenance:
+      - Strict BOLA/RLS enforcement: customers can only view their own records
+--}}
 <x-storefront-layout :theme="$theme" title="My Account">
 <div class="max-w-6xl mx-auto px-6 lg:px-10 py-10">
   <div class="mb-10">

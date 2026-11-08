@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON PRIVACY 
+    ======================================================================
+    File: resources/views/storefront/common/privacy.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <x-storefront-layout :theme="$theme" title="Privacy &amp; Data Protection Policy" metaDesc="Our commitment to safeguarding your personal information, sizing records, and order confidentiality.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-4xl mx-auto px-6 lg:px-8">

@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/organic/components/cart-drawer.blade.php
-     Organic Market Quick Cart Slide-out Drawer. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    COMPONENT: SLIDE-OVER CART DRAWER
+    ======================================================================
+    File: resources/views/storefront/organic/components/cart-drawer.blade.php
+    Component Injection: storefront.organic.components.cart-drawer
+    Responsibility: Off-canvas reactive slide-over shopping bag drawer
+    Features:
+      - Real-time line-item list, item removal, and quantity steppers
+      - Subtotal calculation, tax preview, and free shipping progress tracker
+      - Direct checkout CTA button and continue shopping dismiss action
+      - Seamless client-side state synchronization with sessionStorage
+    Operations & Maintenance:
+      - Opened globally via Alpine event 'open-cart' or window.openCartDrawer()
+      - Dispatches 'cart-updated' event to notify header badge counters
+--}}
 <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[420px] z-[200] translate-x-full transition-transform duration-300 flex flex-col justify-between shadow-2xl bg-white">
   
   {{-- Header --}}

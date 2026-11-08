@@ -1,3 +1,19 @@
+{{--
+    ======================================================================
+    ADMIN POS: HIGH-SPEED TERMINAL CHECKOUT
+    ======================================================================
+    File: resources/views/admin/pos/index.blade.php
+    Controller: App\Http\Controllers\Admin\PosController@index
+    Route Context: GET /admin/pos
+    Responsibility: Point-of-Sale in-store counter checkout screen
+    Features:
+      - Barcode scanner hardware listener and instant SKU lookups
+      - Quick item search, category grid filtering, and variant picker modal
+      - Customer selection with loyalty points balance redemption
+      - Multi-tender payment: Cash, Card, UPI / QR Code, Split Tender
+      - Hold Cart (park transaction) and recall functionality
+    Operations: Hardware keyboard shortcuts enabled for high cashier throughput
+--}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-950">
 <head>

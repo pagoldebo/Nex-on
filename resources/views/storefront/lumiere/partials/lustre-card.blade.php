@@ -1,11 +1,12 @@
-{{-- resources/views/storefront/lumiere/partials/lustre-card.blade.php
-     Expects: $product (Eloquent Product, with colors.images and colors.variants eager-loaded)
-
-     Renders one card for the "Lustre Edit" horizontal rail. Clicking it
-     opens Lumière's existing quick-view modal — passing the full product
-     JSON directly avoids needing an array lookup (openQuickViewById in the
-     static demo only works because that data lives in a JS array; here
-     each card already carries its own data server-side).
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT LUMIERE PARTIALS LUSTRE CARD 
+    ======================================================================
+    File: resources/views/storefront/lumiere/partials/lustre-card.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
 --}}
 @php
     $cardData = $product->toCardArray();

@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON FAQ 
+    ======================================================================
+    File: resources/views/storefront/common/faq.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <x-storefront-layout :theme="$theme" title="Frequently Asked Questions (FAQ)" metaDesc="Find answers to common questions about discreet shipping, sizing, order tracking, and intimate returns.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-4xl mx-auto px-6 lg:px-8">

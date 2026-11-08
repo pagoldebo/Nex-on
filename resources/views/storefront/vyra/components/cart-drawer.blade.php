@@ -1,4 +1,20 @@
-{{-- resources/views/storefront/vyra/components/cart-drawer.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    COMPONENT: SLIDE-OVER CART DRAWER
+    ======================================================================
+    File: resources/views/storefront/vyra/components/cart-drawer.blade.php
+    Component Injection: storefront.vyra.components.cart-drawer
+    Responsibility: Off-canvas reactive slide-over shopping bag drawer
+    Features:
+      - Real-time line-item list, item removal, and quantity steppers
+      - Subtotal calculation, tax preview, and free shipping progress tracker
+      - Direct checkout CTA button and continue shopping dismiss action
+      - Seamless client-side state synchronization with sessionStorage
+    Operations & Maintenance:
+      - Opened globally via Alpine event 'open-cart' or window.openCartDrawer()
+      - Dispatches 'cart-updated' event to notify header badge counters
+--}}
 <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[400px] z-[200] translate-x-full transition-transform duration-400 flex flex-col shadow-2xl border-l-2" style="background:#1A1A1D;border-color:#FF3D5A;">
     <div class="flex items-center justify-between px-6 py-5 border-b" style="border-color:#FF3D5A33;">
         <h3 class="font-semibold text-lg uppercase" style="color:#F2F0EC">Your Bag</h3>

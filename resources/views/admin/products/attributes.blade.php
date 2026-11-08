@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN PRODUCTS: ATTRIBUTE & VARIANT MATRIX STUDIO
+    ======================================================================
+    File: resources/views/admin/products/attributes.blade.php
+    Controller: App\Http\Controllers\Admin\ProductAttributeController@index
+    Route Context: GET /admin/products/attributes
+    Responsibility: Global product attributes studio (Colors, Sizes, Materials, Fits)
+    Features:
+      - Attribute definition (Color swatches with hex codes, text pills, dropdowns)
+      - Attribute value options creation and sorting
+      - Product variant generator mapping attributes into purchasable SKUs
+    Security: Guarded by 'products.manage' permission
+--}}
 @extends('admin.layout')
 
 @section('content')

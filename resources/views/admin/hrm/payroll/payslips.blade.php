@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    ADMIN HRM: PAYSLIPS DIRECTORY & DISPATCH
+    ======================================================================
+    File: resources/views/admin/hrm/payroll/payslips.blade.php
+    Controller: App\Http\Controllers\Admin\PayrollController@payslips
+    Route Context: GET /admin/hrm/payroll/payslips
+    Responsibility: Staff payslip repository, PDF downloads, and email distribution
+    Features:
+      - Filter payslips by month, year, department, and employee
+      - Bulk email payslips to staff with password-protected PDF attachments
+      - Print / view individual employee pay voucher
+--}}
 @extends('admin.layout')
 
 @section('content')

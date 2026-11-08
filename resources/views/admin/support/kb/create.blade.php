@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: SUPPORT KB CREATE
+    ======================================================================
+    File: resources/views/admin/support/kb/create.blade.php
+    Responsibility: Back-office administration for SUPPORT KB CREATE
+    Features:
+      - Standard administration UI following the Nex-on design guidelines
+      - Accessible controls, Tailwind CSS styling, and reactive Alpine.js components
+    Security & Access Control:
+      - Guarded by Laravel authentication and RBAC permission middleware
+    Operations & Maintenance:
+      - Integrates with master administration shell (@extends('admin.layout'))
+--}}
 @extends('admin.layout')
 
 @section('content')

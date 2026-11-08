@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON TERMS 
+    ======================================================================
+    File: resources/views/storefront/common/terms.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <x-storefront-layout :theme="$theme" title="Terms of Service &amp; Purchase Agreement" metaDesc="Review the terms and conditions governing the purchase and delivery of our intimate apparel.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-4xl mx-auto px-6 lg:px-8">

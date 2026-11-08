@@ -1,7 +1,12 @@
-{{-- resources/views/storefront/lumiere/partials/bestseller-card.blade.php
-     Expects: $product (Eloquent Product, with colors.images, colors.variants
-     eager-loaded). Also expects $product->description to hold the short
-     spotlight blurb shown under the name (maps to the static demo's `desc`).
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT LUMIERE PARTIALS BESTSELLER CARD 
+    ======================================================================
+    File: resources/views/storefront/lumiere/partials/bestseller-card.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
 --}}
 @php
     $cardData = $product->toCardArray();

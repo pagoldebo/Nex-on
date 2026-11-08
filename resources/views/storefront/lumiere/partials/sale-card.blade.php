@@ -1,5 +1,19 @@
-{{-- resources/views/storefront/lumiere/partials/sale-card.blade.php
-     Sale Section Product Card matching Reference Design
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PARTIAL: FLASH SALE & PROMOTIONAL CARD
+    ======================================================================
+    File: resources/views/storefront/lumiere/partials/sale-card.blade.php
+    Partial: storefront.lumiere.partials.sale-card
+    Parameters:
+      - $product: App\Models\Product instance
+    Responsibility: High-conversion promotional card with discount highlighting
+    Features:
+      - Prominent discount percentage badge (-X%) and strike-through MSRP pricing
+      - Real-time countdown timer for flash deals and campaign ends
+      - Inventory scarcity bar showing remaining stock percentage
+    Operations & Maintenance:
+      - Binds to product sale price and active promotion schedule
 --}}
 @php
     $cardData = $product->toCardArray();

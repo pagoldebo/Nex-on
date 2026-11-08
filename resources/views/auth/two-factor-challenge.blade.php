@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    AUTHENTICATION: TWO FACTOR CHALLENGE
+    ======================================================================
+    File: resources/views/auth/two-factor-challenge.blade.php
+    Route Context: /two-factor-challenge
+    Responsibility: Secure customer and staff authentication interface
+    Features:
+      - High-security credentials input with CSRF protection
+      - Patron rate limiting enforcement (prevents brute-force attacks)
+      - Two-Factor OTP challenge handling when active
+    Operations & Maintenance:
+      - Controlled via App\Http\Controllers\Auth controllers
+--}}
 <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Two-Factor Authenticator Challenge — {{ config('app.name', 'Nex-on') }}" metaDesc="Verify your two-factor authenticator app code to securely access your {{ config('app.name', 'Nex-on') }} account.">
 
     <style>

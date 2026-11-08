@@ -1,3 +1,15 @@
+{{--
+    ======================================================================
+    ADMIN HRM: 360-DEGREE PEER FEEDBACK & PRAISE WALL
+    ======================================================================
+    File: resources/views/admin/hrm/performance/feedback.blade.php
+    Controller: App\Http\Controllers\Admin\PerformanceController@feedback
+    Route Context: GET /admin/hrm/performance/feedback
+    Responsibility: Continuous feedback exchange and employee praise badges
+    Features:
+      - Peer shoutouts and company core values praise badges
+      - Confidential 360-degree review responses
+--}}
 @extends('admin.layout')
 
 @section('content')

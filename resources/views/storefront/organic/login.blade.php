@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/organic/login.blade.php
-     Organic Market Dedicated Customer Sign In Page --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: DEDICATED CUSTOMER SIGN IN & REGISTRATION
+    ======================================================================
+    File: resources/views/storefront/organic/login.blade.php
+    Controller: App\Http\Controllers\StorefrontController@login
+    Route Context: GET /login, POST /login
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+    Responsibility: Dedicated theme-styled customer authentication page
+    Features:
+      - Email & password customer sign in with remember-me cookie
+      - Redirects seamlessly to checkout if initiated from an active cart
+      - Password reset link request and new patron account registration toggle
+      - Two-Factor OTP challenge integration for high-security patron accounts
+    Operations & Maintenance:
+      - Protected by Domain 2 patron rate limiting (prevents brute-force attempts)
+--}}
 <x-storefront-layout :theme="$theme" title="Customer Sign In — {{ config('app.name', 'Organic Market') }}" metaDesc="Sign in to your {{ config('app.name', 'Organic Market') }} patron account to view harvest orders, track doorstep deliveries, and manage your fresh produce wishlist.">
 
   <style>

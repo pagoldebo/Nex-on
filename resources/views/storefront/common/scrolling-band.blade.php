@@ -1,5 +1,17 @@
-{{-- resources/views/storefront/common/scrolling-band.blade.php
-     Scrolling Announcement Band / Ticker --}}
+{{--
+    ======================================================================
+    STOREFRONT COMMON COMPONENT: GLOBAL SCROLLING ANNOUNCEMENT BAND
+    ======================================================================
+    File: resources/views/storefront/common/scrolling-band.blade.php
+    Component Injection: storefront.common.scrolling-band
+    Responsibility: Infinitely scrolling promotional announcement ticker below hero
+    Features:
+      - CSS hardware-accelerated marquee animation (keyframes marquee)
+      - Dynamic text injection from admin settings ('scrolling_band_text')
+      - Pause-on-hover accessibility behavior
+    Operations & Maintenance:
+      - Text editable in Admin -> Settings -> General -> Announcement Marquee
+--}}
 @php
     $freeShipping = \App\Models\Setting::get('free_shipping_threshold', '1499');
     $supportPhone = \App\Models\Setting::get('support_phone', '+91 98765 43210');

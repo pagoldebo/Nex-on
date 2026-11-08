@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    ADMIN HRM: OKR & GOALS DIRECTORY
+    ======================================================================
+    File: resources/views/admin/hrm/performance/goals.blade.php
+    Controller: App\Http\Controllers\Admin\PerformanceController@goals
+    Route Context: GET /admin/hrm/performance/goals
+    Responsibility: Corporate OKRs and departmental milestone directory
+    Features:
+      - Objective hierarchy: Company Goals -> Department Goals -> Individual OKRs
+      - Progress percentage trackers and status pills (On Track, Behind, At Risk)
+      - Quick progress update slider
+--}}
 @extends('admin.layout')
 
 @section('content')

@@ -1,5 +1,19 @@
-{{-- resources/views/admin/products/edit.blade.php
-     $product is loaded with: colors.images, colors.variants (see ProductController::edit)
+{{--
+    ======================================================================
+    ADMIN PRODUCTS: PRODUCT EDITOR STUDIO
+    ======================================================================
+    File: resources/views/admin/products/edit.blade.php
+    Controller: App\Http\Controllers\Admin\ProductController@edit, update
+    Route Context: GET /admin/products/{product}/edit, PUT /admin/products/{product}
+    ViewModel Injections:
+      - $product: App\Models\Product instance with variants & images
+      - $categories: Category hierarchy
+    Responsibility: Full product lifecycle modifier and gallery manager
+    Features:
+      - Image gallery drag-and-drop reordering and cover image assignment
+      - Variant color cover mapping and attribute value matrix
+      - Inventory stock ledger adjustments and low-stock threshold triggers
+    Security: Guarded by 'products.manage' permission
 --}}
 @extends('admin.layout')
 

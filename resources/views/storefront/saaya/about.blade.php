@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/saaya/about.blade.php --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: ABOUT US & BRAND STORY
+    ======================================================================
+    File: resources/views/storefront/saaya/about.blade.php
+    Controller: App\Http\Controllers\StorefrontController@about
+    Route Context: GET /about
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+      - $title: Page SEO title
+    Responsibility: Brand manifesto, artisan heritage, craftsmanship, and sustainability
+    Features:
+      - Atmospheric hero imagery and founder's note
+      - Artisan handcrafting timeline and ethical sourcing commitments
+      - Brand milestone metrics and curated editorial lookbook links
+    Operations & Maintenance:
+      - Text content editable via admin settings or custom template language
+--}}
 <x-storefront-layout :theme="$theme" title="About Saaya — The Atelier Story" metaDesc="Discover the heritage of Saaya intimate atelier, handcrafted with pure mulberry silk, zari embroidery, and heirloom silhouettes.">
 
 <div class="bg-ivory py-10 lg:py-16">

@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/organic/components/search-overlay.blade.php
-     Accessible full-screen search overlay for quick product lookup. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    COMPONENT: LIVE PRODUCT SEARCH OVERLAY
+    ======================================================================
+    File: resources/views/storefront/organic/components/search-overlay.blade.php
+    Component Injection: storefront.organic.components.search-overlay
+    Responsibility: Real-time debounced live catalog search interface
+    Features:
+      - Debounced asynchronous input queries to autocomplete API
+      - Instant product preview cards with thumbnail, price, and stock status
+      - Trending searches, popular category tags, and recent search history
+      - Keyboard navigation (Arrow keys, Enter, Escape)
+    Operations & Maintenance:
+      - Queries route('api.search') or route('search')
+      - Input strings sanitized against SQL wildcard injection
+--}}
 <div id="searchOverlay" class="hidden fixed inset-0 z-50 transition-opacity duration-200 opacity-0 bg-stone-900/70 backdrop-blur-sm items-start justify-center pt-16 sm:pt-24 px-4">
   
   <div id="searchOverlayCard" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 transform -translate-y-4 transition-transform duration-200 pointer-events-auto">

@@ -1,4 +1,19 @@
-{{-- resources/views/storefront/vyra/components/category-sheet.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    COMPONENT: MOBILE CATEGORY SHEET DRAWER
+    ======================================================================
+    File: resources/views/storefront/vyra/components/category-sheet.blade.php
+    Component Injection: storefront.vyra.components.category-sheet
+    Responsibility: Slide-up mobile category hierarchy and catalog navigation
+    Features:
+      - Hierarchical parent/child category listing with smooth expandable accordions
+      - Direct thumbnail links to category collection landing pages
+      - Smooth backdrop dismiss gesture and escape key listener
+    Operations & Maintenance:
+      - Populated via view shared categories variable ($categories)
+      - Controlled via Alpine x-show="categorySheetOpen"
+--}}
 <div id="sheetOverlay" class="lg:hidden fixed inset-0 z-[70] transition-all" style="background:rgba(0,0,0,0);visibility:hidden;pointer-events:none;"
      onclick="if(event.target===this) closeCategorySheet()">
     <div class="bottom-sheet absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto pb-8 translate-y-full transition-transform duration-400 border-t-2"

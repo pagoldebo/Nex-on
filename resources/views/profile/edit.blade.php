@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    USER PROFILE: ACCOUNT SETTINGS
+    ======================================================================
+    File: resources/views/profile/edit.blade.php
+    Controller: App\Http\Controllers\ProfileController
+    Route Context: GET /profile, PATCH /profile
+    Responsibility: User self-service profile, password, and security management
+    Features:
+      - Personal information updates (Name, Email, Avatar)
+      - Current password verification before password changes
+      - Account deletion with strict confirmation safeguards
+--}}
 @php
     $isAdmin = $user->role === 'admin';
 @endphp

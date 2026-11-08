@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/organic/wishlist.blade.php
-     Organic Market Saved Produce Wishlist Page. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: SAVED WISHLIST & FAVORITES
+    ======================================================================
+    File: resources/views/storefront/organic/wishlist.blade.php
+    Controller: App\Http\Controllers\StorefrontController@wishlist
+    Route Context: GET /wishlist
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+    Responsibility: Customer saved wishlist collection and quick purchase staging
+    Features:
+      - Client & server synchronized saved product list
+      - Live stock availability badge per wishlist item
+      - One-click 'Move to Bag' and 'Move All to Bag' actions
+      - Social sharing link to share curated wishlist with friends
+    Operations & Maintenance:
+      - Automatically syncs client localStorage favorites upon customer login
+--}}
 <x-storefront-layout :theme="$theme" title="Saved Produce &amp; Wishlist">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

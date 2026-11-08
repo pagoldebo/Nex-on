@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/lumiere/wishlist.blade.php
-     Data from StorefrontController@wishlist: $wishlistProducts (from ?ids=, plus the user's saved list if one exists) --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: SAVED WISHLIST & FAVORITES
+    ======================================================================
+    File: resources/views/storefront/lumiere/wishlist.blade.php
+    Controller: App\Http\Controllers\StorefrontController@wishlist
+    Route Context: GET /wishlist
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+    Responsibility: Customer saved wishlist collection and quick purchase staging
+    Features:
+      - Client & server synchronized saved product list
+      - Live stock availability badge per wishlist item
+      - One-click 'Move to Bag' and 'Move All to Bag' actions
+      - Social sharing link to share curated wishlist with friends
+    Operations & Maintenance:
+      - Automatically syncs client localStorage favorites upon customer login
+--}}
 <x-storefront-layout :theme="$theme" title="Wishlist">
 
 {{-- Guests keep their wishlist in localStorage ('lc_wishlist') but this page is rendered by the server

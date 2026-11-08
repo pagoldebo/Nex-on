@@ -1,8 +1,19 @@
-{{-- resources/views/storefront/lumiere/partials/quick-view.blade.php
-     Include once per page that renders lustre-card / bestseller-card:
-         @include('storefront.lumiere.partials.quick-view')
-     Defines the modal markup plus openQuickView(product), where `product` is
-     the array from Product::toCardArray(). --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PARTIAL: PRODUCT QUICK-VIEW MODAL
+    ======================================================================
+    File: resources/views/storefront/lumiere/partials/quick-view.blade.php
+    Partial Injection: storefront.lumiere.partials.quick-view
+    Responsibility: Interactive modal popup for rapid product inspection and cart add
+    Features:
+      - High-resolution image gallery with interactive thumbnail switcher
+      - Variant option selectors (sizes, colors, finishes) with live stock feedback
+      - Instant reactive Add to Bag button and quantity steppers
+      - Full product details link redirecting to standalone product page
+    Operations & Maintenance:
+      - Loaded dynamically via client-side Alpine store or AJAX endpoint
+--}}
 <div id="quickViewModal" class="hidden fixed inset-0 z-[220] bg-black/50 backdrop-blur-sm items-end sm:items-center justify-center sm:p-4"
      onclick="if(event.target===this) closeQuickView()">
     <div class="bg-white w-full sm:max-w-3xl rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto relative">

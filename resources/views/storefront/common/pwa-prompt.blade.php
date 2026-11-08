@@ -1,7 +1,13 @@
-{{-- resources/views/storefront/common/pwa-prompt.blade.php
-     Progressive Web App (PWA) Mobile App Installation Prompt
-     PWA installation prompt with 24h dismissal logic and native/iOS installation support. --}}
-
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON PWA PROMPT 
+    ======================================================================
+    File: resources/views/storefront/common/pwa-prompt.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 @php
     $pwaEnabled = \App\Models\Setting::get('pwa_prompt_enabled', '1') !== '0';
     $appName    = config('app.name', 'Nex-on');

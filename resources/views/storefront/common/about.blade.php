@@ -1,4 +1,13 @@
-{{-- resources/views/storefront/common/about.blade.php --}}
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON ABOUT 
+    ======================================================================
+    File: resources/views/storefront/common/about.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 @php
   $tKey = $theme->key ?? 'saaya';
   $storyImg = \App\Models\Setting::get("{$tKey}_story_image") ?: \App\Models\Setting::get('saaya_story_image');

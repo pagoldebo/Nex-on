@@ -1,5 +1,21 @@
-{{-- resources/views/storefront/organic/partials/product-card.blade.php
-     Organic Market Product Card: Fresh badge, clean product imagery, organic color/variety swatches, size/pack pills, and instant add to bag. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PARTIAL: CATALOG PRODUCT CARD ITEM
+    ======================================================================
+    File: resources/views/storefront/organic/partials/product-card.blade.php
+    Partial: storefront.organic.partials.product-card
+    Parameters:
+      - $product: App\Models\Product instance
+    Responsibility: Modular grid item card for catalog, category, and search results
+    Features:
+      - Image hover transition and cover color presentation
+      - Promotional badge overlays (Sale, Best Seller, New Harvest / Drop)
+      - Customer rating star summary and review counter
+      - One-click instant Add to Bag and Wishlist toggle triggers
+    Operations & Maintenance:
+      - Reusable across all catalog layouts within organic
+--}}
 @php
     $cardData = $product->toCardArray();
 @endphp

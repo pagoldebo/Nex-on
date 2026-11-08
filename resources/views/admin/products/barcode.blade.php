@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN PRODUCTS: THERMAL BARCODE LABEL PRINT STUDIO
+    ======================================================================
+    File: resources/views/admin/products/barcode.blade.php
+    Controller: App\Http\Controllers\Admin\BarcodeController@index, print
+    Route Context: GET /admin/products/barcode
+    Responsibility: Code128 barcode generation and multi-copy thermal label printing
+    Features:
+      - Vector Code128 SVG barcode generator with zero external dependencies
+      - Printable label layouts for standard thermal sticker rolls (50x25mm, 38x25mm)
+      - Includes Product Name, Variant Size/Color, SKU, and MRP pricing
+    Operations: Compatible with standard thermal barcode printers (Zebra, TSC, TVS)
+--}}
 @extends('admin.layout')
 
 @section('content')

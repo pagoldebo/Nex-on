@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: PURCHASE ORDERS SHOW
+    ======================================================================
+    File: resources/views/admin/purchase-orders/show.blade.php
+    Responsibility: Back-office administration for PURCHASE ORDERS SHOW
+    Features:
+      - Standard administration UI following the Nex-on design guidelines
+      - Accessible controls, Tailwind CSS styling, and reactive Alpine.js components
+    Security & Access Control:
+      - Guarded by Laravel authentication and RBAC permission middleware
+    Operations & Maintenance:
+      - Integrates with master administration shell (@extends('admin.layout'))
+--}}
 @extends('admin.layout', [
     'title' => 'Purchase Order #' . $purchaseOrder->po_number,
     'breadcrumbs' => [

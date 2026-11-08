@@ -1,8 +1,23 @@
-{{-- resources/views/storefront/saaya/account.blade.php
-     Saaya account dashboard — auth-guarded (middleware in routes).
-     Controller passes: $user (Auth::user()), $categories (layout),
-                        $orders (Collection|empty — from orders table if it exists). --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: CUSTOMER ACCOUNT & ORDERS DASHBOARD
+    ======================================================================
+    File: resources/views/storefront/saaya/account.blade.php
+    Controller: App\Http\Controllers\StorefrontController@account
+    Route Context: GET /account (Auth Middleware Guard: customer)
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+      - $orders: Customer's order collection with shipment status
+    Responsibility: Patron self-service dashboard for orders, addresses, and settings
+    Features:
+      - Order history listing with fulfillment status and invoice download links
+      - Shipping & billing address book manager
+      - Customer security controls (Password update, 2FA OTP status)
+      - Loyalty rewards points balance and redemption history
+    Operations & Maintenance:
+      - Strict BOLA/RLS enforcement: customers can only view their own records
+--}}
 <x-storefront-layout>
 
 <div class="bg-ivory min-h-screen">

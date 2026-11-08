@@ -1,3 +1,19 @@
+{{--
+    ======================================================================
+    ADMIN CORE: MASTER ADMINISTRATIVE LAYOUT SHELL
+    ======================================================================
+    File: resources/views/admin/layout.blade.php
+    Layout Wrapper: @extends('admin.layout')
+    Responsibility: Primary administrative layout for all back-office modules
+    Features:
+      - Collapsible responsive sidebar with RBAC role-guarded navigation items
+      - Instant theme detection (Dark Mode vs Light Mode) preventing FOUC
+      - Top navigation bar with store view shortcut, notification bell, and user avatar
+      - CSRF meta tag, Tailwind CDN, Alpine.js, and Chart.js integration
+      - Global session flash message container and modal dialog slots
+    Security & Authorization:
+      - Restricted to authenticated staff accounts with admin/store_manager/clerk roles
+--}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50 {{ (($_COOKIE['admin_theme'] ?? request()->cookie('admin_theme')) === 'dark') ? 'dark' : '' }}">
 <head>

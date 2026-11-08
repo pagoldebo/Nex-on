@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/vyra/contact.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    PAGE: CONCIERGE & CUSTOMER SUPPORT CONTACT
+    ======================================================================
+    File: resources/views/storefront/vyra/contact.blade.php
+    Controller: App\Http\Controllers\StorefrontController@contact
+    Route Context: GET /contact, POST /contact/send
+    ViewModel Injections:
+      - $theme: Active Template model ('vyra')
+    Responsibility: Customer concierge inquiry portal, store locations, and helpline
+    Features:
+      - Interactive inquiry form (Name, Email, Phone, Order #, Message)
+      - Direct WhatsApp concierge click-to-chat button
+      - Physical boutique/depot address, telephone lines, and operating hours
+      - Embedded interactive Google Map location
+    Operations & Maintenance:
+      - Form submissions protected by CSRF token and anti-spam rate limits
+--}}
 <x-storefront-layout :theme="$theme" title="Contact Concierge — Vyra" metaDesc="Reach out to the Vyra styling team for sizing guidance, order status, or bespoke inquiries.">
 
 <div class="py-12 lg:py-20" style="background:#0E0E10">

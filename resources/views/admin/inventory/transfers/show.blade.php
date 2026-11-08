@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: INVENTORY TRANSFERS SHOW
+    ======================================================================
+    File: resources/views/admin/inventory/transfers/show.blade.php
+    Responsibility: Back-office administration for INVENTORY TRANSFERS SHOW
+    Features:
+      - Standard administration UI following the Nex-on design guidelines
+      - Accessible controls, Tailwind CSS styling, and reactive Alpine.js components
+    Security & Access Control:
+      - Guarded by Laravel authentication and RBAC permission middleware
+    Operations & Maintenance:
+      - Integrates with master administration shell (@extends('admin.layout'))
+--}}
 @extends('admin.layout')
 
 @section('title', "Transfer Manifest #{$transfer->transfer_no}")

@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/buttercup/wishlist.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: SAVED WISHLIST & FAVORITES
+    ======================================================================
+    File: resources/views/storefront/buttercup/wishlist.blade.php
+    Controller: App\Http\Controllers\StorefrontController@wishlist
+    Route Context: GET /wishlist
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+    Responsibility: Customer saved wishlist collection and quick purchase staging
+    Features:
+      - Client & server synchronized saved product list
+      - Live stock availability badge per wishlist item
+      - One-click 'Move to Bag' and 'Move All to Bag' actions
+      - Social sharing link to share curated wishlist with friends
+    Operations & Maintenance:
+      - Automatically syncs client localStorage favorites upon customer login
+--}}
 <x-storefront-layout :theme="$theme" title="Wishlist">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display text-3xl md:text-4xl mb-2 reveal text-[#4A3B3A]">Wishlist</h1>

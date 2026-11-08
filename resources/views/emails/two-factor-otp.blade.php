@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    TRANSACTIONAL EMAIL: TWO FACTOR OTP
+    ======================================================================
+    File: resources/views/emails/two-factor-otp.blade.php
+    Mailable / Notification Context: App\Mail
+    Responsibility: Formatted HTML transactional email dispatched to customers or staff
+    Features:
+      - Responsive email layout compatible with major email clients (Gmail, Outlook, Apple Mail)
+      - Organization branding, order specifics, and secure direct action links
+    Operations & Maintenance:
+      - Dispatched asynchronously via Laravel Queues for optimal web throughput
+--}}
 @php
     $resolvedAppName = $appName ?? \App\Models\Setting::appName();
     $resolvedLogo    = $storeLogo ?? \App\Models\Setting::get('site_logo');

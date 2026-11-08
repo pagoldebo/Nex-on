@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    STOREFRONT COMMON COMPONENT: INTERACTIVE SIZE & FIT GUIDE
+    ======================================================================
+    File: resources/views/storefront/common/size-guide.blade.php
+    Component Injection: storefront.common.size-guide
+    Responsibility: Apparel size measurement tables and international conversions
+    Features:
+      - Tabbed views for Inches (in) and Centimeters (cm)
+      - International size conversion matrix (US, UK, EU, India)
+      - How-to-measure illustration guide (Bust, Waist, Hips, Inseam)
+    Operations & Maintenance:
+      - Content can be customized via Admin -> Settings -> Size Guide
+--}}
 <x-storefront-layout :theme="$theme" :title="\App\Models\Setting::get('sizeguide_title', 'The Precision Size Guide')" metaDesc="Find your perfect lingerie fit with our interactive bra size calculator and international sister-sizing chart.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-5xl mx-auto px-6 lg:px-8">

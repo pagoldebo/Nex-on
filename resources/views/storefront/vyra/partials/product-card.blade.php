@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/vyra/partials/product-card.blade.php
-     Expects: $product (Eloquent Product, with colors.images and colors.variants eager-loaded)
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    PARTIAL: CATALOG PRODUCT CARD ITEM
+    ======================================================================
+    File: resources/views/storefront/vyra/partials/product-card.blade.php
+    Partial: storefront.vyra.partials.product-card
+    Parameters:
+      - $product: App\Models\Product instance
+    Responsibility: Modular grid item card for catalog, category, and search results
+    Features:
+      - Image hover transition and cover color presentation
+      - Promotional badge overlays (Sale, Best Seller, New Harvest / Drop)
+      - Customer rating star summary and review counter
+      - One-click instant Add to Bag and Wishlist toggle triggers
+    Operations & Maintenance:
+      - Reusable across all catalog layouts within vyra
 --}}
 @php
     $cardData = $product->toCardArray();

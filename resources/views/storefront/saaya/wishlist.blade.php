@@ -1,9 +1,22 @@
-{{-- resources/views/storefront/saaya/wishlist.blade.php
-     Saaya wishlist page.
-     Guest flow: JS reads localStorage lc_wishlist, redirects once to ?ids=…
-     Controller passes: $products (Collection of Product, toCardArray-ready),
-                        $categories (layout) --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: SAVED WISHLIST & FAVORITES
+    ======================================================================
+    File: resources/views/storefront/saaya/wishlist.blade.php
+    Controller: App\Http\Controllers\StorefrontController@wishlist
+    Route Context: GET /wishlist
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+    Responsibility: Customer saved wishlist collection and quick purchase staging
+    Features:
+      - Client & server synchronized saved product list
+      - Live stock availability badge per wishlist item
+      - One-click 'Move to Bag' and 'Move All to Bag' actions
+      - Social sharing link to share curated wishlist with friends
+    Operations & Maintenance:
+      - Automatically syncs client localStorage favorites upon customer login
+--}}
 <x-storefront-layout>
 
 {{-- Guest redirect — fires only when ?ids is absent and localStorage has items --}}

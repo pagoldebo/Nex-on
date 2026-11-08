@@ -1,4 +1,20 @@
-{{-- resources/views/storefront/lumiere/components/login-modal.blade.php --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    COMPONENT: MODAL AUTHENTICATION DIALOG
+    ======================================================================
+    File: resources/views/storefront/lumiere/components/login-modal.blade.php
+    Component Injection: storefront.lumiere.components.login-modal
+    Responsibility: Frictionless patron sign-in and registration overlay
+    Features:
+      - In-context customer sign-in without breaking current browsing flow
+      - Password authentication, Two-Factor OTP step, and password recovery trigger
+      - Switchable tabs between existing customer Login and new customer Registration
+      - CSRF token protection and patron rate limiting enforcement
+    Operations & Maintenance:
+      - Triggered via Alpine event 'open-login-modal'
+      - Automatically reloads active cart upon authentication
+--}}
 <div id="loginModal" class="hidden fixed inset-0 z-[210] bg-black/50 backdrop-blur-sm items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-[32px] p-10 relative shadow-2xl">
         <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-2xl font-light text-gray-300 hover:text-gray-600 transition-colors" aria-label="Close">&times;</button>

@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT COMMON CUSTOM PAGE 
+    ======================================================================
+    File: resources/views/storefront/common/custom-page.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <x-storefront-layout :theme="$theme" :title="$page->meta_title ?: $page->title" :metaDesc="$page->meta_description">
 
     <div class="space-y-16 py-8">

@@ -1,5 +1,23 @@
-{{-- resources/views/storefront/organic/order-confirmation.blade.php
-     Organic Market Order Confirmation: Order Summary, Harvest Dispatch Timeline, and Receipt. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: ORDER RECEIPT & FULFILLMENT TRACKER
+    ======================================================================
+    File: resources/views/storefront/organic/order-confirmation.blade.php
+    Controller: App\Http\Controllers\StorefrontController@orderConfirmation
+    Route Context: GET /order-confirmation/{order}
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $order: Confirmed Order model with items and customer relation
+    Responsibility: Post-purchase order summary, payment confirmation, and dispatch timeline
+    Features:
+      - Confirmed order number, receipt date, and payment status badge
+      - Itemized product table with unit prices, discounts, taxes, and final total
+      - Shipping address and delivery method details
+      - Multi-stage fulfillment timeline (Placed -> Packed -> Out for Delivery -> Delivered)
+    Operations & Maintenance:
+      - Strict BOLA/RLS security: Accessible only by order owner or verified guest session
+--}}
 <x-storefront-layout :theme="$theme" title="Harvest Order Confirmed">
 
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">

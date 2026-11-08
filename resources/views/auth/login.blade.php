@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    AUTHENTICATION: LOGIN
+    ======================================================================
+    File: resources/views/auth/login.blade.php
+    Route Context: /login
+    Responsibility: Secure customer and staff authentication interface
+    Features:
+      - High-security credentials input with CSRF protection
+      - Patron rate limiting enforcement (prevents brute-force attacks)
+      - Two-Factor OTP challenge handling when active
+    Operations & Maintenance:
+      - Controlled via App\Http\Controllers\Auth controllers
+--}}
 <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Sign In — {{ config('app.name', 'Nex-on') }}" metaDesc="Sign in to your {{ config('app.name', 'Nex-on') }} patron account to view order history, track bespoke shipments, and access your private wishlist.">
 
     <style>

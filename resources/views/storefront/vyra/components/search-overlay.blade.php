@@ -1,4 +1,20 @@
-{{-- resources/views/storefront/vyra/components/search-overlay.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    COMPONENT: LIVE PRODUCT SEARCH OVERLAY
+    ======================================================================
+    File: resources/views/storefront/vyra/components/search-overlay.blade.php
+    Component Injection: storefront.vyra.components.search-overlay
+    Responsibility: Real-time debounced live catalog search interface
+    Features:
+      - Debounced asynchronous input queries to autocomplete API
+      - Instant product preview cards with thumbnail, price, and stock status
+      - Trending searches, popular category tags, and recent search history
+      - Keyboard navigation (Arrow keys, Enter, Escape)
+    Operations & Maintenance:
+      - Queries route('api.search') or route('search')
+      - Input strings sanitized against SQL wildcard injection
+--}}
 <div id="searchOverlay" class="hidden fixed inset-0 z-[205] backdrop-blur-md flex-col p-6 md:p-12" style="background:#0E0E10f5;">
     <div class="max-w-2xl mx-auto w-full">
         <div class="flex items-center justify-between mb-8">

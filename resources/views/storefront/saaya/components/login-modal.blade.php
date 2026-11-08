@@ -1,7 +1,20 @@
-{{-- resources/views/storefront/saaya/components/login-modal.blade.php
-     Foil-frame modal (Saaya signature). Posts to Laravel Breeze's /login route.
-     Hidden by default; opened by header/tab-bar login buttons. --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    COMPONENT: MODAL AUTHENTICATION DIALOG
+    ======================================================================
+    File: resources/views/storefront/saaya/components/login-modal.blade.php
+    Component Injection: storefront.saaya.components.login-modal
+    Responsibility: Frictionless patron sign-in and registration overlay
+    Features:
+      - In-context customer sign-in without breaking current browsing flow
+      - Password authentication, Two-Factor OTP step, and password recovery trigger
+      - Switchable tabs between existing customer Login and new customer Registration
+      - CSRF token protection and patron rate limiting enforcement
+    Operations & Maintenance:
+      - Triggered via Alpine event 'open-login-modal'
+      - Automatically reloads active cart upon authentication
+--}}
 <div id="loginModal"
      class="hidden fixed inset-0 z-[60] bg-maroon-dark/80 backdrop-blur-sm items-center justify-center p-6"
      role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">

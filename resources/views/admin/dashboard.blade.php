@@ -1,3 +1,22 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: E-COMMERCE OVERVIEW DASHBOARD
+    ======================================================================
+    File: resources/views/admin/dashboard.blade.php
+    Controller: App\Http\Controllers\Admin\DashboardController@index
+    Route Context: GET /admin, GET /admin/dashboard
+    ViewModel Injections:
+      - $stats: Overview metrics (Total Sales, Total Orders, Active Customers, Low Stock)
+      - $recentOrders: Latest customer orders with status badges
+      - $topProducts: Best-selling inventory items
+      - $salesChartData: Time-series revenue data for Chart.js
+    Responsibility: Executive eCommerce command center and operational pulse
+    Features:
+      - High-level KPI summary cards with percentage growth indicators
+      - Interactive multi-day revenue and order frequency visual charts
+      - Order fulfillment status breakdown and quick action buttons (POS, Add Product)
+    Security: Guarded by 'dashboard.view' permission
+--}}
 @extends('admin.layout', ['breadcrumb' => 'eCommerce Overview'])
 
 @section('content')

@@ -1,7 +1,19 @@
-{{-- resources/views/storefront/saaya/components/tab-bar.blade.php
-     4-tab mobile bar (lg:hidden): Home, Categories, Cart (gold badge), Account.
-     Active tab is determined by the current route name. --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    COMPONENT: MOBILE NAVIGATION TAB BAR
+    ======================================================================
+    File: resources/views/storefront/saaya/components/tab-bar.blade.php
+    Component Injection: storefront.saaya.components.tab-bar
+    Responsibility: Fixed bottom dock navigation for mobile and tablet viewports
+    Features:
+      - Quick touch navigation (Home, Categories, Search, Wishlist, Cart)
+      - Reactive cart & wishlist badge item counters
+      - Auto-hides on large screens via Tailwind 'md:hidden'
+    Operations & Maintenance:
+      - Cart quantity binds to Alpine/sessionStorage state 'cartCount'
+      - Category button triggers the slide-up category drawer
+--}}
 @php
   $route = request()->route()?->getName() ?? '';
   $active = match(true) {

@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/buttercup/about.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: ABOUT US & BRAND STORY
+    ======================================================================
+    File: resources/views/storefront/buttercup/about.blade.php
+    Controller: App\Http\Controllers\StorefrontController@about
+    Route Context: GET /about
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+      - $title: Page SEO title
+    Responsibility: Brand manifesto, artisan heritage, craftsmanship, and sustainability
+    Features:
+      - Atmospheric hero imagery and founder's note
+      - Artisan handcrafting timeline and ethical sourcing commitments
+      - Brand milestone metrics and curated editorial lookbook links
+    Operations & Maintenance:
+      - Text content editable via admin settings or custom template language
+--}}
 <x-storefront-layout :theme="$theme" title="About Buttercup — Comfort That Feels Like Home" metaDesc="Buttercup designs cloud-soft everyday lingerie, wire-free comfort, and breathable cotton modal sets made for real bodies.">
 
 <div class="py-12 lg:py-20" style="background:#FFFAF5">

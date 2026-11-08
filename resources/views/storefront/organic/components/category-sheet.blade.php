@@ -1,5 +1,19 @@
-{{-- resources/views/storefront/organic/components/category-sheet.blade.php
-     Mobile category offcanvas drawer. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    COMPONENT: MOBILE CATEGORY SHEET DRAWER
+    ======================================================================
+    File: resources/views/storefront/organic/components/category-sheet.blade.php
+    Component Injection: storefront.organic.components.category-sheet
+    Responsibility: Slide-up mobile category hierarchy and catalog navigation
+    Features:
+      - Hierarchical parent/child category listing with smooth expandable accordions
+      - Direct thumbnail links to category collection landing pages
+      - Smooth backdrop dismiss gesture and escape key listener
+    Operations & Maintenance:
+      - Populated via view shared categories variable ($categories)
+      - Controlled via Alpine x-show="categorySheetOpen"
+--}}
 <div id="categorySheet" class="invisible fixed inset-0 z-50 pointer-events-none transition-all duration-300 opacity-0 bg-stone-900/60 backdrop-blur-xs">
   <div id="categorySheetPanel" class="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between overflow-y-auto pointer-events-auto">
     <div>

@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/buttercup/cart.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: SHOPPING BAG & CHECKOUT STAGING
+    ======================================================================
+    File: resources/views/storefront/buttercup/cart.blade.php
+    Controller: App\Http\Controllers\StorefrontController@cart
+    Route Context: GET /cart
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+    Responsibility: Dedicated shopping bag review, coupon redemption, and subtotal calculation
+    Features:
+      - Client-side reactive bag synchronized with sessionStorage.cart
+      - Quantity steppers, line-item removal, and price recalculations
+      - Promotional coupon input with immediate discount feedback
+      - Estimated shipping, tax breakdown, and Proceed to Checkout CTA
+    Operations & Maintenance:
+      - Dispatches 'cart-updated' events to keep all header/drawer widgets synced
+--}}
 <x-storefront-layout :theme="$theme" title="Your Bag">
 <div class="max-w-5xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display text-3xl md:text-4xl mb-10 reveal text-[#4A3B3A]">Your Bag</h1>

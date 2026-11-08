@@ -1,6 +1,20 @@
-{{-- resources/views/storefront/saaya/components/search-overlay.blade.php
-     Full-screen ivory overlay with live-search results via the controller's ?ajax=1 branch. --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    COMPONENT: LIVE PRODUCT SEARCH OVERLAY
+    ======================================================================
+    File: resources/views/storefront/saaya/components/search-overlay.blade.php
+    Component Injection: storefront.saaya.components.search-overlay
+    Responsibility: Real-time debounced live catalog search interface
+    Features:
+      - Debounced asynchronous input queries to autocomplete API
+      - Instant product preview cards with thumbnail, price, and stock status
+      - Trending searches, popular category tags, and recent search history
+      - Keyboard navigation (Arrow keys, Enter, Escape)
+    Operations & Maintenance:
+      - Queries route('api.search') or route('search')
+      - Input strings sanitized against SQL wildcard injection
+--}}
 <div id="searchOverlay"
      class="hidden fixed inset-0 z-[65] bg-ivory/97 backdrop-blur-md flex flex-col"
      role="search" aria-label="Search">

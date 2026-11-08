@@ -1,5 +1,19 @@
-{{-- resources/views/storefront/organic/components/tab-bar.blade.php
-     Mobile bottom app tab bar for fast touch navigation. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    COMPONENT: MOBILE NAVIGATION TAB BAR
+    ======================================================================
+    File: resources/views/storefront/organic/components/tab-bar.blade.php
+    Component Injection: storefront.organic.components.tab-bar
+    Responsibility: Fixed bottom dock navigation for mobile and tablet viewports
+    Features:
+      - Quick touch navigation (Home, Categories, Search, Wishlist, Cart)
+      - Reactive cart & wishlist badge item counters
+      - Auto-hides on large screens via Tailwind 'md:hidden'
+    Operations & Maintenance:
+      - Cart quantity binds to Alpine/sessionStorage state 'cartCount'
+      - Category button triggers the slide-up category drawer
+--}}
 <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-lg px-2 py-1.5 flex items-center justify-around text-center text-[10px] font-semibold text-stone-600">
   
   {{-- Home --}}

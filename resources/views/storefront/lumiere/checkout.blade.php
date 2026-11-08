@@ -1,5 +1,23 @@
-{{-- resources/views/storefront/lumiere/checkout.blade.php
-     Lumière checkout — live database order persistence with coupons, address book & dynamic settings. --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: CUSTOMER CHECKOUT & PAYMENT PROCESSING
+    ======================================================================
+    File: resources/views/storefront/lumiere/checkout.blade.php
+    Controller: App\Http\Controllers\StorefrontController@checkout
+    Route Context: GET /checkout, POST /checkout/process
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+      - $gateways: Configured payment gateway credentials & active toggles
+    Responsibility: Secure customer checkout, shipping address capture, and payment
+    Features:
+      - Multi-step customer checkout: Shipping Address, Delivery Method, Payment Selection
+      - Gateway options: Razorpay, Stripe, PhonePe, and Cash on Delivery (COD)
+      - Real-time server-side price verification preventing client tampering (Domain 10)
+      - Coupon validation and instant subtotal recalculation
+    Operations & Maintenance:
+      - Enforces strict CSRF verification and rate limiting on order submissions
+--}}
 <x-storefront-layout :theme="$theme" title="Checkout">
 
 <style>

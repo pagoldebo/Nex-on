@@ -1,9 +1,24 @@
-{{-- resources/views/storefront/saaya/search.blade.php
-     Saaya search results page.
-     Controller passes: $q (string), $products (paginated|empty Collection),
-                        $categories (layout + suggestions), $sortOptions, $currentSort
-     Ajax branch: returns JSON when ?ajax=1 --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: CATALOG SEARCH RESULTS
+    ======================================================================
+    File: resources/views/storefront/saaya/search.blade.php
+    Controller: App\Http\Controllers\StorefrontController@search
+    Route Context: GET /search
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+      - $query: Search keyword string
+      - $products: Paginated search result collection
+    Responsibility: Product discovery search results page with filter tools
+    Features:
+      - Keyword matching across product title, description, SKU, and category
+      - Keyword term highlighting and matching result counter
+      - Faceted filtering: Category, Price slider, In-stock only
+      - Helpful empty state with recommended popular products when no results match
+    Operations & Maintenance:
+      - Search query sanitized via SqlSafetyService against wildcard abuse
+--}}
 <x-storefront-layout>
 
 <div class="bg-ivory min-h-screen">

@@ -1,4 +1,23 @@
-{{-- resources/views/storefront/buttercup/order-confirmation.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: ORDER RECEIPT & FULFILLMENT TRACKER
+    ======================================================================
+    File: resources/views/storefront/buttercup/order-confirmation.blade.php
+    Controller: App\Http\Controllers\StorefrontController@orderConfirmation
+    Route Context: GET /order-confirmation/{order}
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+      - $order: Confirmed Order model with items and customer relation
+    Responsibility: Post-purchase order summary, payment confirmation, and dispatch timeline
+    Features:
+      - Confirmed order number, receipt date, and payment status badge
+      - Itemized product table with unit prices, discounts, taxes, and final total
+      - Shipping address and delivery method details
+      - Multi-stage fulfillment timeline (Placed -> Packed -> Out for Delivery -> Delivered)
+    Operations & Maintenance:
+      - Strict BOLA/RLS security: Accessible only by order owner or verified guest session
+--}}
 <x-storefront-layout :theme="$theme" title="Order Confirmed">
 <div class="max-w-2xl mx-auto px-6 py-20 text-center">
   <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background:#D89AA022">

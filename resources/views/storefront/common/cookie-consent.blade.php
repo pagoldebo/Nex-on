@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    STOREFRONT COMMON COMPONENT: GDPR COOKIE CONSENT BANNER
+    ======================================================================
+    File: resources/views/storefront/common/cookie-consent.blade.php
+    Component Injection: storefront.common.cookie-consent
+    Responsibility: GDPR & ePrivacy compliant cookie consent dialog
+    Features:
+      - Floating banner with Accept All, Essential Only, and Policy Link options
+      - Stores consent decision in localStorage ('cookie_consent_status')
+      - Non-intrusive backdrop and dismiss animation
+    Operations & Maintenance:
+      - Can be toggled on/off in Admin -> Settings -> Privacy & Compliance
+--}}
 @php
     $cookieBannerEnabled = \App\Models\Setting::get('cookie_banner_enabled', '0') === '1';
     $gtmId               = \App\Models\Setting::get('analytics_gtm_id', '');

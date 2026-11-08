@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/lumiere/cart.blade.php
-     The cart lives in sessionStorage (global `cart` from storefront-layout); this page renders it client-side. --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: SHOPPING BAG & CHECKOUT STAGING
+    ======================================================================
+    File: resources/views/storefront/lumiere/cart.blade.php
+    Controller: App\Http\Controllers\StorefrontController@cart
+    Route Context: GET /cart
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+    Responsibility: Dedicated shopping bag review, coupon redemption, and subtotal calculation
+    Features:
+      - Client-side reactive bag synchronized with sessionStorage.cart
+      - Quantity steppers, line-item removal, and price recalculations
+      - Promotional coupon input with immediate discount feedback
+      - Estimated shipping, tax breakdown, and Proceed to Checkout CTA
+    Operations & Maintenance:
+      - Dispatches 'cart-updated' events to keep all header/drawer widgets synced
+--}}
 <x-storefront-layout :theme="$theme" title="Your Bag">
 
 <div class="max-w-6xl mx-auto px-6 md:px-12 py-10">

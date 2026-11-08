@@ -1,4 +1,19 @@
-{{-- resources/views/storefront/buttercup/components/tab-bar.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    COMPONENT: MOBILE NAVIGATION TAB BAR
+    ======================================================================
+    File: resources/views/storefront/buttercup/components/tab-bar.blade.php
+    Component Injection: storefront.buttercup.components.tab-bar
+    Responsibility: Fixed bottom dock navigation for mobile and tablet viewports
+    Features:
+      - Quick touch navigation (Home, Categories, Search, Wishlist, Cart)
+      - Reactive cart & wishlist badge item counters
+      - Auto-hides on large screens via Tailwind 'md:hidden'
+    Operations & Maintenance:
+      - Cart quantity binds to Alpine/sessionStorage state 'cartCount'
+      - Category button triggers the slide-up category drawer
+--}}
 <nav class="tab-bar lg:hidden fixed bottom-0 left-0 right-0 z-[55] grid grid-cols-5 border-t" style="background:#FFFAF5;border-color:#D89AA033;padding-bottom:env(safe-area-inset-bottom);">
     <a href="{{ route('home') }}" class="tab-item flex flex-col items-center justify-center gap-1 py-3 transition-opacity" data-tab="home" style="color:#4A3B3A;opacity:{{ request()->routeIs('home') ? '1' : '0.45' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 11l9-7 9 7M5 10v10h14V10"/></svg>

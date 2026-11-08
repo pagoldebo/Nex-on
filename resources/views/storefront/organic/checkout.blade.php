@@ -1,5 +1,23 @@
-{{-- resources/views/storefront/organic/checkout.blade.php
-     Organic Market Checkout Page: Shipping Form, Payment Method Selection, Coupon Application, and Order Placement Bridge. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: CUSTOMER CHECKOUT & PAYMENT PROCESSING
+    ======================================================================
+    File: resources/views/storefront/organic/checkout.blade.php
+    Controller: App\Http\Controllers\StorefrontController@checkout
+    Route Context: GET /checkout, POST /checkout/process
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $gateways: Configured payment gateway credentials & active toggles
+    Responsibility: Secure customer checkout, shipping address capture, and payment
+    Features:
+      - Multi-step customer checkout: Shipping Address, Delivery Method, Payment Selection
+      - Gateway options: Razorpay, Stripe, PhonePe, and Cash on Delivery (COD)
+      - Real-time server-side price verification preventing client tampering (Domain 10)
+      - Coupon validation and instant subtotal recalculation
+    Operations & Maintenance:
+      - Enforces strict CSRF verification and rate limiting on order submissions
+--}}
 <x-storefront-layout :theme="$theme" title="Secure Checkout">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

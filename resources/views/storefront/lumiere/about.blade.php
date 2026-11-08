@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/lumiere/about.blade.php --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: ABOUT US & BRAND STORY
+    ======================================================================
+    File: resources/views/storefront/lumiere/about.blade.php
+    Controller: App\Http\Controllers\StorefrontController@about
+    Route Context: GET /about
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+      - $title: Page SEO title
+    Responsibility: Brand manifesto, artisan heritage, craftsmanship, and sustainability
+    Features:
+      - Atmospheric hero imagery and founder's note
+      - Artisan handcrafting timeline and ethical sourcing commitments
+      - Brand milestone metrics and curated editorial lookbook links
+    Operations & Maintenance:
+      - Text content editable via admin settings or custom template language
+--}}
 <x-storefront-layout :theme="$theme" title="Our Story — Lumière Atelier" metaDesc="Lumière crafts sustainably made silk lingerie, finished by hand by master artisans in India. Everyday elegance, made responsibly.">
 
 <div class="py-12 lg:py-20 bg-white">

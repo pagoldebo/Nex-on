@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/organic/about.blade.php
-     Organic Market About Us Page: Farm Story, Soil Ethics, Farmer Partnerships, and Certifications. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: ABOUT US & BRAND STORY
+    ======================================================================
+    File: resources/views/storefront/organic/about.blade.php
+    Controller: App\Http\Controllers\StorefrontController@about
+    Route Context: GET /about
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $title: Page SEO title
+    Responsibility: Brand manifesto, artisan heritage, craftsmanship, and sustainability
+    Features:
+      - Atmospheric hero imagery and founder's note
+      - Artisan handcrafting timeline and ethical sourcing commitments
+      - Brand milestone metrics and curated editorial lookbook links
+    Operations & Maintenance:
+      - Text content editable via admin settings or custom template language
+--}}
 @php
   $heroBadge = \App\Models\Setting::get('organic_about_badge', '🌱 Our Farming Manifesto');
   $heroTitle = \App\Models\Setting::get('organic_about_title', 'Bringing Honest, Pure & Chemical-Free Produce to Indian Homes');

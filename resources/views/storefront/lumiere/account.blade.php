@@ -1,5 +1,23 @@
-{{-- resources/views/storefront/lumiere/account.blade.php
-     Data from StorefrontController@account: $user, $orders, $addresses, $theme --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: CUSTOMER ACCOUNT & ORDERS DASHBOARD
+    ======================================================================
+    File: resources/views/storefront/lumiere/account.blade.php
+    Controller: App\Http\Controllers\StorefrontController@account
+    Route Context: GET /account (Auth Middleware Guard: customer)
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+      - $orders: Customer's order collection with shipment status
+    Responsibility: Patron self-service dashboard for orders, addresses, and settings
+    Features:
+      - Order history listing with fulfillment status and invoice download links
+      - Shipping & billing address book manager
+      - Customer security controls (Password update, 2FA OTP status)
+      - Loyalty rewards points balance and redemption history
+    Operations & Maintenance:
+      - Strict BOLA/RLS enforcement: customers can only view their own records
+--}}
 <x-storefront-layout :theme="$theme" title="My Account">
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-6 sm:py-10">

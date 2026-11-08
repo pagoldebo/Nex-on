@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/vyra/about.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    PAGE: ABOUT US & BRAND STORY
+    ======================================================================
+    File: resources/views/storefront/vyra/about.blade.php
+    Controller: App\Http\Controllers\StorefrontController@about
+    Route Context: GET /about
+    ViewModel Injections:
+      - $theme: Active Template model ('vyra')
+      - $title: Page SEO title
+    Responsibility: Brand manifesto, artisan heritage, craftsmanship, and sustainability
+    Features:
+      - Atmospheric hero imagery and founder's note
+      - Artisan handcrafting timeline and ethical sourcing commitments
+      - Brand milestone metrics and curated editorial lookbook links
+    Operations & Maintenance:
+      - Text content editable via admin settings or custom template language
+--}}
 <x-storefront-layout :theme="$theme" title="About Vyra — The Philosophy" metaDesc="Vyra was created for those who treat style as armour. Architectural seams, sheer mesh, and unyielding contours crafted for the fearless.">
 
 <div class="py-12 lg:py-20" style="background:#0E0E10">

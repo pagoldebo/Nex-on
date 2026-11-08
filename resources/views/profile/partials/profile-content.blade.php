@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    USER PROFILE: ACCOUNT SETTINGS
+    ======================================================================
+    File: resources/views/profile/partials/profile-content.blade.php
+    Controller: App\Http\Controllers\ProfileController
+    Route Context: GET /profile, PATCH /profile
+    Responsibility: User self-service profile, password, and security management
+    Features:
+      - Personal information updates (Name, Email, Avatar)
+      - Current password verification before password changes
+      - Account deletion with strict confirmation safeguards
+--}}
 <div class="space-y-6">
 
     <!-- Header -->

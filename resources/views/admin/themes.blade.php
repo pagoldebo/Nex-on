@@ -1,7 +1,20 @@
-{{-- resources/views/admin/themes.blade.php
-     Admin — Theme switcher.
-     Controller passes: $templates (Collection of Template) --}}
-
+{{--
+    ======================================================================
+    ADMIN MODULE: STOREFRONT THEMES MANAGER
+    ======================================================================
+    File: resources/views/admin/themes.blade.php
+    Controller: App\Http\Controllers\Admin\AdminSettingController@themes
+    Route Context: GET /admin/themes, POST /admin/themes/activate
+    ViewModel Injections:
+      - $templates: Collection of all registered Template models
+    Responsibility: Visual theme gallery and instant storefront brand switcher
+    Features:
+      - Interactive swatch cards for all 5 themes (Saaya, Buttercup, Vyra, Lumière, Verdia)
+      - Live activation button with automatic active cache invalidation
+      - Quick shortcut link to edit hero banners in Admin Settings
+    Operations & Maintenance:
+      - Switching themes immediately updates the storefront layout without downtime
+--}}
 <x-admin-layout>
 
 <div class="max-w-4xl mx-auto px-6 py-10">

@@ -1,4 +1,23 @@
-{{-- resources/views/storefront/buttercup/checkout.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: CUSTOMER CHECKOUT & PAYMENT PROCESSING
+    ======================================================================
+    File: resources/views/storefront/buttercup/checkout.blade.php
+    Controller: App\Http\Controllers\StorefrontController@checkout
+    Route Context: GET /checkout, POST /checkout/process
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+      - $gateways: Configured payment gateway credentials & active toggles
+    Responsibility: Secure customer checkout, shipping address capture, and payment
+    Features:
+      - Multi-step customer checkout: Shipping Address, Delivery Method, Payment Selection
+      - Gateway options: Razorpay, Stripe, PhonePe, and Cash on Delivery (COD)
+      - Real-time server-side price verification preventing client tampering (Domain 10)
+      - Coupon validation and instant subtotal recalculation
+    Operations & Maintenance:
+      - Enforces strict CSRF verification and rate limiting on order submissions
+--}}
 <x-storefront-layout :theme="$theme" title="Checkout">
 <div class="max-w-5xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display text-3xl md:text-4xl mb-10 reveal text-[#4A3B3A]">Checkout</h1>

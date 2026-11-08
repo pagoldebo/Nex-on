@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    AUTHENTICATION: VERIFY OTP
+    ======================================================================
+    File: resources/views/auth/verify-otp.blade.php
+    Route Context: /verify-otp
+    Responsibility: Secure customer and staff authentication interface
+    Features:
+      - High-security credentials input with CSRF protection
+      - Patron rate limiting enforcement (prevents brute-force attacks)
+      - Two-Factor OTP challenge handling when active
+    Operations & Maintenance:
+      - Controlled via App\Http\Controllers\Auth controllers
+--}}
 <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Verify Sign In — {{ config('app.name', 'Nex-on') }}" metaDesc="Verify your two-step login code to securely access your {{ config('app.name', 'Nex-on') }} patron account.">
 
     <style>

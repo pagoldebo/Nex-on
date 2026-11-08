@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: INTEGRATIONS TALLY
+    ======================================================================
+    File: resources/views/admin/integrations/tally.blade.php
+    Responsibility: Back-office administration for INTEGRATIONS TALLY
+    Features:
+      - Standard administration UI following the Nex-on design guidelines
+      - Accessible controls, Tailwind CSS styling, and reactive Alpine.js components
+    Security & Access Control:
+      - Guarded by Laravel authentication and RBAC permission middleware
+    Operations & Maintenance:
+      - Integrates with master administration shell (@extends('admin.layout'))
+--}}
 @extends('admin.layout', [
     'title' => 'Tally Prime & ERP Accounting Sync',
     'breadcrumbs' => [

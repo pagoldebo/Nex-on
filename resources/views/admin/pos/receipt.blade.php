@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN POS: 80MM THERMAL RECEIPT TEMPLATE
+    ======================================================================
+    File: resources/views/admin/pos/receipt.blade.php
+    Controller: App\Http\Controllers\Admin\PosController@receipt
+    Route Context: GET /admin/pos/receipt/{order}
+    Responsibility: Printable thermal paper sales slip for in-store purchases
+    Features:
+      - Clean 80mm / 58mm monospace thermal printer layout
+      - Store logo, GSTIN, receipt invoice number, and cashier name
+      - Itemized items with HSN codes, quantity, rate, discount, and tax
+      - Payment mode breakdown, tender amount, and change returned
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

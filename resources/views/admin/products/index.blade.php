@@ -1,3 +1,20 @@
+{{--
+    ======================================================================
+    ADMIN PRODUCTS: PRODUCT CATALOG MANAGEMENT
+    ======================================================================
+    File: resources/views/admin/products/index.blade.php
+    Controller: App\Http\Controllers\Admin\ProductController@index
+    Route Context: GET /admin/products
+    ViewModel Injections:
+      - $products: Paginated catalog items with category and stock relations
+      - $categories: Category hierarchy for filtering
+    Responsibility: Central inventory and catalog management table
+    Features:
+      - Search by title, SKU, or barcode; filter by category and stock status
+      - Bulk actions: Toggle active state, bulk price change, bulk delete
+      - Direct shortcuts to edit, manage variant attributes, and print barcodes
+    Security: Guarded by 'products.view' and 'products.manage' permissions
+--}}
 @extends('admin.layout')
 
 @section('content')

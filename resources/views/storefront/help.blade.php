@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT HELP 
+    ======================================================================
+    File: resources/views/storefront/help.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <x-storefront-layout title="Help Center &amp; Client Knowledge Base" metaDesc="Find instant answers to sizing guides, atelier care, international dispatch, and return policies.">
     <div class="py-12 lg:py-20 bg-stone-50/50">
         <div class="max-w-5xl mx-auto px-6 lg:px-8">

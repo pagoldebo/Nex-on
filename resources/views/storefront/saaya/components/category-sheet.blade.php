@@ -1,6 +1,19 @@
-{{-- resources/views/storefront/saaya/components/category-sheet.blade.php
-     Mobile-only bottom sheet for category browsing. Opened by the tab bar's "Shop" button. --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    COMPONENT: MOBILE CATEGORY SHEET DRAWER
+    ======================================================================
+    File: resources/views/storefront/saaya/components/category-sheet.blade.php
+    Component Injection: storefront.saaya.components.category-sheet
+    Responsibility: Slide-up mobile category hierarchy and catalog navigation
+    Features:
+      - Hierarchical parent/child category listing with smooth expandable accordions
+      - Direct thumbnail links to category collection landing pages
+      - Smooth backdrop dismiss gesture and escape key listener
+    Operations & Maintenance:
+      - Populated via view shared categories variable ($categories)
+      - Controlled via Alpine x-show="categorySheetOpen"
+--}}
 <div id="sheetOverlay" class="lg:hidden" role="dialog" aria-modal="true" aria-label="Browse categories">
   <div class="bottom-sheet">
     <div class="sheet-handle"></div>

@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/organic/partials/sale-card.blade.php
-     Organic Market Flash Deal Card: Highlighted discount tag, countdown badge, and farm deal styling. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PARTIAL: FLASH SALE & PROMOTIONAL CARD
+    ======================================================================
+    File: resources/views/storefront/organic/partials/sale-card.blade.php
+    Partial: storefront.organic.partials.sale-card
+    Parameters:
+      - $product: App\Models\Product instance
+    Responsibility: High-conversion promotional card with discount highlighting
+    Features:
+      - Prominent discount percentage badge (-X%) and strike-through MSRP pricing
+      - Real-time countdown timer for flash deals and campaign ends
+      - Inventory scarcity bar showing remaining stock percentage
+    Operations & Maintenance:
+      - Binds to product sale price and active promotion schedule
+--}}
 @php
     $cardData = $product->toCardArray();
 @endphp

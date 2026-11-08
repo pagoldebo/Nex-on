@@ -1,5 +1,23 @@
-{{-- resources/views/storefront/organic/account.blade.php
-     Organic Market Patron Account Console: Order History, AWB Dispatch Tracking, Saved Addresses, and Profile Management. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: CUSTOMER ACCOUNT & ORDERS DASHBOARD
+    ======================================================================
+    File: resources/views/storefront/organic/account.blade.php
+    Controller: App\Http\Controllers\StorefrontController@account
+    Route Context: GET /account (Auth Middleware Guard: customer)
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $orders: Customer's order collection with shipment status
+    Responsibility: Patron self-service dashboard for orders, addresses, and settings
+    Features:
+      - Order history listing with fulfillment status and invoice download links
+      - Shipping & billing address book manager
+      - Customer security controls (Password update, 2FA OTP status)
+      - Loyalty rewards points balance and redemption history
+    Operations & Maintenance:
+      - Strict BOLA/RLS enforcement: customers can only view their own records
+--}}
 <x-storefront-layout :theme="$theme" title="My Patron Account">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

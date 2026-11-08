@@ -1,8 +1,22 @@
-{{-- resources/views/storefront/saaya/compare.blade.php
-     Saaya compare page — up to 4 products side-by-side.
-     Controller passes: $products (Collection, max 4, toCardArray-ready),
-                        $categories (layout) --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: MULTI-PRODUCT COMPARISON MATRIX
+    ======================================================================
+    File: resources/views/storefront/saaya/compare.blade.php
+    Controller: App\Http\Controllers\StorefrontController@compare
+    Route Context: GET /compare
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+    Responsibility: Side-by-side specification, pricing, and variant comparison
+    Features:
+      - Multi-column comparison grid synchronized with sessionStorage.compare_items
+      - Side-by-side spec alignment: Fabric, Fit, Care, Country of Origin, Price
+      - Instant Add to Bag button per column and one-click remove item
+      - Empty state with recommendations to browse categories
+    Operations & Maintenance:
+      - Client-driven table using Alpine.js and local storage cache
+--}}
 <x-storefront-layout>
 
 <style>

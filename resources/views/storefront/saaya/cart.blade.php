@@ -1,7 +1,22 @@
-{{-- resources/views/storefront/saaya/cart.blade.php
-     Saaya full cart page — reads sessionStorage lc_cart, same data model as cart-drawer.
-     Controller passes: $categories (layout). No server-side cart — state is client-only. --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: SHOPPING BAG & CHECKOUT STAGING
+    ======================================================================
+    File: resources/views/storefront/saaya/cart.blade.php
+    Controller: App\Http\Controllers\StorefrontController@cart
+    Route Context: GET /cart
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+    Responsibility: Dedicated shopping bag review, coupon redemption, and subtotal calculation
+    Features:
+      - Client-side reactive bag synchronized with sessionStorage.cart
+      - Quantity steppers, line-item removal, and price recalculations
+      - Promotional coupon input with immediate discount feedback
+      - Estimated shipping, tax breakdown, and Proceed to Checkout CTA
+    Operations & Maintenance:
+      - Dispatches 'cart-updated' events to keep all header/drawer widgets synced
+--}}
 <x-storefront-layout>
 
 <div class="bg-ivory min-h-screen">

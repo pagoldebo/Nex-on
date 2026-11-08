@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    TRANSACTIONAL EMAIL: CONTACT INQUIRY
+    ======================================================================
+    File: resources/views/emails/contact-inquiry.blade.php
+    Mailable / Notification Context: App\Mail
+    Responsibility: Formatted HTML transactional email dispatched to customers or staff
+    Features:
+      - Responsive email layout compatible with major email clients (Gmail, Outlook, Apple Mail)
+      - Organization branding, order specifics, and secure direct action links
+    Operations & Maintenance:
+      - Dispatched asynchronously via Laravel Queues for optimal web throughput
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

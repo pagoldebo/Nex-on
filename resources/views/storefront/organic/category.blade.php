@@ -1,5 +1,25 @@
-{{-- resources/views/storefront/organic/category.blade.php
-     Organic Market Category & Catalog Page: Breadcrumbs, Department Pills, Sorting, Product Grid, and Pagination. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: CATEGORY COLLECTION CATALOG
+    ======================================================================
+    File: resources/views/storefront/organic/category.blade.php
+    Controller: App\Http\Controllers\StorefrontController@category
+    Route Context: GET /category/{slug}
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+      - $category: Selected Category model
+      - $products: Paginated collection of category products
+      - $subcategories: Child categories for faceted navigation
+    Responsibility: Category product showcase with faceted filters and sorting
+    Features:
+      - Filter rail: Price range, size/variant pills, availability, rating
+      - Sorting options: Newest, Price (Low-High, High-Low), Most Popular
+      - Responsive product grid with quick-view modal triggers
+      - Accessible pagination links
+    Operations & Maintenance:
+      - Only displays active products (is_active = 1)
+--}}
 <x-storefront-layout :theme="$theme" :title="$category->name">
   
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

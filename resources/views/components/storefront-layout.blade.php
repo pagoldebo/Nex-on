@@ -1,23 +1,13 @@
 {{--
-    resources/views/components/storefront-layout.blade.php
-    The root master layout for ALL five storefront themes (vyra, buttercup, saaya, lumiere, organic/verdia).
-
-    Architecture Contracts:
-    1. Tailwind CSS Runtime Configuration: Injected via storefront.{theme->key}.components.tailwind-config
-    2. Theme-Specific Overrides: Injected via storefront.{theme->key}.components.theme-css
-    3. Structural Layout: Header, Scrolling Announcement Band, Main Content Slot, Footer, Mobile Tab-Bar
-    4. Client-Side Flyouts: Category Bottom Sheet, Cart Drawer, Login Modal, Search Overlay
-    5. Global JavaScript Store: SessionStorage Cart, Quick-View Modal, AJAX CSRF handling
-
-    Usage:
-        <x-storefront-layout :theme="$theme" title="Page Title">
-            ... page content ...
-        </x-storefront-layout>
-
-    Props:
-      $theme    — the active Template model (->key: 'saaya'|'buttercup'|'vyra'|'lumiere'|'organic')
-      $title    — <title> tag content
-      $metaDesc — optional meta description
+    ======================================================================
+    REUSABLE BLADE COMPONENT: STOREFRONT LAYOUT
+    ======================================================================
+    File: resources/views/components/storefront-layout.blade.php
+    Component Tag: <x-storefront-layout>
+    Responsibility: Reusable UI component across the Nex-on application
+    Features:
+      - Encapsulated component logic, props validation, and slot injection
+      - Accessible Tailwind CSS styling and smooth transition animations
 --}}
 @props([
     'theme'    => null,

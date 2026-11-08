@@ -1,3 +1,14 @@
+{{--
+    ======================================================================
+    REUSABLE BLADE COMPONENT: ADMIN LOGO
+    ======================================================================
+    File: resources/views/components/admin-logo.blade.php
+    Component Tag: <x-admin-logo>
+    Responsibility: Reusable UI component across the Nex-on application
+    Features:
+      - Encapsulated component logic, props validation, and slot injection
+      - Accessible Tailwind CSS styling and smooth transition animations
+--}}
 @props([
     'class' => 'w-9 h-9',
 ])

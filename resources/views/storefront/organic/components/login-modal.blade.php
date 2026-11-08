@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/organic/components/login-modal.blade.php
-     Accessible quick login modal conforming to modern web standards. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    COMPONENT: MODAL AUTHENTICATION DIALOG
+    ======================================================================
+    File: resources/views/storefront/organic/components/login-modal.blade.php
+    Component Injection: storefront.organic.components.login-modal
+    Responsibility: Frictionless patron sign-in and registration overlay
+    Features:
+      - In-context customer sign-in without breaking current browsing flow
+      - Password authentication, Two-Factor OTP step, and password recovery trigger
+      - Switchable tabs between existing customer Login and new customer Registration
+      - CSRF token protection and patron rate limiting enforcement
+    Operations & Maintenance:
+      - Triggered via Alpine event 'open-login-modal'
+      - Automatically reloads active cart upon authentication
+--}}
 <dialog id="loginModal" 
         closedby="any" 
         aria-labelledby="loginModalTitle"

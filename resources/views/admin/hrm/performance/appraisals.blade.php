@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    ADMIN HRM: APPRAISAL SCORING MATRIX
+    ======================================================================
+    File: resources/views/admin/hrm/performance/appraisals.blade.php
+    Controller: App\Http\Controllers\Admin\PerformanceController@appraisals
+    Route Context: GET /admin/hrm/performance/appraisals
+    Responsibility: Staff appraisal evaluation hub using composite scoring
+    Features:
+      - 30 / 50 / 20 composite calculation model (Self / Manager / Peer review)
+      - Rating distribution bell-curve analytics
+      - Promotion and increment recommendation flags
+--}}
 @extends('admin.layout')
 
 @section('content')

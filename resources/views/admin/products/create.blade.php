@@ -1,4 +1,21 @@
-{{-- resources/views/admin/products/create.blade.php --}}
+{{--
+    ======================================================================
+    ADMIN PRODUCTS: NEW PRODUCT AUTHORING STUDIO
+    ======================================================================
+    File: resources/views/admin/products/create.blade.php
+    Controller: App\Http\Controllers\Admin\ProductController@create, store
+    Route Context: GET /admin/products/create, POST /admin/products
+    ViewModel Injections:
+      - $categories: Hierarchical category tree
+      - $brands: Registered brand options
+    Responsibility: Multi-tab product creation studio
+    Features:
+      - Title, slug generator, SKU, barcode, and rich HTML description
+      - Pricing engine: Regular price, sale price, cost price, and GST tax rate
+      - Multi-image drag-and-drop uploader with client-side WebP conversion
+      - SEO meta title and OpenGraph description fields
+    Security: Guarded by 'products.manage' permission
+--}}
 @extends('admin.layout')
 
 @section('content')

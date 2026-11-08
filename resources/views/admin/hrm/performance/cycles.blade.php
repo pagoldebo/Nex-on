@@ -1,3 +1,15 @@
+{{--
+    ======================================================================
+    ADMIN HRM: APPRAISAL REVIEW CYCLES
+    ======================================================================
+    File: resources/views/admin/hrm/performance/cycles.blade.php
+    Controller: App\Http\Controllers\Admin\PerformanceController@cycles
+    Route Context: GET /admin/hrm/performance/cycles
+    Responsibility: Performance review window and review cycle schedule manager
+    Features:
+      - Quarterly and annual appraisal cycle creation
+      - Submission deadlines, reminders, and lock status
+--}}
 @extends('admin.layout')
 
 @section('content')

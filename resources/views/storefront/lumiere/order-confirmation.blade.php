@@ -1,8 +1,23 @@
-{{-- resources/views/storefront/lumiere/order-confirmation.blade.php
-     Data from StorefrontController@orderConfirmation: $order (the id string from the URL).
-     DEMO FLOW: details come from sessionStorage ('lc_last_order', written by checkout). It is kept for the
-     tab session so a refresh still works, and only shown if its id matches the URL. With a real Order model,
-     load the order server-side and render it here instead. --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: ORDER RECEIPT & FULFILLMENT TRACKER
+    ======================================================================
+    File: resources/views/storefront/lumiere/order-confirmation.blade.php
+    Controller: App\Http\Controllers\StorefrontController@orderConfirmation
+    Route Context: GET /order-confirmation/{order}
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+      - $order: Confirmed Order model with items and customer relation
+    Responsibility: Post-purchase order summary, payment confirmation, and dispatch timeline
+    Features:
+      - Confirmed order number, receipt date, and payment status badge
+      - Itemized product table with unit prices, discounts, taxes, and final total
+      - Shipping address and delivery method details
+      - Multi-stage fulfillment timeline (Placed -> Packed -> Out for Delivery -> Delivered)
+    Operations & Maintenance:
+      - Strict BOLA/RLS security: Accessible only by order owner or verified guest session
+--}}
 <x-storefront-layout :theme="$theme" title="Order Confirmed">
 
 <div class="max-w-2xl mx-auto px-6 md:px-12 py-16">

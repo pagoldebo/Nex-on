@@ -1,5 +1,22 @@
-{{-- resources/views/storefront/organic/contact.blade.php
-     Organic Market Contact Page: Farm Depot Helpline, Address, and Interactive Contact Form. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA — Botanical Living & Organic Produce Marketplace
+    PAGE: CONCIERGE & CUSTOMER SUPPORT CONTACT
+    ======================================================================
+    File: resources/views/storefront/organic/contact.blade.php
+    Controller: App\Http\Controllers\StorefrontController@contact
+    Route Context: GET /contact, POST /contact/send
+    ViewModel Injections:
+      - $theme: Active Template model ('organic')
+    Responsibility: Customer concierge inquiry portal, store locations, and helpline
+    Features:
+      - Interactive inquiry form (Name, Email, Phone, Order #, Message)
+      - Direct WhatsApp concierge click-to-chat button
+      - Physical boutique/depot address, telephone lines, and operating hours
+      - Embedded interactive Google Map location
+    Operations & Maintenance:
+      - Form submissions protected by CSRF token and anti-spam rate limits
+--}}
 <x-storefront-layout :theme="$theme" title="Contact Our Organic Farm Support">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">

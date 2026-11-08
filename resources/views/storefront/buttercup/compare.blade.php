@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/buttercup/compare.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — Pastel Comfort Intimates & Loungewear
+    PAGE: MULTI-PRODUCT COMPARISON MATRIX
+    ======================================================================
+    File: resources/views/storefront/buttercup/compare.blade.php
+    Controller: App\Http\Controllers\StorefrontController@compare
+    Route Context: GET /compare
+    ViewModel Injections:
+      - $theme: Active Template model ('buttercup')
+    Responsibility: Side-by-side specification, pricing, and variant comparison
+    Features:
+      - Multi-column comparison grid synchronized with sessionStorage.compare_items
+      - Side-by-side spec alignment: Fabric, Fit, Care, Country of Origin, Price
+      - Instant Add to Bag button per column and one-click remove item
+      - Empty state with recommendations to browse categories
+    Operations & Maintenance:
+      - Client-driven table using Alpine.js and local storage cache
+--}}
 <x-storefront-layout :theme="$theme" title="Compare Products">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display text-3xl md:text-4xl mb-2 reveal text-[#4A3B3A]">Compare</h1>

@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/vyra/wishlist.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    PAGE: SAVED WISHLIST & FAVORITES
+    ======================================================================
+    File: resources/views/storefront/vyra/wishlist.blade.php
+    Controller: App\Http\Controllers\StorefrontController@wishlist
+    Route Context: GET /wishlist
+    ViewModel Injections:
+      - $theme: Active Template model ('vyra')
+    Responsibility: Customer saved wishlist collection and quick purchase staging
+    Features:
+      - Client & server synchronized saved product list
+      - Live stock availability badge per wishlist item
+      - One-click 'Move to Bag' and 'Move All to Bag' actions
+      - Social sharing link to share curated wishlist with friends
+    Operations & Maintenance:
+      - Automatically syncs client localStorage favorites upon customer login
+--}}
 <x-storefront-layout :theme="$theme" title="Wishlist">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display uppercase text-3xl md:text-4xl mb-2 reveal text-[#F2F0EC]">Wishlist</h1>

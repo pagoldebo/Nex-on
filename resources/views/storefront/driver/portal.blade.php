@@ -1,3 +1,13 @@
+{{--
+    ======================================================================
+    VIEW TEMPLATE:  STOREFRONT DRIVER PORTAL 
+    ======================================================================
+    File: resources/views/storefront/driver/portal.blade.php
+    Responsibility: View template supporting the Nex-on platform
+    Features:
+      - Standard Blade template syntax with Tailwind CSS styling
+      - Integrates with application controllers and view model data
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,5 +1,25 @@
-{{-- resources/views/storefront/lumiere/category.blade.php
-     Data from StorefrontController@category: $category, $products (paginator), $categories --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — French Silk Atelier & Minimalist Luxury
+    PAGE: CATEGORY COLLECTION CATALOG
+    ======================================================================
+    File: resources/views/storefront/lumiere/category.blade.php
+    Controller: App\Http\Controllers\StorefrontController@category
+    Route Context: GET /category/{slug}
+    ViewModel Injections:
+      - $theme: Active Template model ('lumiere')
+      - $category: Selected Category model
+      - $products: Paginated collection of category products
+      - $subcategories: Child categories for faceted navigation
+    Responsibility: Category product showcase with faceted filters and sorting
+    Features:
+      - Filter rail: Price range, size/variant pills, availability, rating
+      - Sorting options: Newest, Price (Low-High, High-Low), Most Popular
+      - Responsive product grid with quick-view modal triggers
+      - Accessible pagination links
+    Operations & Maintenance:
+      - Only displays active products (is_active = 1)
+--}}
 <x-storefront-layout :theme="$theme" :title="$category->name">
 
 <style>

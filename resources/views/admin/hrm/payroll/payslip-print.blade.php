@@ -1,3 +1,16 @@
+{{--
+    ======================================================================
+    ADMIN HRM: OFFICIAL PRINTABLE SALARY PAYSLIP
+    ======================================================================
+    File: resources/views/admin/hrm/payroll/payslip-print.blade.php
+    Controller: App\Http\Controllers\Admin\PayrollController@printPayslip
+    Route Context: GET /admin/hrm/payroll/payslip/{id}/print
+    Responsibility: Printable employee salary voucher and tax computation sheet
+    Features:
+      - Organization header, employee designation, UAN, PAN, and Bank details
+      - Side-by-side Earnings vs Deductions table and Net Payable calculation
+      - Authorized signatory signature and seal placeholder
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

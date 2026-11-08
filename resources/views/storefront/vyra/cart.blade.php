@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/vyra/cart.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — Modern Noir & High-Contrast Streetwear
+    PAGE: SHOPPING BAG & CHECKOUT STAGING
+    ======================================================================
+    File: resources/views/storefront/vyra/cart.blade.php
+    Controller: App\Http\Controllers\StorefrontController@cart
+    Route Context: GET /cart
+    ViewModel Injections:
+      - $theme: Active Template model ('vyra')
+    Responsibility: Dedicated shopping bag review, coupon redemption, and subtotal calculation
+    Features:
+      - Client-side reactive bag synchronized with sessionStorage.cart
+      - Quantity steppers, line-item removal, and price recalculations
+      - Promotional coupon input with immediate discount feedback
+      - Estimated shipping, tax breakdown, and Proceed to Checkout CTA
+    Operations & Maintenance:
+      - Dispatches 'cart-updated' events to keep all header/drawer widgets synced
+--}}
 <x-storefront-layout :theme="$theme" title="Your Bag">
 <div class="max-w-5xl mx-auto px-6 lg:px-10 py-10">
   <h1 class="font-display uppercase text-3xl md:text-4xl mb-10 reveal text-[#F2F0EC]">Your Bag</h1>

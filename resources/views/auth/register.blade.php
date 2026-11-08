@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    AUTHENTICATION: REGISTER
+    ======================================================================
+    File: resources/views/auth/register.blade.php
+    Route Context: /register
+    Responsibility: Secure customer and staff authentication interface
+    Features:
+      - High-security credentials input with CSRF protection
+      - Patron rate limiting enforcement (prevents brute-force attacks)
+      - Two-Factor OTP challenge handling when active
+    Operations & Maintenance:
+      - Controlled via App\Http\Controllers\Auth controllers
+--}}
 <x-storefront-layout :theme="$theme ?? \App\Models\Template::active()" title="Create an Account — {{ config('app.name', 'Nex-on') }}" metaDesc="Join {{ config('app.name', 'Nex-on') }} to unlock private salon privileges, personal styling concierge, and exclusive seasonal releases.">
 
     <style>

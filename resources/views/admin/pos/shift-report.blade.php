@@ -1,3 +1,17 @@
+{{--
+    ======================================================================
+    ADMIN MODULE: POS SHIFT REPORT
+    ======================================================================
+    File: resources/views/admin/pos/shift-report.blade.php
+    Responsibility: Back-office administration for POS SHIFT REPORT
+    Features:
+      - Standard administration UI following the Nex-on design guidelines
+      - Accessible controls, Tailwind CSS styling, and reactive Alpine.js components
+    Security & Access Control:
+      - Guarded by Laravel authentication and RBAC permission middleware
+    Operations & Maintenance:
+      - Integrates with master administration shell (@extends('admin.layout'))
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

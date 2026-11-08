@@ -1,4 +1,22 @@
-{{-- resources/views/storefront/saaya/contact.blade.php --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: CONCIERGE & CUSTOMER SUPPORT CONTACT
+    ======================================================================
+    File: resources/views/storefront/saaya/contact.blade.php
+    Controller: App\Http\Controllers\StorefrontController@contact
+    Route Context: GET /contact, POST /contact/send
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+    Responsibility: Customer concierge inquiry portal, store locations, and helpline
+    Features:
+      - Interactive inquiry form (Name, Email, Phone, Order #, Message)
+      - Direct WhatsApp concierge click-to-chat button
+      - Physical boutique/depot address, telephone lines, and operating hours
+      - Embedded interactive Google Map location
+    Operations & Maintenance:
+      - Form submissions protected by CSRF token and anti-spam rate limits
+--}}
 <x-storefront-layout :theme="$theme" title="Contact Concierge — Saaya" metaDesc="Reach out to the Saaya personal styling concierge for fit consultations, bespoke trousseau assistance, or order inquiries.">
 
 <div class="bg-ivory py-10 lg:py-16">

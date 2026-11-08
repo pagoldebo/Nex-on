@@ -1,7 +1,20 @@
-{{-- resources/views/storefront/saaya/components/cart-drawer.blade.php
-     Slide-in cart drawer shared across all Saaya pages. Cart state lives in sessionStorage via
-     the shared layout JS (addToCart, removeFromCart, persistCart, updateCartUI). --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    COMPONENT: SLIDE-OVER CART DRAWER
+    ======================================================================
+    File: resources/views/storefront/saaya/components/cart-drawer.blade.php
+    Component Injection: storefront.saaya.components.cart-drawer
+    Responsibility: Off-canvas reactive slide-over shopping bag drawer
+    Features:
+      - Real-time line-item list, item removal, and quantity steppers
+      - Subtotal calculation, tax preview, and free shipping progress tracker
+      - Direct checkout CTA button and continue shopping dismiss action
+      - Seamless client-side state synchronization with sessionStorage
+    Operations & Maintenance:
+      - Opened globally via Alpine event 'open-cart' or window.openCartDrawer()
+      - Dispatches 'cart-updated' event to notify header badge counters
+--}}
 {{-- Drawer overlay --}}
 <div id="cartOverlay" class="fixed inset-0 z-[58] bg-maroon-dark/50 backdrop-blur-sm opacity-0 invisible transition-all duration-300"></div>
 

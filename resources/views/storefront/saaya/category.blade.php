@@ -1,8 +1,25 @@
-{{-- resources/views/storefront/saaya/category.blade.php
-     Saaya category listing page.
-     Controller passes: $category, $products (paginated, toCardArray-ready),
-                        $categories (for layout/sheet), $sortOptions, $currentSort --}}
-
+{{--
+    ======================================================================
+    THEME: SAAYA — Royal Indian Trousseau & Heritage Silk
+    PAGE: CATEGORY COLLECTION CATALOG
+    ======================================================================
+    File: resources/views/storefront/saaya/category.blade.php
+    Controller: App\Http\Controllers\StorefrontController@category
+    Route Context: GET /category/{slug}
+    ViewModel Injections:
+      - $theme: Active Template model ('saaya')
+      - $category: Selected Category model
+      - $products: Paginated collection of category products
+      - $subcategories: Child categories for faceted navigation
+    Responsibility: Category product showcase with faceted filters and sorting
+    Features:
+      - Filter rail: Price range, size/variant pills, availability, rating
+      - Sorting options: Newest, Price (Low-High, High-Low), Most Popular
+      - Responsive product grid with quick-view modal triggers
+      - Accessible pagination links
+    Operations & Maintenance:
+      - Only displays active products (is_active = 1)
+--}}
 <x-storefront-layout>
 
 <div class="bg-ivory min-h-screen">

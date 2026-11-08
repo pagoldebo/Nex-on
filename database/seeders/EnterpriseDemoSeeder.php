@@ -24,7 +24,7 @@ class EnterpriseDemoSeeder extends Seeder
     {
         // 1. Seed Staff & Admin Accounts
         $admin = User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'admin@nexon.app'],
             [
                 'name'              => 'Super Administrator',
                 'password'          => Hash::make('admin123'),

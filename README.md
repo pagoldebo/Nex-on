@@ -137,7 +137,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 
 | Role | Email / Username | Password | Access URL | Privileges / Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Super Administrator (Default)** | `admin@admin.com` | `admin123` | `/login` → `/admin` | Full unrestricted access to store operations, settings, ERP, and finances |
+| **Super Administrator (Default)** | `admin@nexon.app` | `admin123` | `/login` → `/admin` | Full unrestricted access to store operations, settings, ERP, and finances |
 | **Demo Customer / Patron** | `priya.sharma@example.com` | `password123` | `/login` | Storefront browsing, shopping cart, customer checkout & orders |
 
 > [!NOTE]
@@ -145,7 +145,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 > Upon submitting your email and password, a secure 4-digit verification code is dispatched. In local development (`MAIL_MAILER=log`), the OTP is written directly to **`storage/logs/laravel.log`** and saved in the **`otp_code`** column on the `users` table.
 > You can also check the current OTP via CLI at any time:
 > ```bash
-> php artisan tinker --execute="echo App\Models\User::where('email', 'admin@admin.com')->value('otp_code');"
+> php artisan tinker --execute="echo App\Models\User::where('email', 'admin@nexon.app')->value('otp_code');"
 > ```
 
 ---

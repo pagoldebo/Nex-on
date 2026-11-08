@@ -1,4 +1,19 @@
-{{-- resources/views/storefront/buttercup/product.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — SINGLE PRODUCT DETAIL PAGE
+    ======================================================================
+    File: resources/views/storefront/buttercup/product.blade.php
+    Controller: App\Http\Controllers\StorefrontController@product
+    ViewModel Injections:
+      - $product:         Eloquent Product (with colors.images, colors.variants)
+      - $related:         Comfort pairing recommendations
+    Key Interactions:
+      - Soft pastel image carousel with full zoom
+      - Color swatch selector with instant image swapping
+      - Non-wired size guide modal & stock warning badge
+      - Delivery pincode serviceability checker
+      - Verified customer comfort reviews
+--}}
 <x-storefront-layout :theme="$theme" :title="$product->name">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
 

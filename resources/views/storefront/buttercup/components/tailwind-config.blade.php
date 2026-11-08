@@ -1,4 +1,21 @@
-{{-- resources/views/storefront/buttercup/components/tailwind-config.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — DESIGN TOKENS & TAILWIND RUNTIME CONFIGURATION
+    ======================================================================
+    File: resources/views/storefront/buttercup/components/tailwind-config.blade.php
+    Archetype: Cloud-Soft, Pastel Comfort Intimates & Loungewear
+    Palette:
+      - blush.DEFAULT: #FBE7E4 (Soft Blush Cloud Accent)
+      - blush.deep:    #F3D2CD (Secondary Contrast Tint)
+      - rose.DEFAULT:  #D89AA0 (Primary Brand Accent / Buttons)
+      - cream:         #FFFAF5 (Warm Organic Cotton Background)
+      - sage:          #A8B89A (Herbal Calming Tone)
+      - ink:           #4A3B3A (Warm Espresso Typography)
+    Typography:
+      - Display: Fraunces (Warm Editorial Soft-Serif Headings)
+      - Body:    Quicksand (Curved Organic Humanist Body Sans)
+    Contract: Injected into <head> by <x-storefront-layout> when $theme->key === 'buttercup'.
+--}}
 <script>
 tailwind.config = {
   theme: {

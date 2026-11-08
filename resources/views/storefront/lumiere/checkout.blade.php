@@ -132,7 +132,7 @@
           </div>
         </div>
         <button id="coPlaceBtn" type="submit" form="checkoutForm"
-                class="mt-6 w-full py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                class="mt-6 w-full py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
           Place Order
         </button>
         <p id="coEmptyNote" class="hidden text-center text-xs text-gray-400 mt-3">

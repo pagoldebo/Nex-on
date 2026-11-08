@@ -12,7 +12,7 @@
             <span class="text-xs uppercase tracking-widest font-semibold text-gray-400">Total</span>
             <span id="cartTotal" class="text-lg font-bold text-pink-600">₹0</span>
         </div>
-        <a href="{{ route('checkout') }}" class="block w-full py-3.5 text-center text-xs font-bold uppercase tracking-widest rounded-2xl transition-colors bg-gray-900 text-white hover:bg-pink-600">Checkout</a>
+        <a href="{{ route('checkout') }}" class="block w-full py-3.5 text-center text-xs font-bold uppercase tracking-widest rounded-2xl transition-colors bg-[#405549] text-white hover:bg-pink-600">Checkout</a>
         <a href="{{ route('cart') }}" class="block w-full py-3 text-center text-xs font-medium mt-2 text-gray-400 hover:text-gray-700 transition-colors">View Full Cart</a>
     </div>
 </div>

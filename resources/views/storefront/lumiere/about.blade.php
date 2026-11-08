@@ -112,7 +112,7 @@
 
     {{-- Call to action --}}
     <div class="text-center mt-12 mb-8 reveal">
-      <a href="{{ route('search') }}" class="px-10 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm inline-block">
+      <a href="{{ route('search') }}" class="px-10 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors shadow-sm inline-block">
         Explore Curated Edit ✨
       </a>
     </div>

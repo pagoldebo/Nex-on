@@ -1,6 +1,14 @@
-{{-- resources/views/storefront/saaya/components/header.blade.php
-     Saaya header: ivory/95 sticky bar, Cormorant Garamond italic logo, gold underline nav,
-     mega-menu, cart count badge, search/wishlist/account icons. --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — HEADER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/saaya/components/header.blade.php
+    Features:
+      - Deep maroon luxury promo marquee with gold text
+      - Ivory sticky bar with Cormorant Garamond serif branding
+      - Gold-underline luxury mega-menu with hierarchical categories
+      - Interactive cart count badge, search flyout, and login triggers
+--}}
 
 @php
     $saayaAnnouncement = \App\Models\Setting::get('announcement_bar', 'Free delivery over ₹1,499 | Use code WELCOME10 for 10% off');

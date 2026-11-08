@@ -1,7 +1,26 @@
-{{-- resources/views/storefront/saaya/index.blade.php
-     Saaya homepage: Hero → Category strip → Best Sellers → About → Contact --}}
-
-<x-storefront-layout>
+{{--
+    ======================================================================
+    THEME: SAAYA — HOMEPAGE TEMPLATE
+    ======================================================================
+    File: resources/views/storefront/saaya/index.blade.php
+    Controller: App\Http\Controllers\StorefrontController@index
+    ViewModel Injections:
+      - $theme:            Active Template model ('saaya')
+      - $categories:       Hierarchical royal trousseau categories
+      - $featured:         Handcrafted bridal & zari silk spotlight
+      - $bestsellers:      Royal heirloom bestsellers
+      - $newArrivals:      Festive new collections
+    Section Architecture:
+      1. HERO:            Deep maroon velvet canvas with antique gold foil-frame
+      2. SCROLLING BAND:  Heritage Sanskrit/English luxury motto ribbon
+      3. SHOP BY CAT:     Regal arched cards with gold border filigree
+      4. SPOTLIGHT EDIT:  Archival trousseau showcase with silk swatches
+      5. BEST SELLERS:    Foil-framed cards with dynamic size & color selectors
+      6. ATELIER STORY:   Royal artisan clusters, handloom weaving heritage
+      7. TESTIMONIALS:    Patron bride reviews & luxury packaging highlights
+      8. CONCIERGE:       Bespoke bridal trousseau consultation booking
+--}}
+<x-storefront-layout :theme="$theme" title="Home">
 
 {{-- ═══════════════════════════════════════════════
      HERO  —  maroon bg, foil-frame right, reveal left

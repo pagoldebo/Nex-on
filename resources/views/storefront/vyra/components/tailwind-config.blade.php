@@ -1,4 +1,20 @@
-{{-- resources/views/storefront/vyra/components/tailwind-config.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — DESIGN TOKENS & TAILWIND RUNTIME CONFIGURATION
+    ======================================================================
+    File: resources/views/storefront/vyra/components/tailwind-config.blade.php
+    Archetype: High-Impact Modern Noir, Streetwear & Cyber Aesthetics
+    Palette:
+      - ink.DEFAULT: #0E0E10 (Deep Background Void)
+      - ink.light:   #1A1A1D (Card & Surface Elevation)
+      - coral:       #FF3D5A (Primary Neon Accent / Kicker)
+      - lime:        #D4FF3D (High-Contrast Cyber Glow)
+      - off:         #F2F0EC (High-Legibility Type White)
+    Typography:
+      - Display: Archivo Black (Heavy Impact Industrial Headings)
+      - Body:    Space Grotesk (Clean Modern Monospaced Readability)
+    Contract: Injected into <head> by <x-storefront-layout> when $theme->key === 'vyra'.
+--}}
 <script>
 tailwind.config = {
   theme: {

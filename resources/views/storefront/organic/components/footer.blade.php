@@ -1,5 +1,14 @@
-{{-- resources/views/storefront/organic/components/footer.blade.php
-     Organic Market Footer: Newsletter subscription, 4-column store directory, certification badges, and payment gateways. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA (ORGANIC) — FOOTER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/organic/components/footer.blade.php
+    Features:
+      - Farm-fresh newsletter card with leaf background accents
+      - 4-column directory: Categories, Farm Trust, Customer Care, Verified Certifications
+      - Certified organic guarantee seals & secure payment icons
+      - Platform attribution & legal compliance notices
+--}}
 <footer class="bg-white border-t border-stone-200 mt-16 pt-12 text-stone-700 text-xs">
 
   {{-- 1. Farm-Fresh Newsletter Card --}}

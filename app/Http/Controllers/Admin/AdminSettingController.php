@@ -13,8 +13,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
+/**
+ * Class AdminSettingController
+ *
+ * Back-office controller for global store configuration, theme visuals, and security policies.
+ * Dynamically persists key-value settings, validates webhooks against SSRF,
+ * enforces strict image upload whitelisting (Domain 5), and sanitizes SVG files.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class AdminSettingController extends Controller
 {
+    /**
+     * Renders the master settings page with loaded templates and active settings.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index(): View
     {
         $settings    = Setting::getAll();
@@ -25,6 +39,12 @@ class AdminSettingController extends Controller
         return view('admin.settings.index', compact('settings', 'categories', 'activeTheme', 'templates'));
     }
 
+    /**
+     * Validates and updates store settings, uploaded banner images, and webhook endpoints.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request): RedirectResponse
     {
         $allowedImageKeys = [

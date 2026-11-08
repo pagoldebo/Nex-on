@@ -1,8 +1,20 @@
-{{-- resources/views/storefront/saaya/product.blade.php
-     Saaya product detail page.
-     Controller passes: $product (with colors.images + colors.variants eager-loaded),
-                        $relatedProducts (Collection, toCardArray-ready),
-                        $categories (for layout) --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — SINGLE PRODUCT DETAIL PAGE
+    ======================================================================
+    File: resources/views/storefront/saaya/product.blade.php
+    Controller: App\Http\Controllers\StorefrontController@product
+    ViewModel Injections:
+      - $product:         Eloquent Product (with colors.images, colors.variants)
+      - $relatedProducts: Heirloom trousseau pairings
+      - $categories:      Hierarchical category tree
+    Key Interactions:
+      - Regal gold foil-framed bridal gallery
+      - Zari silk color swatch triggers & auto-updating prices
+      - Fabric craftsmanship breakdown & dry-clean hygiene guide
+      - Delivery availability & pincode transit days checker
+      - Patron bride testimonials & review submission
+--}}
 
 @php
   $card      = $product->toCardArray();

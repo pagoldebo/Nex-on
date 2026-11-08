@@ -44,9 +44,15 @@ class TemplateSeeder extends Seeder
             [
                 'key'       => 'organic',
                 'name'      => 'Verdia',
+                'label'     => 'Verdia Botanical Living',
                 'is_active' => false,
             ],
         ];
+
+        $hasActive = DB::table('templates')->where('is_active', true)->exists();
+        $updateColumns = $hasActive 
+            ? ['name', 'label', 'updated_at'] 
+            : ['name', 'label', 'is_active', 'updated_at'];
 
         foreach ($themes as $theme) {
             DB::table('templates')->upsert(
@@ -54,8 +60,8 @@ class TemplateSeeder extends Seeder
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]),
-                ['key'],                          // unique column to match on
-                ['name', 'is_active', 'updated_at'] // columns to update on conflict
+                ['key'],         // unique column to match on
+                $updateColumns   // columns to update on conflict
             );
         }
 

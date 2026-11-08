@@ -19,7 +19,7 @@
         <input id="srchInput" name="q" type="search" value="{{ $q }}" placeholder="Search for silk sets, bralettes, sleepwear…" autofocus
                class="w-full rounded-2xl border border-pink-100 bg-white pl-12 pr-5 py-4 text-sm text-gray-800 outline-none focus:border-pink-400 transition-colors">
       </div>
-      <button type="submit" class="px-7 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors flex-shrink-0">Search</button>
+      <button type="submit" class="px-7 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors flex-shrink-0">Search</button>
       @if ($q)
         <a href="{{ route('search') }}" class="px-5 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest border border-pink-100 text-gray-400 hover:text-gray-700 hover:border-pink-300 transition-colors flex-shrink-0" aria-label="Clear search">✕</a>
       @endif

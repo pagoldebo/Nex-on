@@ -1,4 +1,19 @@
-{{-- resources/views/storefront/vyra/product.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — SINGLE PRODUCT DETAIL PAGE
+    ======================================================================
+    File: resources/views/storefront/vyra/product.blade.php
+    Controller: App\Http\Controllers\StorefrontController@product
+    ViewModel Injections:
+      - $product:         Eloquent Product (with colors.images, colors.variants)
+      - $related:         Related product suggestions for "Complete the Fit"
+    Key Interactions:
+      - Multi-angle gallery with thumbnail switching
+      - Interactive color swatch selector (switches gallery images automatically)
+      - Size variant pills with live stock & price updates
+      - Universal Pincode delivery ETA checker
+      - Customer impressions & moderation review submission form
+--}}
 <x-storefront-layout :theme="$theme" :title="$product->name">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
 

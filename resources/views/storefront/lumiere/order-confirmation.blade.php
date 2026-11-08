@@ -39,7 +39,7 @@
     </div>
 
     <div class="flex flex-wrap justify-center gap-4">
-      <a href="{{ route('home') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
+      <a href="{{ route('home') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
       @auth
         <a href="{{ route('account') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-pink-200 text-gray-700 hover:border-pink-400 transition-colors">My Orders</a>
       @endauth
@@ -55,7 +55,7 @@
     <h1 class="font-display italic text-3xl text-gray-900 mb-3">Order {{ $order }}</h1>
     <p class="text-sm text-gray-400 max-w-sm mx-auto mb-8">We can't show the details of this order in this browser session.</p>
     <div class="flex flex-wrap justify-center gap-4">
-      <a href="{{ route('home') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
+      <a href="{{ route('home') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
       @auth
         <a href="{{ route('account') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-pink-200 text-gray-700 hover:border-pink-400 transition-colors">My Orders</a>
       @endauth

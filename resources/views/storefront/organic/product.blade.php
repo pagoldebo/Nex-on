@@ -1,5 +1,19 @@
-{{-- resources/views/storefront/organic/product.blade.php
-     Organic Market Single Product Details Page: Gallery, Nutritional/Farm Specs, Variant Stepper, Add to Basket, Pincode ETA, and Reviews. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA (ORGANIC) — SINGLE PRODUCT DETAIL PAGE
+    ======================================================================
+    File: resources/views/storefront/organic/product.blade.php
+    Controller: App\Http\Controllers\StorefrontController@product
+    ViewModel Injections:
+      - $product:         Eloquent Product (with colors.images, colors.variants)
+      - $related:         Botanical & farm companion pairings
+    Key Interactions:
+      - Clean farm harvest gallery with natural light presentation
+      - Unit weight / variant quantity selector
+      - Organic certification stamp & nutritional breakdown
+      - Local farm dispatch & pincode delivery ETA checker
+      - Customer reviews & verified organic buyer testimonials
+--}}
 <x-storefront-layout :theme="$theme" :title="$product->name">
   
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

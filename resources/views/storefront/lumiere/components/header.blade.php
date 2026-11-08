@@ -1,11 +1,21 @@
-{{-- resources/views/storefront/lumiere/components/header.blade.php --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — HEADER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/lumiere/components/header.blade.php
+    Features:
+      - Deep Pine (#405549) announcement top bar
+      - Editorial silk pink typography logo & sticky frosted glass bar
+      - Clean desktop navigation with 3-column curated mega-menu
+      - Quick actions: Live search flyout, account modal, and mini bag
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Lumière');
     $lumiereAnnouncement = \App\Models\Setting::get('announcement_bar');
 @endphp
 @if(!empty($lumiereAnnouncement))
-<div class="bg-gray-900 text-white text-[10px] sm:text-xs uppercase font-bold tracking-wider sm:tracking-widest text-center py-2 px-3 sm:px-4 select-none break-words">
+<div class="bg-[#405549] text-white text-[10px] sm:text-xs uppercase font-bold tracking-wider sm:tracking-widest text-center py-2 px-3 sm:px-4 select-none break-words">
     {{ $lumiereAnnouncement }}
 </div>
 @endif
@@ -60,7 +70,7 @@
                                 <span class="text-xs text-gray-400 normal-case font-medium">The Lustre Edit — new for the festive season</span>
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('featured.products') }}" class="border border-pink-200 text-gray-700 text-[10px] px-4 py-2 rounded-full font-bold uppercase tracking-widest hover:border-pink-500 hover:text-pink-600 transition-colors">Featured</a>
-                                    <a href="{{ route('collections.sale') }}" class="bg-pink-600 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest hover:bg-gray-900 transition-colors">Sale ✨</a>
+                                    <a href="{{ route('collections.sale') }}" class="bg-pink-600 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest hover:bg-[#405549] transition-colors">Sale ✨</a>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +97,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path stroke-linecap="round" d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>
                     </button>
                 @endauth
-                <button onclick="openCartDrawer()" class="bg-gray-900 text-white px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest hover:bg-pink-600 transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button onclick="openCartDrawer()" class="bg-[#405549] text-white px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest hover:bg-pink-600 transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                     <span class="hidden sm:inline">Bag</span> (<span class="cart-count">0</span>)
                 </button>

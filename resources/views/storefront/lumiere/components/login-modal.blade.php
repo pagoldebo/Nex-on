@@ -10,7 +10,7 @@
                    class="rounded-2xl border border-pink-100 px-5 py-3.5 text-sm outline-none transition-colors focus:border-pink-400 text-gray-800">
             <input type="password" name="password" placeholder="Password" required
                    class="rounded-2xl border border-pink-100 px-5 py-3.5 text-sm outline-none transition-colors focus:border-pink-400 text-gray-800">
-            <button type="submit" class="py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest mt-1 transition-colors bg-gray-900 text-white hover:bg-pink-600">Sign In</button>
+            <button type="submit" class="py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest mt-1 transition-colors bg-[#405549] text-white hover:bg-pink-600">Sign In</button>
         </form>
         <p class="text-center text-xs mt-6 text-gray-400">
             New to Lumière? <a href="{{ route('register') }}" class="font-bold text-pink-500">Create an account</a>

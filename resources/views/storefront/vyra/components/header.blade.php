@@ -1,4 +1,15 @@
-{{-- resources/views/storefront/vyra/components/header.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — HEADER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/vyra/components/header.blade.php
+    Features:
+      - Top announcement ticker (Setting::get('announcement_bar'))
+      - Sticky navigation bar with dark backdrop blur
+      - Dynamic brand logo / fallback stylized typography
+      - Mega-menu category chunks with nested subcategory pills
+      - Flyout triggers: openSearch(), openCartDrawer(), openLoginModal()
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'VYRA');

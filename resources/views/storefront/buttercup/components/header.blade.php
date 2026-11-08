@@ -1,4 +1,14 @@
-{{-- resources/views/storefront/buttercup/components/header.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — HEADER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/buttercup/components/header.blade.php
+    Features:
+      - Soft pastel announcement banner
+      - Rounded pill logo with delicate rose glow
+      - Dropdown mega-menu with hierarchical subcategory links
+      - Quick actions: Search, Wishlist, Account, Slide-out Bag
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Buttercup');

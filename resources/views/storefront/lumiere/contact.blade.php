@@ -131,7 +131,7 @@
                         class="w-full border border-pink-100 rounded-2xl px-4 py-3 text-xs focus:ring-2 focus:ring-pink-200 focus:border-pink-400 outline-none transition bg-[#FFF0F3]/30 resize-none"></textarea>
             </div>
 
-            <button type="submit" class="w-full py-4 text-xs font-bold uppercase tracking-widest transition-all bg-gray-900 text-white hover:bg-pink-600 rounded-2xl shadow-md">
+            <button type="submit" class="w-full py-4 text-xs font-bold uppercase tracking-widest transition-all bg-[#405549] text-white hover:bg-pink-600 rounded-2xl shadow-md">
               Send Message ✨
             </button>
           </form>

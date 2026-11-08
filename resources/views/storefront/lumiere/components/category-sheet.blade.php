@@ -33,7 +33,7 @@
                     </div>
                 @endforeach
             </div>
-            <a href="{{ route('search') }}" onclick="closeCategorySheet()" class="block text-center mt-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white">View All Products</a>
+            <a href="{{ route('search') }}" onclick="closeCategorySheet()" class="block text-center mt-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white">View All Products</a>
         </div>
     </div>
 </div>

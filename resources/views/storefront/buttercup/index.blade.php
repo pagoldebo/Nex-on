@@ -1,4 +1,25 @@
-{{-- resources/views/storefront/buttercup/index.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — HOMEPAGE TEMPLATE
+    ======================================================================
+    File: resources/views/storefront/buttercup/index.blade.php
+    Controller: App\Http\Controllers\StorefrontController@index
+    ViewModel Injections:
+      - $theme:            Active Template model ('buttercup')
+      - $categories:       Parent categories with circular pill swatches
+      - $featured:         Curated cozy comfort collections
+      - $bestsellers:      Top rated essentials
+      - $newArrivals:      Fresh seasonal pastel drops
+    Section Architecture:
+      1. HERO SLIDER:     5-slide full-width background image carousel with 3s autoplay
+      2. SCROLLING BAND:  Global delicate brand motto ticker
+      3. SHOP BY CAT:     Circular pastel bubbles with organic hover scaling
+      4. COZY EDIT:       Featured editorial rail with quick-view modal triggers
+      5. BEST SELLERS:    Tabbed product grid with instant color swatch preview
+      6. VALUE PILLARS:   Cloud-soft comfort, eco-modal, non-wire body promises
+      7. REVIEWS:         Verified client testimonials & star impressions
+      8. NEWSLETTER:      Soft pastel subscription CTA
+--}}
 <x-storefront-layout :theme="$theme" title="Home">
 
 {{-- ===== HERO SLIDER (5 FULL BACKGROUND IMAGES, 3-SECOND AUTOPLAY) ===== --}}

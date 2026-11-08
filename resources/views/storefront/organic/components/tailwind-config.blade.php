@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/organic/components/tailwind-config.blade.php
-     Organic Market design tokens: fresh leaf greens, warm earth, sunshine gold, and natural cream. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA (ORGANIC) — DESIGN TOKENS & TAILWIND CONFIGURATION
+    ======================================================================
+    File: resources/views/storefront/organic/components/tailwind-config.blade.php
+    Archetype: Botanical Luxury, Clean Living & Farm-to-Table Marketplace
+    Palette:
+      - organic.500: #699E4B (Core Botanical Sage Green)
+      - organic.900: #2A4B1A (Deep Ancient Forest Olive)
+      - citrus.warm: #F7A422 / #F1B927 (Sunlit Amber Harvest Gold)
+      - citrus.DEFAULT: #F95F09 (Fresh Citrus Energy Accent)
+      - cream.DEFAULT: #F9F8F3 (Handmade Botanical Paper / Linen Background)
+    Typography:
+      - Display: Playfair Display / Recoleta (Editorial Botanical Elegance)
+      - Body:    Nunito / Plus Jakarta Sans (Rounded Warm Organic Legibility)
+    Contract: Injected into <head> by <x-storefront-layout> when $theme->key === 'organic'.
+--}}
 <script>
 tailwind.config = {
   theme: {

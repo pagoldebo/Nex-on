@@ -124,7 +124,7 @@
           <div class="bg-white rounded-3xl border border-pink-100 p-12 text-center shadow-sm shadow-pink-50">
             <p class="font-display italic text-2xl text-gray-900 mb-1">No orders yet</p>
             <p class="text-sm text-gray-400 mb-6">Discover our French silk lingerie collections.</p>
-            <a href="{{ route('home') }}" class="inline-block py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">
+            <a href="{{ route('home') }}" class="inline-block py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">
               Explore Collections &rarr;
             </a>
           </div>
@@ -200,7 +200,7 @@
               <input type="checkbox" name="is_default" id="newAddrDefault" value="1" class="rounded accent-pink-600">
               <label for="newAddrDefault" class="text-xs text-gray-500 cursor-pointer">Set as default delivery address</label>
             </div>
-            <button type="submit" id="saveAddrBtn" class="py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-gray-900 hover:bg-pink-600 transition-colors">
+            <button type="submit" id="saveAddrBtn" class="py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-[#405549] hover:bg-pink-600 transition-colors">
               Save Address
             </button>
           </form>
@@ -230,7 +230,7 @@
               <label class="block text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-1">Confirm Password</label>
               <input type="password" name="password_confirmation" autocomplete="new-password" class="w-full rounded-2xl border border-gray-200 px-4 py-2.5 text-xs text-gray-800 outline-none focus:border-pink-500">
             </div>
-            <button type="submit" class="py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-gray-900 hover:bg-pink-600 transition-colors mt-2">
+            <button type="submit" class="py-3 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-[#405549] hover:bg-pink-600 transition-colors mt-2">
               Update Details
             </button>
           </form>

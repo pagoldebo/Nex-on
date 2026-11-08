@@ -1,4 +1,14 @@
-{{-- resources/views/storefront/vyra/components/footer.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — FOOTER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/vyra/components/footer.blade.php
+    Features:
+      - Brand bio & custom trust badges (footer_badge1, footer_badge2)
+      - Category directory & customer care navigation
+      - AJAX newsletter subscription endpoint (newsletter.subscribe)
+      - Platform attribution & copyright notices
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'VYRA');

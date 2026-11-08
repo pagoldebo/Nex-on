@@ -1,4 +1,14 @@
-{{-- resources/views/storefront/buttercup/components/footer.blade.php --}}
+{{--
+    ======================================================================
+    THEME: BUTTERCUP — FOOTER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/buttercup/components/footer.blade.php
+    Features:
+      - Warm rose background with organic cotton cream typography
+      - Brand bio, customer care links, and size guides
+      - AJAX newsletter subscription endpoint
+      - Safe-area bottom padding for mobile sticky tab-bar
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Buttercup');

@@ -1,5 +1,21 @@
-{{-- resources/views/storefront/saaya/components/tailwind-config.blade.php
-     Loaded inside <head> by storefront-layout; sets Saaya's design tokens. --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — DESIGN TOKENS & TAILWIND RUNTIME CONFIGURATION
+    ======================================================================
+    File: resources/views/storefront/saaya/components/tailwind-config.blade.php
+    Archetype: Royal Indian Trousseau, Heritage Zari Silk & Velvet Couture
+    Palette:
+      - maroon.DEFAULT: #3D0C11 (Deep Heritage Velvet Burgundy)
+      - maroon.dark:    #260609 (Shadow Contrast)
+      - gold.DEFAULT:   #C9A24B (Antique Zari Gold Foil Accent)
+      - gold.light:     #E3CC8C (Champagne Shimmer)
+      - ivory:          #F7F1E6 (Silk Cream Canvas Background)
+      - blush:          #E8C4C0 (Rose Quartz Accent)
+    Typography:
+      - Display: Cormorant Garamond (Regal Aristocratic Classical Serif)
+      - Body:    Jost (Balanced Geometric Clean Sans)
+    Contract: Injected into <head> by <x-storefront-layout> when $theme->key === 'saaya'.
+--}}
 <script>
 tailwind.config = {
   theme: {

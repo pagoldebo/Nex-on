@@ -12,7 +12,7 @@
       <div id="cartPageItems">
         <div class="text-center py-16">
           <p class="text-sm text-gray-400">Your bag is empty.</p>
-          <a href="{{ route('home') }}" class="inline-block mt-5 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
+          <a href="{{ route('home') }}" class="inline-block mt-5 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
         </div>
       </div>
     </div>
@@ -28,7 +28,7 @@
         </div>
       </div>
       <a id="cartCheckoutBtn" href="{{ route('checkout') }}"
-         class="mt-6 block py-3.5 rounded-2xl text-center text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Checkout</a>
+         class="mt-6 block py-3.5 rounded-2xl text-center text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Checkout</a>
       <a href="{{ route('home') }}" class="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors mt-3 py-2">Continue Shopping</a>
     </div>
   </div>
@@ -47,7 +47,7 @@ function renderCartPage() {
         wrap.innerHTML = `
             <div class="text-center py-16">
                 <p class="text-sm text-gray-400">Your bag is empty.</p>
-                <a href="{{ route('home') }}" class="inline-block mt-5 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
+                <a href="{{ route('home') }}" class="inline-block mt-5 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Continue Shopping</a>
             </div>`;
         checkout.classList.add('opacity-40', 'pointer-events-none');
     } else {

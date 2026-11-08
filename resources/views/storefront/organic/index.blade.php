@@ -1,6 +1,26 @@
-{{-- resources/views/storefront/organic/index.blade.php
-     Organic Market Master Home Page: Hero Banner, Value Propositions, Category Grid, Featured Products, Promo Banners, New Arrivals, Flash Deals, and Farmer Trust Story. --}}
-<x-storefront-layout :theme="$theme" title="Organic Foods &amp; Farm Fresh Groceries at your Doorstep">
+{{--
+    ======================================================================
+    THEME: VERDIA (ORGANIC) — HOMEPAGE TEMPLATE
+    ======================================================================
+    File: resources/views/storefront/organic/index.blade.php
+    Controller: App\Http\Controllers\StorefrontController@index
+    ViewModel Injections:
+      - $theme:            Active Template model ('organic' / 'Verdia')
+      - $categories:       Parent organic produce & botanical categories
+      - $featured:         Curated harvest & eco-living essentials
+      - $bestsellers:      Popular daily staples & seasonal favourites
+      - $newArrivals:      Fresh farm harvest releases
+    Section Architecture:
+      1. HERO BANNER:     Textured linen backdrop with gradient overlay & verified farm badge
+      2. VALUE PROPS:     Certified organic, direct farm dispatch, zero-chemical guarantee
+      3. SHOP BY CAT:     Clean grid of farm produce categories with visual counters
+      4. FEATURED PICKS:  Botanical product cards with origin tags & weight selectors
+      5. PROMO SPLIT:     Dual promotional cards for seasonal harvest baskets
+      6. NEW ARRIVALS:    Freshly harvested daily stock rail
+      7. GROWER STORY:    Farmer trust, fair compensation, and sustainable regenerative soil
+      8. COMMUNITY:       Organic recipe & newsletter subscription box
+--}}
+<x-storefront-layout :theme="$theme" title="Verdia Botanical Living &amp; Farm Fresh Marketplace">
 
   {{-- 1. HERO BANNER SECTION --}}
   @php

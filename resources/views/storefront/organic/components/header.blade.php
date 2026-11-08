@@ -1,5 +1,14 @@
-{{-- resources/views/storefront/organic/components/header.blade.php
-     Organic Market Header: Top announcement, Brand Logo, Search Bar, Account & Cart quick actions, and Departments Navigation. --}}
+{{--
+    ======================================================================
+    THEME: VERDIA (ORGANIC) — HEADER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/organic/components/header.blade.php
+    Features:
+      - Deep forest olive announcement bar with certification badges
+      - Clean botanical brand logo with integrated live search input
+      - Customer care helpline & quick account / cart actions
+      - All Departments mega-dropdown with category tree navigation
+--}}
 <header class="w-full bg-white border-b border-stone-200 sticky top-0 z-40 shadow-xs" x-data="{ mobileMenuOpen: false, categoryOpen: false }">
 
   {{-- 1. Top Announcement Bar --}}

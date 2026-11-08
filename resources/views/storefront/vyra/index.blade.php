@@ -1,4 +1,25 @@
-{{-- resources/views/storefront/vyra/index.blade.php --}}
+{{--
+    ======================================================================
+    THEME: VYRA — HOMEPAGE TEMPLATE
+    ======================================================================
+    File: resources/views/storefront/vyra/index.blade.php
+    Controller: App\Http\Controllers\StorefrontController@index
+    ViewModel Injections:
+      - $theme:            Active Template model ('vyra')
+      - $categories:       Parent categories with eager-loaded children
+      - $featured:         Curated editorial drop products
+      - $bestsellers:      High-velocity trending items
+      - $newArrivals:      Latest release items
+    Section Architecture:
+      1. HERO SLIDER:     Autoplaying MP4 video background + 3 text slides
+      2. SCROLLING BAND:  Global announcement marquee (storefront.common.scrolling-band)
+      3. SHOP BY CAT:     High-contrast neon category pills & cards
+      4. FEATURED PICKS:  Cyber editorial showcase & interactive quick view
+      5. BEST SELLERS:    Filterable tabbed product grid with dynamic stock counters
+      6. BRAND STORY:     Manifesto panel with video teasers
+      7. REVIEWS:         Customer social proof & ratings carousel
+      8. CONTACT:         Direct concierge communication form
+--}}
 <x-storefront-layout :theme="$theme" title="Home">
 
 {{-- ===== HERO TOP SLIDER WITH GLORIA-FREE VIDEO BACKGROUND ===== --}}

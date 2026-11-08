@@ -48,7 +48,7 @@
     <i class="fa-regular fa-heart text-5xl mx-auto mb-5 text-pink-200 block"></i>
     <p class="font-display italic text-2xl text-gray-300 mb-2">Your wishlist is empty</p>
     <p class="text-sm text-gray-400 mb-6">Tap the heart on any piece to save it here.</p>
-    <a href="{{ route('home') }}" class="inline-block px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Discover Pieces</a>
+    <a href="{{ route('home') }}" class="inline-block px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Discover Pieces</a>
   </div>
 </div>
 

@@ -1,5 +1,25 @@
-{{-- resources/views/storefront/lumiere/index.blade.php
-     Data from StorefrontController@index: $categories, $featured, $bestsellers, $newArrivals, $featuredProducts --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — HOMEPAGE TEMPLATE
+    ======================================================================
+    File: resources/views/storefront/lumiere/index.blade.php
+    Controller: App\Http\Controllers\StorefrontController@index
+    ViewModel Injections:
+      - $theme:            Active Template model ('lumiere')
+      - $categories:       Hierarchical luxury categories
+      - $featured:         Curated silk picks (Lustre Edit)
+      - $bestsellers:      High-demand silk slips & bralettes
+      - $newArrivals:      Festive new silk silhouettes
+    Section Architecture:
+      1. HERO:            Warm butter gold canvas with silk teaser illustration
+      2. SCROLLING BAND:  Global announcement marquee (storefront.common.scrolling-band)
+      3. SHOP BY CAT:     Centered carousel with flanking left & right navigation buttons
+      4. CURATED PICKS:   Horizontal Lustre Edit rail with quick-view modal triggers
+      5. BEST SELLERS:    Tab-filtered grid with hover image transitions
+      6. SILK ATELIER:    Mulberry silk quality, fair-wage handcraft & keepsakes
+      7. CLIENT VOICES:   Editorial reviews & verified testimonials
+      8. CONCIERGE:       Private styling consultation form
+--}}
 <x-storefront-layout :theme="$theme" title="Home">
 
 <style>
@@ -19,8 +39,8 @@
         Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.
       </p>
       <div class="flex flex-wrap gap-4">
-        <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm">Shop the Edit</a>
-        <a href="{{ route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-gray-900/20 text-gray-800 hover:border-gray-900 transition-colors">Explore All</a>
+        <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors shadow-sm">Shop the Edit</a>
+        <a href="{{ route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-[#405549]/30 text-gray-800 hover:border-[#405549] transition-colors">Explore All</a>
       </div>
     </div>
     <div class="reveal rounded-[40px] overflow-hidden aspect-[4/5] bg-white/40 flex items-center justify-center border border-pink-100 shadow-md">
@@ -91,77 +111,74 @@
          }"
          x-init="$nextTick(() => { checkScroll(); }); window.addEventListener('resize', () => checkScroll());">
   <div class="max-w-7xl mx-auto">
-    {{-- Header: Category Title + View All + Prev/Next Buttons --}}
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <p class="text-pink-600 text-[10px] font-black uppercase tracking-widest mb-1">Browse</p>
-        <h2 class="font-display italic text-2xl sm:text-3xl md:text-4xl text-gray-900">Shop by Category</h2>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <a href="{{ route('featured.products') }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-xs">
-          View All
-        </a>
-        <div class="flex items-center gap-1.5">
-          <button type="button" 
-                  @click="scrollTrack(-1)" 
-                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white hover:bg-pink-50 text-gray-800 border border-pink-200 flex items-center justify-center transition text-xs font-bold focus:outline-none disabled:opacity-35 disabled:cursor-not-allowed shadow-2xs" 
-                  :disabled="!canScrollLeft"
-                  aria-label="Previous categories">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <button type="button" 
-                  @click="scrollTrack(1)" 
-                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-pink-600 hover:bg-pink-700 text-white flex items-center justify-center transition text-xs font-bold shadow-2xs focus:outline-none disabled:opacity-35 disabled:cursor-not-allowed" 
-                  :disabled="!canScrollRight"
-                  aria-label="Next categories">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
+    {{-- Header: Centered Category Title --}}
+    <div class="text-center mb-8 sm:mb-10">
+      <p class="text-pink-600 text-[10px] font-black uppercase tracking-widest mb-1.5">Browse</p>
+      <h2 class="font-display italic text-2xl sm:text-3xl md:text-4xl text-gray-900">Shop by Category</h2>
     </div>
 
-    {{-- Category Items Track --}}
-    <div x-ref="catTrack" 
-         @scroll.passive="checkScroll()"
-         class="flex items-start gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
-         style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
-      @php
-        $parentCats = $categories->filter(fn($c) => is_null($c->parent_id));
-      @endphp
-      @forelse($parentCats as $cat)
-        <a href="{{ route('category.show', $cat->slug) }}" 
-           class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
-           style="scroll-snap-align: start; scroll-snap-stop: normal;">
-          <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-pink-50 border-2 border-pink-200 group-hover:border-pink-500 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
-            @if($cat->image_url)
-              <img src="{{ $cat->image_url }}" 
-                   alt="{{ $cat->name }}" 
-                   class="w-full h-full object-cover rounded-full" 
-                   loading="lazy">
-            @else
-              <svg viewBox="0 0 60 60" class="w-9 h-9"><circle cx="30" cy="30" r="20" fill="#DB2777" opacity="0.35"/></svg>
-            @endif
-          </div>
-          <h3 class="font-bold text-xs sm:text-sm text-gray-800 group-hover:text-pink-600 transition-colors leading-snug px-1 line-clamp-2 max-w-[125px]">
-            {{ $cat->name }}
-          </h3>
-        </a>
-      @empty
-        @foreach(['Silk Robes', 'Lace Bralettes', 'Bodysuits', 'Nightwear', 'Bridal Edit', 'Mulberry Sets'] as $fallbackName)
-          <a href="{{ route('featured.products') }}" 
-             class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
+    {{-- Carousel: Left Arrow + Items Track + Right Arrow --}}
+    <div class="relative flex items-center gap-2 sm:gap-4">
+      {{-- Left Arrow (Left Side) --}}
+      <button type="button" 
+              @click="scrollTrack(-1)" 
+              class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-pink-600 hover:bg-pink-700 text-white flex items-center justify-center transition text-xs font-bold shadow-2xs focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed z-10" 
+              :disabled="!canScrollLeft"
+              aria-label="Previous categories">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+
+      {{-- Category Items Track --}}
+      <div x-ref="catTrack" 
+           @scroll.passive="checkScroll()"
+           class="flex-1 flex items-start gap-4 sm:gap-6 lg:gap-8 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
+           :class="(canScrollLeft || canScrollRight) ? 'justify-start' : 'justify-center'"
+           style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
+        @php
+          $parentCats = $categories->filter(fn($c) => is_null($c->parent_id));
+        @endphp
+        @forelse($parentCats as $cat)
+          <a href="{{ route('category.show', $cat->slug) }}" 
+             class="category-item group shrink-0 min-w-[96px] sm:min-w-[110px] max-w-[140px] flex flex-col items-center text-center transition"
              style="scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-pink-50 border-2 border-pink-200 group-hover:border-pink-500 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
-              <svg viewBox="0 0 60 60" class="w-9 h-9"><circle cx="30" cy="30" r="20" fill="#DB2777" opacity="0.35"/></svg>
+            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden mb-3 bg-pink-50 border-2 border-pink-200 group-hover:border-pink-500 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
+              @if($cat->image_url)
+                <img src="{{ $cat->image_url }}" 
+                     alt="{{ $cat->name }}" 
+                     class="w-full h-full object-cover rounded-full" 
+                     loading="lazy">
+              @else
+                <svg viewBox="0 0 60 60" class="w-9 h-9"><circle cx="30" cy="30" r="20" fill="#DB2777" opacity="0.35"/></svg>
+              @endif
             </div>
             <h3 class="font-bold text-xs sm:text-sm text-gray-800 group-hover:text-pink-600 transition-colors leading-snug px-1 line-clamp-2 max-w-[125px]">
-              {{ $fallbackName }}
+              {{ $cat->name }}
             </h3>
           </a>
-        @endforeach
-      @endforelse
+        @empty
+          @foreach(['Silk Robes', 'Lace Bralettes', 'Bodysuits', 'Nightwear', 'Bridal Edit', 'Mulberry Sets'] as $fallbackName)
+            <a href="{{ route('featured.products') }}" 
+               class="category-item group shrink-0 min-w-[96px] sm:min-w-[110px] max-w-[140px] flex flex-col items-center text-center transition"
+               style="scroll-snap-align: start; scroll-snap-stop: normal;">
+              <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden mb-3 bg-pink-50 border-2 border-pink-200 group-hover:border-pink-500 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
+                <svg viewBox="0 0 60 60" class="w-9 h-9"><circle cx="30" cy="30" r="20" fill="#DB2777" opacity="0.35"/></svg>
+              </div>
+              <h3 class="font-bold text-xs sm:text-sm text-gray-800 group-hover:text-pink-600 transition-colors leading-snug px-1 line-clamp-2 max-w-[125px]">
+                {{ $fallbackName }}
+              </h3>
+            </a>
+          @endforeach
+        @endforelse
+      </div>
+
+      {{-- Right Arrow (Right Side) --}}
+      <button type="button" 
+              @click="scrollTrack(1)" 
+              class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-pink-600 hover:bg-pink-700 text-white flex items-center justify-center transition text-xs font-bold shadow-2xs focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed z-10" 
+              :disabled="!canScrollRight"
+              aria-label="Next categories">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -202,7 +219,7 @@
     </div>
 
     <div class="text-center mt-12 reveal">
-      <a href="{{ route('featured.products') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm inline-block">
+      <a href="{{ route('featured.products') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors shadow-sm inline-block">
         Explore Curated Edit ✨
       </a>
     </div>
@@ -273,7 +290,7 @@
 
     {{-- Category filter tabs --}}
     <div class="flex flex-wrap justify-center gap-2 mb-10 reveal" id="bsFilterWrap">
-      <button class="bs-tab active text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-2xl bg-gray-900 text-white transition-all shadow-sm" data-filter="all">All</button>
+      <button class="bs-tab active text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-2xl bg-[#405549] text-white transition-all shadow-sm" data-filter="all">All</button>
       @foreach($categories->take(5) as $cat)
         <button class="bs-tab text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-2xl border border-pink-200 text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-all"
                 data-filter="{{ $cat->slug }}">{{ $cat->name }}</button>
@@ -437,7 +454,7 @@
       <input type="text"  name="name"  placeholder="Full Name"     required class="rounded-2xl border border-pink-100 px-4 py-3.5 text-sm outline-none w-full bg-white focus:border-pink-400">
       <input type="email" name="email" placeholder="Email Address" required class="rounded-2xl border border-pink-100 px-4 py-3.5 text-sm outline-none w-full bg-white focus:border-pink-400">
       <textarea name="message" placeholder="Your Message…" rows="4" required class="sm:col-span-2 rounded-2xl border border-pink-100 px-4 py-3.5 text-sm outline-none w-full bg-white focus:border-pink-400 resize-none"></textarea>
-      <button type="submit" class="sm:col-span-2 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm">Send Message ✨</button>
+      <button type="submit" class="sm:col-span-2 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors shadow-sm">Send Message ✨</button>
     </form>
   </div>
 </section>
@@ -497,10 +514,10 @@
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => {
-        t.classList.remove('active', 'bg-gray-900', 'text-white');
+        t.classList.remove('active', 'bg-[#405549]', 'text-white');
         t.classList.add('border', 'border-pink-200', 'text-gray-600');
       });
-      tab.classList.add('active', 'bg-gray-900', 'text-white');
+      tab.classList.add('active', 'bg-[#405549]', 'text-white');
       tab.classList.remove('border', 'border-pink-200', 'text-gray-600');
 
       const filter = tab.dataset.filter;
@@ -529,7 +546,7 @@
     });
   });
 
-  document.querySelector('.bs-tab.active')?.classList.add('bg-gray-900', 'text-white');
+  document.querySelector('.bs-tab.active')?.classList.add('bg-[#405549]', 'text-white');
 })();
 </script>
 @endpush

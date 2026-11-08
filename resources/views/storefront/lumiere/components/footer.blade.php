@@ -1,4 +1,14 @@
-{{-- resources/views/storefront/lumiere/components/footer.blade.php --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — FOOTER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/lumiere/components/footer.blade.php
+    Features:
+      - Vibrant silk pink (#DB2777) luxury backdrop
+      - Brand bio & custom trust badges (footer_badge1, footer_badge2)
+      - Experience directory: Story, Concierge, FAQs, Size Guide, Hygiene Policy
+      - AJAX newsletter subscription endpoint with real-time feedback
+--}}
 @php
     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Lumière');

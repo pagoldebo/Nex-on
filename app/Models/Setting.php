@@ -5,8 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Class Setting
+ *
+ * Provides a dynamic, high-performance key-value configuration store for Nex-on.
+ * Automatically handles environment-aware caching (10s local, 1h production)
+ * and resolves fallback values from config or environment variables.
+ *
+ * @package App\Models
+ * @property int $id
+ * @property string $key     Unique setting identifier
+ * @property string|null $value   Serialized or string setting content
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Setting extends Model
 {
+    /**
+     * Mass assignable attributes.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = ['key', 'value'];
 
     /**

@@ -17,7 +17,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Vyra**: High-impact modern noir & streetwear aesthetic (dark mode `#0E0E10`, electric coral `#FF3D5A`, lime `#D4FF3D`, video hero sliders).
 * **Buttercup**: Cloud-soft, pastel comfort intimates (blush `#FBE7E4`, rose, sage `#A8B89A`).
 * **Saaya**: Royal Indian trousseau & heritage silk (deep burgundy `#4A0E17`, antique gold `#D4AF37`, silk cream `#fdfbf7`).
-* **Lumière**: Minimalist, French-inspired pure silk atelier (`#FAFAFA`, editorial typography).
+* **Lumière**: Minimalist, French-inspired pure silk atelier (`#FAFAFA`, deep pine `#405549`, editorial typography).
 * **Verdia**: Botanical luxury & clean living marketplace (signature cream `#F9F8F3`, forest sage `#699E4B`, sunlit amber `#F1B927`).
 
 ### 2. Patron Security & Two-Factor Email OTP
@@ -191,6 +191,13 @@ Nexon/
 └── tests/
     └── Feature/              # 253 Automated Feature & Integration Tests
 ```
+
+---
+
+## 📚 Engineering & Operations Documentation
+* **[Storefront Themes Architecture Guide](docs/THEMES_ARCHITECTURE_GUIDE.md)**: Full design tokens, palette hexes, typography, and section specifications for all 5 themes.
+* **[Developer & Operations Technical Manual](docs/DEVELOPER_OPERATIONS_GUIDE.md)**: System architecture, RBAC roles, security domains 1–11, operational runbooks, and coding standards.
+* **[Theme Development & Settings Guide](docs/HOW_TO_ADD_A_NEW_THEME.md)**: Blueprint for designing new storefront themes and adding custom controls to the Admin Settings page.
 
 ---
 

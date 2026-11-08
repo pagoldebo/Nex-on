@@ -33,7 +33,7 @@
                     <div id="sizeOptions" class="flex gap-2 flex-wrap"></div>
                 </div>
                 <button id="qvAddBtn" onclick="qvAddToBag()" disabled
-                        class="mt-2 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        class="mt-2 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                     Select a Size
                 </button>
                 <a id="qvViewDetails" href="#" class="block text-center text-xs font-semibold text-gray-500 hover:text-pink-600 transition-colors py-1">

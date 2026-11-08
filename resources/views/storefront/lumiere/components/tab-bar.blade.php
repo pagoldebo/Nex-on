@@ -11,7 +11,7 @@
     <button onclick="openCartDrawer()" class="tab-item flex flex-col items-center justify-center gap-1 py-3" style="color:#1f2937;opacity:0.4;" data-tab="cart" aria-label="Cart">
         <div class="relative w-12 h-12 -mt-5 rounded-full flex items-center justify-center shadow-lg bg-pink-600">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span class="cart-count-badge absolute -top-1 -right-1 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center bg-gray-900 text-white">0</span>
+            <span class="cart-count-badge absolute -top-1 -right-1 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center bg-[#405549] text-white">0</span>
         </div>
     </button>
     <button onclick="openSearch()" class="tab-item flex flex-col items-center justify-center gap-1 py-3" style="color:#1f2937;opacity:0.4;" data-tab="search">

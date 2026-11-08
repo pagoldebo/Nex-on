@@ -1,5 +1,14 @@
-{{-- resources/views/storefront/saaya/components/footer.blade.php
-     Dark maroon background, ivory/gold text, 4-column grid. Adds bottom padding on mobile for the tab bar. --}}
+{{--
+    ======================================================================
+    THEME: SAAYA — FOOTER COMPONENT
+    ======================================================================
+    File: resources/views/storefront/saaya/components/footer.blade.php
+    Features:
+      - Petal dotted gold decorative divider
+      - Dark velvet maroon background with antique gold typography
+      - 4-column directory: Brand Story, Bridal Collections, Trousseau Care, Newsletter
+      - Integrated platform attribution & mobile tab-bar bottom padding
+--}}
 
 {{-- Petal dotted divider --}}
 <div class="petal-divider mx-6 lg:mx-10 mb-0 opacity-40"></div>

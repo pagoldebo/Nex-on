@@ -22,26 +22,58 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
+/**
+ * Class StorefrontController
+ *
+ * Primary controller for all customer-facing storefront routes.
+ * Dynamically resolves the active lifestyle theme (vyra, buttercup, saaya, lumiere, organic/verdia),
+ * eager-loads product matrices to prevent N+1 queries, and handles cart, wishlist,
+ * reviews, customer orders, and checkout interactions.
+ *
+ * @package App\Http\Controllers
+ */
 class StorefrontController extends Controller
 {
-    /** Active theme; views resolve as storefront.{theme->key}.{page}. */
+    /**
+     * Resolves the active template instance.
+     * Views resolve strictly as: storefront.{theme->key}.{page}
+     *
+     * @return \App\Models\Template
+     */
     private function theme(): Template
     {
         return Template::active();
     }
 
-    /** Eager-load everything toCardArray() touches so cards never trigger N+1 queries. */
+    /**
+     * Base query for active products with eager-loaded relationships.
+     * Prevents N+1 queries when calling $product->toCardArray() across collection cards.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function productQuery()
     {
         return Product::with(['category.parent.parent.parent', 'brand', 'colors.images', 'colors.variants'])
             ->where('is_active', true);
     }
 
+    /**
+     * Sanitizes comma-separated integer IDs from query string parameters.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return int[]
+     */
     private function idsFromRequest(Request $request): array
     {
         return array_values(array_filter(array_map('intval', explode(',', (string) $request->get('ids', '')))));
     }
 
+    /**
+     * Renders the storefront homepage for the active theme.
+     * Passes categories, featured collections, bestsellers, new arrivals, and client reviews.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $theme            = $this->theme();

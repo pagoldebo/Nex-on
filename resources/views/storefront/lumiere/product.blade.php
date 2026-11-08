@@ -1,5 +1,20 @@
-{{-- resources/views/storefront/lumiere/product.blade.php
-     Data from StorefrontController@product: $product (with category, colors.images, colors.variants), $related --}}
+{{--
+    ======================================================================
+    THEME: LUMIÈRE — SINGLE PRODUCT DETAIL PAGE
+    ======================================================================
+    File: resources/views/storefront/lumiere/product.blade.php
+    Controller: App\Http\Controllers\StorefrontController@product
+    ViewModel Injections:
+      - $product:         Eloquent Product (with colors.images, colors.variants)
+      - $related:         Curated silk pairings
+    Key Interactions:
+      - Silk touch editorial imagery with thumbnail switching
+      - Color swatch circles (switches shade & gallery images in real time)
+      - Size selection pills with live stock countdown
+      - Add to Bag button styled in Deep Pine (#405549)
+      - Delivery pincode serviceability checker
+      - Verified customer reviews & moderation feedback
+--}}
 <x-storefront-layout :theme="$theme" :title="$product->name">
 
 <style>
@@ -75,7 +90,7 @@
 
       {{-- Actions --}}
       <button id="pdAddBtn" onclick="pdAddToBag()" disabled
-              class="py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              class="py-4 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
         Select a Size
       </button>
 
@@ -102,7 +117,7 @@
                  onkeydown="if(event.key==='Enter'){event.preventDefault();checkLumierePincode();}"
                  class="flex-1 rounded-2xl border border-gray-200 px-4 py-2.5 text-xs text-gray-800 outline-none focus:border-pink-500">
           <button type="button" onclick="checkLumierePincode()"
-                  class="px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider text-white bg-gray-900 hover:bg-pink-600 transition-colors">
+                  class="px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider text-white bg-[#405549] hover:bg-pink-600 transition-colors">
             Check
           </button>
         </div>
@@ -242,7 +257,7 @@
           <label class="block text-[10px] uppercase tracking-widest font-bold text-gray-500 mb-1">Review *</label>
           <textarea name="comment" rows="3" required placeholder="Describe the silk touch, fit, and elegance..." class="w-full bg-white border border-gray-200 rounded-2xl p-4 text-xs text-gray-800 outline-none focus:border-pink-500 leading-relaxed"></textarea>
         </div>
-        <button type="submit" class="py-3.5 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-gray-900 hover:bg-pink-600 transition-colors">
+        <button type="submit" class="py-3.5 px-8 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-[#405549] hover:bg-pink-600 transition-colors">
           Submit Review
         </button>
       </form>

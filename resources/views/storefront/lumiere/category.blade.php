@@ -71,7 +71,7 @@
   @else
     <div class="text-center py-24">
       <p class="font-display italic text-2xl text-gray-300 mb-4">Nothing here yet</p>
-      <a href="{{ route('home') }}" class="inline-block px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-gray-900 text-white hover:bg-pink-600 transition-colors">Back to Home</a>
+      <a href="{{ route('home') }}" class="inline-block px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Back to Home</a>
     </div>
   @endif
 </div>

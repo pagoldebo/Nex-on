@@ -184,7 +184,7 @@
           'buttercup' => ['bg' => '#2C2C2C', 'accent' => '#F5C518', 'label' => 'Charcoal · Buttercup',    'font' => 'Playfair Display'],
           'vyra'      => ['bg' => '#1A1A2E', 'accent' => '#E94560', 'label' => 'Navy · Crimson · Ivory',   'font' => 'Italiana'],
           'lumiere'   => ['bg' => '#0F0F0F', 'accent' => '#D4AF37', 'label' => 'Noir · Gold · Champagne',  'font' => 'IM Fell English'],
-          'organic'   => ['bg' => '#699E4B', 'accent' => '#F1B927', 'label' => 'Fresh Green · Sunny Gold · Organic Cream', 'font' => 'Nunito'],
+          'organic'   => ['bg' => '#699E4B', 'accent' => '#F1B927', 'label' => 'Forest Sage · Sunlit Amber · Botanical Cream', 'font' => 'Nunito'],
         ];
         $p = $previews[$t->key] ?? ['bg' => '#374151', 'accent' => '#9CA3AF', 'label' => '—', 'font' => 'sans-serif'];
       @endphp

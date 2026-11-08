@@ -18,7 +18,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Buttercup**: Cloud-soft, pastel comfort intimates (blush `#FBE7E4`, rose, sage `#A8B89A`).
 * **Saaya**: Royal Indian trousseau & heritage silk (deep burgundy `#4A0E17`, antique gold `#D4AF37`, silk cream `#fdfbf7`).
 * **Lumière**: Minimalist, French-inspired pure silk atelier (`#FAFAFA`, editorial typography).
-* **Organic**: Clean living & eco-lifestyle marketplace (signature cream `#F9F8F3`, organic greens `#699E4B`, citrus accents).
+* **Verdia**: Botanical luxury & clean living marketplace (signature cream `#F9F8F3`, forest sage `#699E4B`, sunlit amber `#F1B927`).
 
 ### 2. Patron Security & Two-Factor Email OTP
 * **Email Verification OTP**: Secure 4-digit numeric code dispatched on every sign-in attempt.

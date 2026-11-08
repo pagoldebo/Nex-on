@@ -41,6 +41,11 @@ class TemplateSeeder extends Seeder
                 'name'      => 'Lumière',
                 'is_active' => false,
             ],
+            [
+                'key'       => 'organic',
+                'name'      => 'Verdia',
+                'is_active' => false,
+            ],
         ];
 
         foreach ($themes as $theme) {

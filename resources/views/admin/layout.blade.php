@@ -719,7 +719,7 @@
             $pendingCount     = \App\Models\Order::whereIn('status', ['pending', 'confirmed'])->count();
             $pendingReqs      = \App\Models\OrderRequest::where('status', 'pending')->count();
             $pendingReviews   = \App\Models\ProductReview::where('is_approved', false)->count();
-            $navLowStockCount = \App\Models\ProductVariant::whereRaw('stock <= COALESCE(reorder_threshold, 5)')->count();
+            $navLowStockCount = \App\Models\ProductVariant::lowStock()->count();
             $navOpenPosCount  = \App\Models\PurchaseOrder::whereIn('status', ['draft', 'sent', 'partial'])->count();
         @endphp
 
@@ -1502,13 +1502,15 @@
 
             <!-- Quick Action Buttons -->
             <div :class="sidebarCollapsed ? 'md:flex md:flex-col md:gap-1.5 grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-2'">
-                <a href="{{ route('admin.optimize.clear') }}" 
-                   onclick="return confirm('Clear application, route, config, and view cache?')"
-                   class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100/80 text-slate-700 text-[11px] font-semibold transition shadow-2xs"
-                   :title="'Clear Cache'">
-                    <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Clear Cache</span>
-                </a>
+                <form method="POST" action="{{ route('admin.optimize.clear') }}" onsubmit="return confirm('Clear application, route, config, and view cache?')" class="m-0 p-0 block">
+                    @csrf
+                    <button type="submit"
+                       class="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100/80 text-slate-700 text-[11px] font-semibold transition shadow-2xs cursor-pointer"
+                       :title="'Clear Cache'">
+                        <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Clear Cache</span>
+                    </button>
+                </form>
                 <a href="{{ route('home') }}" target="_blank" 
                    class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold transition shadow-xs"
                    :title="'Live Store'">

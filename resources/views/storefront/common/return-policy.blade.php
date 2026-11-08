@@ -74,7 +74,7 @@
 
                 @if(\App\Models\Setting::get('return_custom_content'))
                     <div class="space-y-3 pt-4 border-t border-slate-100">
-                        {!! \App\Models\Setting::get('return_custom_content') !!}
+                        {!! \App\Services\HtmlSanitizerService::clean(\App\Models\Setting::get('return_custom_content')) !!}
                     </div>
                 @endif
             </div>

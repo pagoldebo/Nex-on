@@ -19,7 +19,17 @@ class Product extends Model
 
     public function setShortDescriptionAttribute($value): void
     {
-        $this->attributes['description'] = $value;
+        $this->attributes['description'] = \App\Services\HtmlSanitizerService::clean($value);
+    }
+
+    public function setDescriptionAttribute($value): void
+    {
+        $this->attributes['description'] = \App\Services\HtmlSanitizerService::clean($value);
+    }
+
+    public function setLongDescriptionAttribute($value): void
+    {
+        $this->attributes['long_description'] = \App\Services\HtmlSanitizerService::clean($value);
     }
 
     protected $casts = [
@@ -187,17 +197,11 @@ class Product extends Model
     public function getCoverImageAttribute(): string
     {
         $color = $this->default_color;
-        $image = $color?->images->first();
-
-        if (!$image || empty($image->image_path)) {
-            return asset('images/placeholder.jpg');
+        if ($color) {
+            return $color->cover_image;
         }
 
-        if (Str::startsWith($image->image_path, ['http://', 'https://'])) {
-            return $image->image_path;
-        }
-
-        return asset('storage/' . ltrim($image->image_path, '/'));
+        return asset('images/placeholder.jpg');
     }
 
     /**

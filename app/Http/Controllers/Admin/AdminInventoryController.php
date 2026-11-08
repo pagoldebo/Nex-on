@@ -142,7 +142,7 @@ class AdminInventoryController extends Controller
             'size'             => 'nullable|string|max:10',
             'variant_sku'      => 'nullable|string|max:60|unique:product_variants,sku',
             'is_active'        => 'nullable|boolean',
-            'image'            => 'nullable|image|max:4096',
+            'image'            => 'nullable|file|mimes:jpeg,png,jpg,webp,gif|mimetypes:image/jpeg,image/png,image/webp,image/gif|max:4096',
             'description'      => 'nullable|string',
         ]);
 

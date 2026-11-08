@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasRowLevelSecurity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,12 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
+    use HasRowLevelSecurity;
+
+    /**
+     * Allow unauthenticated guest orders (e.g. guest checkout & driver session transitions).
+     */
+    protected bool $allowGuestAccess = true;
     protected $fillable = [
         'user_id',
         'pos_cashier_id',

@@ -24,6 +24,7 @@
     </div>
 </div>
 <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     document.getElementById('searchInput')?.addEventListener('input', function() {
         const q = this.value.trim();
         const res = document.getElementById('liveResults');
@@ -33,7 +34,7 @@
             .then(data => {
                 res.classList.remove('hidden');
                 res.innerHTML = data.length
-                    ? data.map(p => `<a href="${p.url}" class="p-3 text-sm font-medium hover:opacity-80 transition-opacity uppercase" style="background:#FF3D5A22;color:#F2F0EC">${p.name}</a>`).join('')
+                    ? data.map(p => `<a href="${esc(p.url)}" class="p-3 text-sm font-medium hover:opacity-80 transition-opacity uppercase" style="background:#FF3D5A22;color:#F2F0EC">${esc(p.name)}</a>`).join('')
                     : `<p class="text-xs opacity-40 col-span-2 text-center py-4" style="color:#F2F0EC">No results found.</p>`;
             });
     });

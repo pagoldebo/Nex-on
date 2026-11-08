@@ -83,7 +83,7 @@ class SmsService
     public function generateAndSendOtp(string $phone): array
     {
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        $otp = (string) rand(100000, 999999);
+        $otp = (string) random_int(100000, 999999);
 
         // Store in phone_otps table valid for 10 minutes
         PhoneOtp::create([

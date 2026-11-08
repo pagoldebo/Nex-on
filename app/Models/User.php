@@ -67,7 +67,7 @@ class User extends Authenticatable
 
     public function generateOtp(int $minutes = 10): string
     {
-        $otp = (string) rand(1000, 9999);
+        $otp = (string) random_int(1000, 9999);
         $this->update([
             'otp_code'       => $otp,
             'otp_expires_at' => now()->addMinutes($minutes),
@@ -152,6 +152,21 @@ class User extends Authenticatable
         return $this->role === 'customer' || empty($this->role);
     }
 
+    public function isSuperAdmin(): bool
+    {
+        // 1. Explicitly assigned 'super-admin' role
+        if ($this->relationLoaded('roles')) {
+            if ($this->roles->contains('slug', 'super-admin')) {
+                return true;
+            }
+        } elseif ($this->roles()->where('slug', 'super-admin')->exists()) {
+            return true;
+        }
+
+        // 2. Or is a root admin (role === 'admin') that is NOT constrained staff
+        return $this->role === 'admin' && ! $this->is_staff;
+    }
+
     public function scopeActive($query)
     {
         return $query->whereNull('deactivated_at');
@@ -164,22 +179,28 @@ class User extends Authenticatable
 
     public function hasRole(string|array $roles): bool
     {
-        if ($this->isAdmin()) {
+        $roleList = is_array($roles) ? $roles : [$roles];
+
+        if ($this->isSuperAdmin() && in_array('super-admin', $roleList, true)) {
             return true;
         }
 
-        $roleList = is_array($roles) ? $roles : [$roles];
-        return $this->roles->pluck('slug')->intersect($roleList)->isNotEmpty();
+        $userRoles = $this->relationLoaded('roles') ? $this->roles : $this->roles()->get();
+        return $userRoles->pluck('slug')->intersect($roleList)->isNotEmpty();
     }
 
     public function hasPermission(string $permissionSlug): bool
     {
-        // Legacy admin role or super-admin has full access
-        if ($this->isAdmin() || $this->roles->contains('slug', 'super-admin')) {
+        // Root super-admin has full unrestricted system access
+        if ($this->isSuperAdmin()) {
             return true;
         }
 
-        foreach ($this->roles as $role) {
+        $userRoles = $this->relationLoaded('roles')
+            ? $this->roles
+            : $this->roles()->with('permissions')->get();
+
+        foreach ($userRoles as $role) {
             if ($role->hasPermission($permissionSlug)) {
                 return true;
             }

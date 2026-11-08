@@ -117,32 +117,35 @@
 
   const PAY_LABELS = { upi: 'UPI / GPay / PhonePe', card: 'Credit / Debit Card', cod: 'Cash on Delivery' };
 
-  const serverOrder = @json(isset($orderModel) && $orderModel ? [
-    'id'       => $orderModel->reference,
-    'order_id' => $orderModel->id,
-    'subtotal' => $orderModel->subtotal,
-    'shipping' => [
-      'name'     => $orderModel->shipping_name,
-      'phone'    => $orderModel->shipping_phone,
-      'email'    => $orderModel->shipping_email,
-      'address1' => $orderModel->shipping_address1,
-      'address2' => $orderModel->shipping_address2,
-      'city'     => $orderModel->shipping_city,
-      'state'    => $orderModel->shipping_state,
-      'pincode'  => $orderModel->shipping_pincode,
-    ],
-    'payment'  => $orderModel->payment_method,
-    'total'    => $orderModel->total,
-    'placedAt' => $orderModel->created_at->toISOString(),
-    'items'    => $orderModel->items->map(fn ($i) => [
-      'name'      => $i->product_name,
-      'colorName' => $i->color_name,
-      'size'      => $i->size,
-      'qty'       => $i->qty,
-      'price'     => $i->price,
-      'image'     => $i->cover_image,
-    ]),
-  ] : null);
+  @php
+    $serverOrderPayload = (isset($orderModel) && $orderModel) ? [
+      'id'       => $orderModel->reference,
+      'order_id' => $orderModel->id,
+      'subtotal' => $orderModel->subtotal,
+      'shipping' => [
+        'name'     => $orderModel->shipping_name,
+        'phone'    => $orderModel->shipping_phone,
+        'email'    => $orderModel->shipping_email,
+        'address1' => $orderModel->shipping_address1,
+        'address2' => $orderModel->shipping_address2,
+        'city'     => $orderModel->shipping_city,
+        'state'    => $orderModel->shipping_state,
+        'pincode'  => $orderModel->shipping_pincode,
+      ],
+      'payment'  => $orderModel->payment_method,
+      'total'    => $orderModel->total,
+      'placedAt' => $orderModel->created_at?->toISOString(),
+      'items'    => $orderModel->items->map(fn ($i) => [
+        'name'      => $i->product_name,
+        'colorName' => $i->color_name,
+        'size'      => $i->size,
+        'qty'       => $i->qty,
+        'price'     => $i->price,
+        'image'     => $i->cover_image,
+      ])->values()->all(),
+    ] : null;
+  @endphp
+  const serverOrder = @json($serverOrderPayload);
 
   const params    = new URLSearchParams(window.location.search);
   const orderId   = params.get('order') || '{{ $order ?? '' }}';

@@ -117,7 +117,7 @@
               <div class="flex items-center gap-2 flex-wrap">
                 @foreach($colors as $ci => $color)
                   <button type="button" 
-                          onclick="selectProductColor({{ $ci }}, '{{ addslashes($color->name) }}')"
+                          onclick="selectProductColor({{ $ci }}, @js($color->name))"
                           class="variety-btn px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 transition {{ $ci === 0 ? 'border-organic-500 bg-organic-50 text-organic-800' : 'border-stone-200 bg-white text-stone-700' }}"
                           data-color-idx="{{ $ci }}">
                     <span class="w-3.5 h-3.5 rounded-full border border-stone-300" style="background-color: {{ $color->hex ?? '#699E4B' }}"></span>
@@ -369,14 +369,14 @@
 
   {{-- Script for interactive variants and addToCart bridging --}}
   <script>
-    let activeColorName = '{{ addslashes($defaultColor?->name ?? "Natural") }}';
-    let activeVariantId = {{ $variants->first()?->id ?? 'null' }};
-    let activeSize = '{{ addslashes($variants->first()?->size ?? "Standard") }}';
-    let activePrice = {{ $variants->first()?->price ?? $product->starting_price }};
-    const productId = {{ $product->id }};
-    const productName = '{{ addslashes($product->name) }}';
-    const productImage = '{{ $product->cover_image }}';
-    const productSku = '{{ $variants->first()?->sku ?? $product->sku ?? "SKU-ORG" }}';
+    let activeColorName = @js($defaultColor?->name ?? "Natural");
+    let activeVariantId = {{ (int) ($variants->first()?->id ?? 0) }};
+    let activeSize = @js($variants->first()?->size ?? "Standard");
+    let activePrice = {{ (float) ($variants->first()?->price ?? $product->starting_price) }};
+    const productId = {{ (int) $product->id }};
+    const productName = @js($product->name);
+    const productImage = @js($product->cover_image);
+    const productSku = @js($variants->first()?->sku ?? $product->sku ?? "SKU-ORG");
 
     function getSelectedAddonsTotal() {
       let total = 0;

@@ -121,7 +121,7 @@ class AdminExpenseController extends Controller
             'vendor_name'         => 'nullable|string|max:150',
             'vendor_gstin'        => 'nullable|string|max:50',
             'reference_no'        => 'nullable|string|max:100',
-            'receipt'             => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'receipt'             => 'nullable|file|mimes:jpg,jpeg,png,pdf|mimetypes:image/jpeg,image/png,application/pdf|max:5120',
             'is_recurring'        => 'nullable|boolean',
             'recurring_frequency' => 'nullable|in:monthly,quarterly,yearly',
             'notes'               => 'nullable|string|max:1000',

@@ -53,6 +53,14 @@ class ProductVariant extends Model
         return $this->hasMany(ProductBatch::class, 'product_variant_id')->orderBy('expiry_date', 'asc');
     }
 
+    /**
+     * Scope query to variants at or below reorder threshold using safe parameterized query.
+     */
+    public function scopeLowStock($query, int $defaultThreshold = 5)
+    {
+        return $query->whereRaw('stock <= COALESCE(reorder_threshold, ?)', [$defaultThreshold]);
+    }
+
     public function getInStockAttribute(): bool
     {
         return $this->stock > 0;

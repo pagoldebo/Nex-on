@@ -16,10 +16,18 @@ class Setting extends Model
     public static function get(string $key, mixed $default = null): mixed
     {
         $ttl = app()->environment('local') ? 10 : 3600;
-        return Cache::remember("setting_{$key}", $ttl, function () use ($key, $default) {
-            $record = static::where('key', $key)->first();
-            return $record !== null && $record->value !== null ? $record->value : $default;
-        });
+        try {
+            return Cache::remember("setting_{$key}", $ttl, function () use ($key, $default) {
+                try {
+                    $record = static::where('key', $key)->first();
+                    return $record !== null && $record->value !== null ? $record->value : $default;
+                } catch (\Throwable $e) {
+                    return $default;
+                }
+            });
+        } catch (\Throwable $e) {
+            return $default;
+        }
     }
 
     /**

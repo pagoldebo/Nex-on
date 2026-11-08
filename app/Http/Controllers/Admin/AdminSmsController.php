@@ -9,6 +9,7 @@ use App\Services\SmsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
 class AdminSmsController extends Controller
@@ -124,6 +125,19 @@ class AdminSmsController extends Controller
             'phone' => 'required|string',
         ]);
 
+        $phone = preg_replace('/[^0-9]/', '', (string) $request->input('phone', ''));
+        $throttleKey = 'sms_otp_send:' . ($phone ?: 'anon') . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many OTP requests. Please wait {$seconds} seconds before trying again.",
+            ], 429);
+        }
+
+        RateLimiter::hit($throttleKey, 600);
+
         $res = $this->smsService->generateAndSendOtp($request->input('phone'));
 
         return response()->json([
@@ -143,14 +157,38 @@ class AdminSmsController extends Controller
             'otp'   => 'required|string',
         ]);
 
+        $phone = preg_replace('/[^0-9]/', '', (string) $request->input('phone', ''));
+        $verifyThrottleKey = 'sms_otp_verify:' . ($phone ?: 'anon') . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($verifyThrottleKey, 5)) {
+            $seconds = RateLimiter::availableIn($verifyThrottleKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many verification attempts. Please wait {$seconds} seconds before trying again.",
+            ], 429);
+        }
+
         $verified = $this->smsService->verifyOtp(
             $request->input('phone'),
             $request->input('otp')
         );
 
+        if (!$verified) {
+            RateLimiter::hit($verifyThrottleKey, 300);
+            $remaining = 5 - RateLimiter::attempts($verifyThrottleKey);
+            return response()->json([
+                'success' => false,
+                'message' => $remaining > 0
+                    ? "Invalid or expired OTP code. {$remaining} attempts remaining."
+                    : 'Too many failed verification attempts. Please request a new OTP.',
+            ], 422);
+        }
+
+        RateLimiter::clear($verifyThrottleKey);
+
         return response()->json([
-            'success' => $verified,
-            'message' => $verified ? 'Phone number verified successfully!' : 'Invalid or expired OTP code.',
+            'success' => true,
+            'message' => 'Phone number verified successfully!',
         ]);
     }
 }

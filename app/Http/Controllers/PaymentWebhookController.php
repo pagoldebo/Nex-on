@@ -20,7 +20,12 @@ class PaymentWebhookController extends Controller
         $payload = $request->getContent();
 
         // Signature verification if secret configured
-        if (!empty($webhookSecret) && !empty($signature)) {
+        if (!empty($webhookSecret)) {
+            if (empty($signature)) {
+                Log::warning('Razorpay webhook signature missing.');
+                return response()->json(['error' => 'Signature missing'], 400);
+            }
+
             $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);
             if (!hash_equals($expectedSignature, $signature)) {
                 Log::warning('Razorpay webhook signature verification failed.');
@@ -57,6 +62,40 @@ class PaymentWebhookController extends Controller
      */
     public function handleStripe(Request $request): JsonResponse
     {
+        $webhookSecret = Setting::get('gateway_stripe_webhook_secret', '');
+        if (!empty($webhookSecret)) {
+            $signatureHeader = $request->header('Stripe-Signature');
+            if (empty($signatureHeader)) {
+                Log::warning('Stripe webhook signature header missing.');
+                return response()->json(['error' => 'Signature header missing'], 400);
+            }
+
+            $timestamp = null;
+            $signature = null;
+            foreach (explode(',', $signatureHeader) as $part) {
+                $pair = explode('=', trim($part), 2);
+                if (count($pair) === 2) {
+                    if ($pair[0] === 't') {
+                        $timestamp = $pair[1];
+                    } elseif ($pair[0] === 'v1') {
+                        $signature = $pair[1];
+                    }
+                }
+            }
+
+            if (!$timestamp || !$signature) {
+                Log::warning('Stripe webhook signature header format invalid.');
+                return response()->json(['error' => 'Invalid signature format'], 400);
+            }
+
+            $signedPayload = $timestamp . '.' . $request->getContent();
+            $expectedSignature = hash_hmac('sha256', $signedPayload, $webhookSecret);
+            if (!hash_equals($expectedSignature, $signature)) {
+                Log::warning('Stripe webhook signature verification failed.');
+                return response()->json(['error' => 'Invalid signature'], 400);
+            }
+        }
+
         $event = $request->input('type');
         $dataObject = $request->input('data.object', []);
 
@@ -85,7 +124,26 @@ class PaymentWebhookController extends Controller
      */
     public function handlePhonePe(Request $request): JsonResponse
     {
+        $saltKey = Setting::get('gateway_phonepe_salt_key', '');
+        $saltIndex = Setting::get('gateway_phonepe_salt_index', '1');
         $responseBase64 = $request->input('response');
+
+        if (!empty($saltKey) && !empty($responseBase64)) {
+            $verifyHeader = $request->header('X-VERIFY');
+            if (empty($verifyHeader)) {
+                Log::warning('PhonePe webhook X-VERIFY header missing.');
+                return response()->json(['error' => 'Verification header missing'], 400);
+            }
+
+            $expectedChecksum1 = hash('sha256', $responseBase64 . $saltKey) . '###' . $saltIndex;
+            $expectedChecksum2 = hash('sha256', $responseBase64 . '/v3/transaction/callback' . $saltKey) . '###' . $saltIndex;
+
+            if (!hash_equals($expectedChecksum1, $verifyHeader) && !hash_equals($expectedChecksum2, $verifyHeader)) {
+                Log::warning('PhonePe webhook checksum verification failed.');
+                return response()->json(['error' => 'Checksum verification failed'], 400);
+            }
+        }
+
         if (!empty($responseBase64)) {
             $decoded = json_decode(base64_decode($responseBase64), true);
             if (($decoded['code'] ?? '') === 'PAYMENT_SUCCESS') {
@@ -118,6 +176,15 @@ class PaymentWebhookController extends Controller
         ]);
 
         $order = Order::where('reference', $validated['order_reference'])->firstOrFail();
+
+        $keySecret = Setting::get('gateway_razorpay_key_secret', '');
+        if (!empty($keySecret) && !empty($validated['razorpay_order_id']) && !empty($validated['razorpay_signature'])) {
+            $expectedSignature = hash_hmac('sha256', $validated['razorpay_order_id'] . '|' . $validated['razorpay_payment_id'], $keySecret);
+            if (!hash_equals($expectedSignature, $validated['razorpay_signature'])) {
+                Log::warning('Client Razorpay payment verification signature mismatch.');
+                return response()->json(['error' => 'Invalid payment signature'], 400);
+            }
+        }
 
         $order->update([
             'payment_status'    => Order::PAYMENT_PAID,

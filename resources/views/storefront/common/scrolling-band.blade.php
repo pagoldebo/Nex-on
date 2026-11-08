@@ -5,30 +5,24 @@
     $supportPhone = \App\Models\Setting::get('support_phone', '+91 98765 43210');
     $tickerEnabled = \App\Models\Setting::get('ticker_enabled', '1');
 
+    $cleanTicker = fn($val, $fallback) => ($val !== null && trim($val) !== '')
+        ? \App\Services\HtmlSanitizerService::clean($val)
+        : $fallback;
+
     $item1 = \App\Models\Setting::get('ticker_item_1');
-    $item1Html = ($item1 !== null && trim($item1) !== '') 
-        ? $item1 
-        : 'Free Delivery on orders over <strong>₹' . e($freeShipping) . '</strong>';
+    $item1Html = $cleanTicker($item1, 'Free Delivery on orders over <strong>₹' . e($freeShipping) . '</strong>');
 
     $item2 = \App\Models\Setting::get('ticker_item_2');
-    $item2Html = ($item2 !== null && trim($item2) !== '') 
-        ? $item2 
-        : 'Upto 500/- off for selected styles.';
+    $item2Html = $cleanTicker($item2, 'Upto 500/- off for selected styles.');
 
     $item3 = \App\Models\Setting::get('ticker_item_3');
-    $item3Html = ($item3 !== null && trim($item3) !== '') 
-        ? $item3 
-        : 'Use code <strong>WELCOME5</strong> for 5% OFF';
+    $item3Html = $cleanTicker($item3, 'Use code <strong>WELCOME5</strong> for 5% OFF');
 
     $item4 = \App\Models\Setting::get('ticker_item_4');
-    $item4Html = ($item4 !== null && trim($item4) !== '') 
-        ? $item4 
-        : 'Accepting UPI payments';
+    $item4Html = $cleanTicker($item4, 'Accepting UPI payments');
 
     $item5 = \App\Models\Setting::get('ticker_item_5');
-    $item5Html = ($item5 !== null && trim($item5) !== '') 
-        ? $item5 
-        : 'Call us: <strong>' . e($supportPhone) . '</strong>';
+    $item5Html = $cleanTicker($item5, 'Call us: <strong>' . e($supportPhone) . '</strong>');
 
     $tickerItems = [
         ['icon' => 'fa-solid fa-truck sld-icon-amber', 'html' => $item1Html],

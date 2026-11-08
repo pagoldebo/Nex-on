@@ -182,16 +182,66 @@
             </div>
         </div>
 
-        <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Images for this color <span class="text-slate-400 font-normal">(up to 8 images — automatically switched on color click)</span>
-            </label>
-            <input type="file" name="colors[__COLOR_INDEX__][images][]" accept="image/*" multiple
-                   onchange="enforceImageLimit(this, 8)"
-                   class="w-full border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-600 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        {{-- ===== 1. Dedicated Cover Image for this color (Updatable separately anytime) ===== --}}
+        <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200/90 space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        Cover Image for this color <span class="text-indigo-600 font-semibold">(Main Display Thumbnail)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 mt-0.5">
+                        The primary image displayed on catalog cards, collections, and initial swatch selection. Can be changed independently anytime.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                {{-- Preview Container --}}
+                <div class="cover-preview-wrapper relative w-24 h-28 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                    <img src="" class="cover-preview-img hidden w-full h-full object-cover" alt="Cover preview">
+                    <div class="cover-placeholder-icon flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+                        <svg class="w-6 h-6 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="text-[10px] font-semibold text-slate-400">No cover</span>
+                    </div>
+                    <span class="cover-badge hidden absolute top-1 left-1 bg-indigo-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Cover</span>
+                </div>
+
+                {{-- Upload & Controls --}}
+                <div class="flex-1 w-full space-y-2">
+                    <input type="file" name="colors[__COLOR_INDEX__][cover_image]" accept="image/*"
+                           onchange="handleCoverImageSelect(this)"
+                           class="cover-file-input w-full border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-600 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 bg-white">
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="clearCoverImage(this)" class="cover-clear-btn hidden text-[11px] font-semibold text-rose-600 hover:underline">
+                            ✕ Remove Cover Image
+                        </button>
+                        <span class="text-[11px] text-slate-400">Accepted formats: WEBP, JPG, PNG, GIF (Max 4MB)</span>
+                    </div>
+                </div>
+            </div>
         </div>
-                   onchange="enforceImageLimit(this, 8)"
-                   class="w-full border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-600 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+
+        {{-- ===== 2. Gallery Images with Interactive Rearrange / Drag-and-Drop ===== --}}
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        Images for this color <span class="text-slate-400 font-normal">(up to 8 images — automatically switched on color click)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 mt-0.5">
+                        Upload detail views &amp; angles. Drag cards or click ◀ / ▶ arrow buttons below to rearrange their order.
+                    </p>
+                </div>
+                <span class="gallery-count-badge text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">0 / 8 images</span>
+            </div>
+
+            <input type="file" name="colors[__COLOR_INDEX__][images][]" accept="image/*" multiple
+                   onchange="handleGalleryImagesSelect(this)"
+                   class="gallery-file-input w-full border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-600 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 bg-white">
+
+            {{-- Interactive Reorder Grid --}}
+            <div class="gallery-preview-grid grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3 min-h-[50px] p-2.5 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 empty:hidden">
+            </div>
         </div>
 
         {{-- ===== Size rows: each has its OWN SKU + price + compare-at + stock ===== --}}
@@ -253,7 +303,9 @@
         const html = tpl.replaceAll('__COLOR_INDEX__', colorIndex);
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html;
-        document.getElementById('colorsContainer').appendChild(wrapper.firstElementChild);
+        const newColorBlock = wrapper.firstElementChild;
+        newColorBlock._galleryFiles = [];
+        document.getElementById('colorsContainer').appendChild(newColorBlock);
         colorIndex++;
         
         // every new color starts with one size row so the form isn't empty
@@ -277,10 +329,183 @@
         sizeContainer.appendChild(wrapper.firstElementChild);
     }
 
-    function enforceImageLimit(input, max) {
-        if (input.files.length > max) {
-            alert(`You can upload up to ${max} images per color.`);
-            input.value = '';
+    // ===== Cover Image Handling =====
+    function handleCoverImageSelect(input) {
+        const block = input.closest('.color-block');
+        const img = block.querySelector('.cover-preview-img');
+        const icon = block.querySelector('.cover-placeholder-icon');
+        const badge = block.querySelector('.cover-badge');
+        const clearBtn = block.querySelector('.cover-clear-btn');
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            img.src = URL.createObjectURL(file);
+            img.classList.remove('hidden');
+            icon.classList.add('hidden');
+            badge.classList.remove('hidden');
+            clearBtn.classList.remove('hidden');
+        } else {
+            clearCoverImage(input);
+        }
+    }
+
+    function clearCoverImage(btnOrInput) {
+        const block = btnOrInput.closest('.color-block');
+        const input = block.querySelector('.cover-file-input');
+        const img = block.querySelector('.cover-preview-img');
+        const icon = block.querySelector('.cover-placeholder-icon');
+        const badge = block.querySelector('.cover-badge');
+        const clearBtn = block.querySelector('.cover-clear-btn');
+
+        input.value = '';
+        img.src = '';
+        img.classList.add('hidden');
+        icon.classList.remove('hidden');
+        badge.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+    }
+
+    // ===== Gallery Images Handling & Rearranging =====
+    function handleGalleryImagesSelect(input) {
+        const block = input.closest('.color-block');
+        if (!block._galleryFiles) {
+            block._galleryFiles = [];
+        }
+
+        const newFiles = Array.from(input.files);
+        const maxAllowed = 8;
+        const availableSlots = maxAllowed - block._galleryFiles.length;
+
+        if (availableSlots <= 0) {
+            alert(`You have already selected the maximum of ${maxAllowed} images for this color.`);
+            syncGalleryFilesToInput(block);
+            return;
+        }
+
+        if (newFiles.length > availableSlots) {
+            alert(`You can only add ${availableSlots} more image(s). Only the first ${availableSlots} will be added.`);
+        }
+
+        const filesToAdd = newFiles.slice(0, availableSlots);
+        block._galleryFiles = block._galleryFiles.concat(filesToAdd);
+
+        renderGalleryPreviews(block);
+        syncGalleryFilesToInput(block);
+    }
+
+    function syncGalleryFilesToInput(block) {
+        const input = block.querySelector('.gallery-file-input');
+        const dt = new DataTransfer();
+        (block._galleryFiles || []).forEach(file => dt.items.add(file));
+        input.files = dt.files;
+
+        const badge = block.querySelector('.gallery-count-badge');
+        if (badge) {
+            badge.textContent = `${(block._galleryFiles || []).length} / 8 images`;
+        }
+    }
+
+    function renderGalleryPreviews(block) {
+        const grid = block.querySelector('.gallery-preview-grid');
+        grid.innerHTML = '';
+        const files = block._galleryFiles || [];
+
+        if (files.length === 0) {
+            grid.classList.add('empty:hidden');
+            return;
+        }
+        grid.classList.remove('empty:hidden');
+
+        files.forEach((file, index) => {
+            const card = document.createElement('div');
+            card.className = 'gallery-card relative group rounded-xl overflow-hidden border border-slate-200 bg-white shadow-xs select-none aspect-3/4 flex flex-col justify-between cursor-grab active:cursor-grabbing transition transform hover:scale-[1.02]';
+            card.draggable = true;
+            card.dataset.index = index;
+
+            const url = URL.createObjectURL(file);
+
+            card.innerHTML = `
+                <div class="p-1.5 flex items-center justify-between z-10 pointer-events-none">
+                    <span class="bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow">
+                        #${index + 1}
+                    </span>
+                </div>
+                <img src="${url}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Gallery preview">
+                <div class="relative z-10 p-1 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 opacity-95 sm:opacity-0 group-hover:opacity-100 transition">
+                    <button type="button" onclick="moveGalleryCard(this, -1)" class="w-6 h-6 rounded bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center text-[10px] font-bold shadow ${index === 0 ? 'opacity-30 pointer-events-none' : ''}" title="Move Left">
+                        ◀
+                    </button>
+                    <button type="button" onclick="removeGalleryCard(this)" class="w-6 h-6 rounded bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-[11px] font-bold shadow" title="Remove image">
+                        ✕
+                    </button>
+                    <button type="button" onclick="moveGalleryCard(this, 1)" class="w-6 h-6 rounded bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center text-[10px] font-bold shadow ${index === files.length - 1 ? 'opacity-30 pointer-events-none' : ''}" title="Move Right">
+                        ▶
+                    </button>
+                </div>
+            `;
+
+            // HTML5 Drag-and-drop events
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', index);
+                card.classList.add('opacity-40');
+                window._draggedGalleryCard = { block, index };
+            });
+            card.addEventListener('dragend', () => {
+                card.classList.remove('opacity-40');
+                grid.querySelectorAll('.gallery-card').forEach(c => c.classList.remove('ring-2', 'ring-indigo-500'));
+                window._draggedGalleryCard = null;
+            });
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                card.classList.add('ring-2', 'ring-indigo-500');
+            });
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('ring-2', 'ring-indigo-500');
+            });
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('ring-2', 'ring-indigo-500');
+                if (!window._draggedGalleryCard || window._draggedGalleryCard.block !== block) return;
+
+                const fromIndex = window._draggedGalleryCard.index;
+                const toIndex = index;
+                if (fromIndex !== toIndex) {
+                    const movedFile = block._galleryFiles.splice(fromIndex, 1)[0];
+                    block._galleryFiles.splice(toIndex, 0, movedFile);
+                    renderGalleryPreviews(block);
+                    syncGalleryFilesToInput(block);
+                }
+            });
+
+            grid.appendChild(card);
+        });
+    }
+
+    function moveGalleryCard(btn, direction) {
+        const card = btn.closest('.gallery-card');
+        const block = card.closest('.color-block');
+        const index = parseInt(card.dataset.index, 10);
+        const newIndex = index + direction;
+        const files = block._galleryFiles || [];
+
+        if (newIndex >= 0 && newIndex < files.length) {
+            const moved = files.splice(index, 1)[0];
+            files.splice(newIndex, 0, moved);
+            renderGalleryPreviews(block);
+            syncGalleryFilesToInput(block);
+        }
+    }
+
+    function removeGalleryCard(btn) {
+        const card = btn.closest('.gallery-card');
+        const block = card.closest('.color-block');
+        const index = parseInt(card.dataset.index, 10);
+        const files = block._galleryFiles || [];
+
+        if (index >= 0 && index < files.length) {
+            files.splice(index, 1);
+            renderGalleryPreviews(block);
+            syncGalleryFilesToInput(block);
         }
     }
 

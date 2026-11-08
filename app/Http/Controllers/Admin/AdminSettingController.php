@@ -27,49 +27,91 @@ class AdminSettingController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $allowedImageKeys = [
+            'site_logo',
+            'vyra_hero_image',
+            'buttercup_hero_image',
+            'buttercup_slide_1_image',
+            'buttercup_slide_2_image',
+            'buttercup_slide_3_image',
+            'buttercup_slide_4_image',
+            'buttercup_slide_5_image',
+            'lumiere_hero_image',
+            'saaya_hero_image',
+            'saaya_story_image',
+            'vyra_story_image',
+            'buttercup_story_image',
+            'lumiere_story_image',
+            'organic_story_image',
+            'hero_banner_image',
+        ];
+
         $request->validate([
-            'site_logo'            => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
-            'vyra_hero_image'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_hero_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_slide_1_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_slide_2_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_slide_3_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_slide_4_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_slide_5_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'lumiere_hero_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'saaya_hero_image'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'saaya_story_image'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'vyra_story_image'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'buttercup_story_image'=> 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'lumiere_story_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'organic_story_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-            'hero_banner_image'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
+            'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:5120',
+            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_slide_3_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_slide_4_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
         ]);
 
-        // Dynamically process any image removals
+        // Validate webhook URLs against SSRF (mitigates internal network scanning & cloud metadata access)
+        if ($request->filled('order_webhook_urls')) {
+            $webhookUrls = array_filter(array_map('trim', explode(',', (string) $request->input('order_webhook_urls'))));
+            foreach ($webhookUrls as $webhookUrl) {
+                try {
+                    \App\Services\SsrfProtectionService::validateUrl($webhookUrl);
+                } catch (\InvalidArgumentException $e) {
+                    return back()->withInput()->withErrors([
+                        'order_webhook_urls' => "SSRF Security Validation Failed: {$e->getMessage()}",
+                    ]);
+                }
+            }
+        }
+
+        // Process whitelisted image removals only (prevents arbitrary setting wipes)
         foreach ($request->all() as $inputKey => $value) {
             if (str_starts_with($inputKey, 'remove_') && ($value === '1' || $value === 1)) {
                 $targetKey = substr($inputKey, 7);
                 if ($targetKey === 'logo') {
                     $targetKey = 'site_logo';
                 }
-                $oldImg = Setting::get($targetKey);
-                if ($oldImg && Storage::disk('public')->exists($oldImg)) {
-                    Storage::disk('public')->delete($oldImg);
+                if (in_array($targetKey, $allowedImageKeys, true)) {
+                    $oldImg = Setting::get($targetKey);
+                    if ($oldImg && Storage::disk('public')->exists($oldImg)) {
+                        Storage::disk('public')->delete($oldImg);
+                    }
+                    Setting::set($targetKey, '');
                 }
-                Setting::set($targetKey, '');
             }
         }
 
-        // Dynamically process any file uploads
-        foreach ($request->allFiles() as $fileKey => $file) {
-            $folder = ($fileKey === 'site_logo') ? 'branding' : 'banners';
-            $oldImg = Setting::get($fileKey);
-            if ($oldImg && Storage::disk('public')->exists($oldImg)) {
-                Storage::disk('public')->delete($oldImg);
+        // Process whitelisted file uploads only (prevents arbitrary file uploads)
+        foreach ($allowedImageKeys as $fileKey) {
+            if ($request->hasFile($fileKey)) {
+                $folder = ($fileKey === 'site_logo') ? 'branding' : 'banners';
+                $oldImg = Setting::get($fileKey);
+                if ($oldImg && Storage::disk('public')->exists($oldImg)) {
+                    Storage::disk('public')->delete($oldImg);
+                }
+                $uploadedFile = $request->file($fileKey);
+                if (strtolower($uploadedFile->getClientOriginalExtension()) === 'svg' || str_contains($uploadedFile->getMimeType() ?? '', 'svg')) {
+                    $sanitized = \App\Services\HtmlSanitizerService::sanitizeSvg(file_get_contents($uploadedFile->getRealPath()));
+                    file_put_contents($uploadedFile->getRealPath(), $sanitized);
+                }
+                $storedPath = $uploadedFile->store($folder, 'public');
+                Setting::set($fileKey, $storedPath);
             }
-            $storedPath = $request->file($fileKey)->store($folder, 'public');
-            Setting::set($fileKey, $storedPath);
         }
 
         $allFileKeys = array_keys($request->allFiles());
@@ -90,8 +132,26 @@ class AdminSettingController extends Controller
             $data['ticker_enabled'] = '0';
         }
 
+        $richContentKeys = [
+            'return_custom_content',
+            'shipping_custom_content',
+            'sizeguide_additional_info',
+            'ticker_item_1',
+            'ticker_item_2',
+            'ticker_item_3',
+            'ticker_item_4',
+            'ticker_item_5',
+            'product_delivery_info',
+            'product_returns_info',
+            'organic_delivery_info',
+            'organic_returns_info',
+        ];
+
         foreach ($data as $key => $value) {
             if (!is_array($value)) {
+                if (in_array($key, $richContentKeys, true)) {
+                    $value = \App\Services\HtmlSanitizerService::clean($value);
+                }
                 Setting::set($key, $value);
             }
         }

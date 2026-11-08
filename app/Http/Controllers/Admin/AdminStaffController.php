@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AdminStaffController extends Controller
@@ -81,7 +82,7 @@ class AdminStaffController extends Controller
             'department_name'   => ['required', 'string', 'max:100'],
             'employment_status' => ['required', 'in:active,on_leave,inactive'],
             'sales'             => ['nullable', 'numeric', 'min:0'],
-            'password'          => ['nullable', 'string', 'min:6'],
+            'password'          => ['nullable', 'string', Password::defaults()],
         ]);
 
         $password = !empty($validated['password']) ? $validated['password'] : Str::random(12);
@@ -106,6 +107,13 @@ class AdminStaffController extends Controller
                 'role_title' => $validated['role_title'],
                 'is_primary' => true,
             ]);
+        }
+
+        // Associate matching role if defined in RBAC roles catalog
+        $roleSlug = Str::slug($validated['role_title']);
+        $role = Role::where('slug', $roleSlug)->orWhere('name', $validated['role_title'])->first();
+        if ($role) {
+            $employee->roles()->syncWithoutDetaching([$role->id]);
         }
 
         return redirect()->route('admin.staff.index')
@@ -169,6 +177,13 @@ class AdminStaffController extends Controller
                     'is_primary' => true,
                 ],
             ]);
+        }
+
+        // Sync matching role if defined in RBAC roles catalog
+        $roleSlug = Str::slug($validated['role_title']);
+        $role = Role::where('slug', $roleSlug)->orWhere('name', $validated['role_title'])->first();
+        if ($role) {
+            $user->roles()->sync([$role->id]);
         }
 
         return redirect()->route('admin.staff.index')

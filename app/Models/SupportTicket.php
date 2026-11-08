@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasRowLevelSecurity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SupportTicket extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRowLevelSecurity;
 
     protected $fillable = [
         'ticket_number',
@@ -52,7 +53,8 @@ class SupportTicket extends Model
     public static function generateTicketNumber(): string
     {
         $prefix = 'TCK-' . date('Ym') . '-';
-        $latest = self::where('ticket_number', 'LIKE', "{$prefix}%")
+        $latest = self::withoutRowLevelSecurity()
+            ->where('ticket_number', 'LIKE', "{$prefix}%")
             ->orderBy('id', 'desc')
             ->first();
 

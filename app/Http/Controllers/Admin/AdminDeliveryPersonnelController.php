@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AdminDeliveryPersonnelController extends Controller
@@ -126,6 +127,15 @@ class AdminDeliveryPersonnelController extends Controller
      */
     public function driverUpdateStatus(Request $request, Order $order): RedirectResponse
     {
+        // Object-level authorization: ensure the requesting driver is assigned to this order, or the user is an admin
+        $driverPhone = session('driver_phone');
+        $driver = $driverPhone ? DeliveryPersonnel::where('phone', $driverPhone)->first() : null;
+        $isAdmin = Auth::check() && Auth::user()->isAdmin();
+
+        if (! $isAdmin && (! $driver || $order->delivery_personnel_id !== $driver->id)) {
+            abort(403, 'Unauthorized. This delivery order is not assigned to your driver account.');
+        }
+
         $action = $request->input('action'); // 'start' (out_for_delivery) or 'complete' (delivered)
 
         if ($action === 'start') {

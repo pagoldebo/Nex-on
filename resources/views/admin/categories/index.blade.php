@@ -462,7 +462,7 @@
                                         </button>
 
                                         <!-- Delete Form -->
-                                        <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Are you sure you want to delete \'{{ addslashes($cat->name) }}\'?')">
+                                        <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Are you sure you want to delete ' + @js($cat->name) + '?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 

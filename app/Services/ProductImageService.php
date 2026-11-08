@@ -83,8 +83,11 @@ class ProductImageService
     public static function saveRawAsWebp(string $rawContent, string $targetPath, bool $isAlreadyWebp = false): void
     {
         if ($isAlreadyWebp) {
-            Storage::disk('public')->put($targetPath, $rawContent);
-            return;
+            // Verify WebP magic bytes: RIFF....WEBP
+            if (strlen($rawContent) >= 12 && str_starts_with($rawContent, 'RIFF') && substr($rawContent, 8, 4) === 'WEBP') {
+                Storage::disk('public')->put($targetPath, $rawContent);
+                return;
+            }
         }
 
         if (function_exists('imagecreatefromstring') && function_exists('imagewebp')) {
@@ -105,7 +108,7 @@ class ProductImageService
             }
         }
 
-        Storage::disk('public')->put($targetPath, $rawContent);
+        throw new \InvalidArgumentException('Uploaded file is not a valid or decodable image.');
     }
 }
 

@@ -15,11 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin_theme',
         ]);
         $middleware->validateCsrfTokens(except: [
-            'admin/themes/admin-toggle',
+            'webhook/*',
         ]);
         $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeadersMiddleware::class,
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\EnsurePlatformBranding::class,
+        ]);
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\EnsurePermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

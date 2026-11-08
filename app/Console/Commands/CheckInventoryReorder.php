@@ -19,7 +19,7 @@ class CheckInventoryReorder extends Command
         $this->info("Scanning inventory for safety stock breaches...");
 
         $breached = ProductVariant::with(['product', 'color', 'supplier'])
-            ->whereRaw('stock <= COALESCE(reorder_threshold, 5)')
+            ->lowStock()
             ->orderBy('stock')
             ->get();
 

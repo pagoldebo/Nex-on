@@ -122,8 +122,9 @@ class ProductController extends Controller
             'colors'                     => 'required|array|min:1',
             'colors.*.name'              => 'required|string|max:50',
             'colors.*.hex'               => 'nullable|string|max:9',
+            'colors.*.cover_image'       => 'nullable|file|mimes:jpeg,png,jpg,webp,gif|mimetypes:image/jpeg,image/png,image/webp,image/gif|max:4096',
             'colors.*.images'            => 'nullable|array|max:8',
-            'colors.*.images.*'          => 'image|max:4096',
+            'colors.*.images.*'          => 'file|mimes:jpeg,png,jpg,webp,gif|mimetypes:image/jpeg,image/png,image/webp,image/gif|max:4096',
             'colors.*.sizes'             => 'required|array|min:1',
             'colors.*.sizes.*.size'      => 'required|string|max:10',
             'colors.*.sizes.*.sku'       => 'nullable|string|max:60',
@@ -177,8 +178,12 @@ class ProductController extends Controller
             'colors.*.id'                => 'nullable|exists:product_colors,id',
             'colors.*.name'              => 'required|string|max:50',
             'colors.*.hex'               => 'nullable|string|max:9',
+            'colors.*.cover_image'       => 'nullable|file|mimes:jpeg,png,jpg,webp,gif|mimetypes:image/jpeg,image/png,image/webp,image/gif|max:4096',
+            'colors.*.remove_cover_image'=> 'nullable|boolean',
+            'colors.*.existing_images_order' => 'nullable|array',
+            'colors.*.existing_images_order.*' => 'integer|exists:product_color_images,id',
             'colors.*.images'            => 'nullable|array|max:8',
-            'colors.*.images.*'          => 'image|max:4096',
+            'colors.*.images.*'          => 'file|mimes:jpeg,png,jpg,webp,gif|mimetypes:image/jpeg,image/png,image/webp,image/gif|max:4096',
             'colors.*.remove_image_ids'  => 'nullable|array',
             'colors.*.remove_image_ids.*' => 'integer|exists:product_color_images,id',
             'colors.*.sizes'             => 'required|array|min:1',
@@ -247,10 +252,11 @@ class ProductController extends Controller
 
             foreach ($product->colors as $color) {
                 $newColor = ProductColor::create([
-                    'product_id' => $clone->id,
-                    'name'       => $color->name,
-                    'hex'        => $color->hex,
-                    'sort_order' => $color->sort_order,
+                    'product_id'  => $clone->id,
+                    'name'        => $color->name,
+                    'hex'         => $color->hex,
+                    'cover_image' => $color->getRawOriginal('cover_image'),
+                    'sort_order'  => $color->sort_order,
                 ]);
 
                 foreach ($color->images as $img) {
@@ -316,6 +322,24 @@ class ProductController extends Controller
             );
             $position++;
 
+            // Handle cover image removal if requested
+            if (!empty($colorData['remove_cover_image']) && $color->getRawOriginal('cover_image')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($color->getRawOriginal('cover_image'));
+                $color->cover_image = null;
+                $color->save();
+            }
+
+            // Handle cover image upload
+            if ($request->hasFile("colors.$colorIndex.cover_image")) {
+                $coverFile = $request->file("colors.$colorIndex.cover_image");
+                if ($color->getRawOriginal('cover_image')) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($color->getRawOriginal('cover_image'));
+                }
+                $coverPath = ProductImageService::store($coverFile, $product);
+                $color->cover_image = $coverPath;
+                $color->save();
+            }
+
             // Delete images explicitly removed by admin
             $removeImageIds = $colorData['remove_image_ids'] ?? [];
             if (!empty($removeImageIds)) {
@@ -323,6 +347,14 @@ class ProductController extends Controller
                 foreach ($imagesToDelete as $image) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($image->image_path);
                     $image->delete();
+                }
+            }
+
+            // Reorder existing images if sort order was submitted
+            $existingImagesOrder = $colorData['existing_images_order'] ?? [];
+            if (!empty($existingImagesOrder)) {
+                foreach ($existingImagesOrder as $orderIdx => $imgId) {
+                    $color->images()->where('id', $imgId)->update(['sort_order' => $orderIdx]);
                 }
             }
 

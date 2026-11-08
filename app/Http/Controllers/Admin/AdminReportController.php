@@ -177,7 +177,7 @@ class AdminReportController extends Controller
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->whereIn('order_items.order_id', $orderIds)
             ->select(
-                DB::raw('COALESCE(categories.name, "Uncategorized") as category_name'),
+                DB::raw("COALESCE(categories.name, 'Uncategorized') as category_name"),
                 DB::raw('SUM(order_items.qty) as units_sold'),
                 DB::raw('SUM(order_items.line_total) as revenue')
             )

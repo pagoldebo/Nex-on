@@ -56,7 +56,7 @@ class AdminPurchaseOrderController extends Controller
         $purchaseOrders = $query->paginate(15)->withQueryString();
 
         // Procurement KPIs
-        $lowStockVariantsCount = ProductVariant::whereRaw('stock <= COALESCE(reorder_threshold, 5)')->count();
+        $lowStockVariantsCount = ProductVariant::lowStock()->count();
         $openPosCount = PurchaseOrder::whereIn('status', [PurchaseOrder::STATUS_DRAFT, PurchaseOrder::STATUS_SENT, PurchaseOrder::STATUS_PARTIAL])->count();
         $receivedThisMonth = PurchaseOrder::where('status', PurchaseOrder::STATUS_RECEIVED)->whereMonth('updated_at', now()->month)->count();
         $totalSpend = PurchaseOrder::whereIn('status', [PurchaseOrder::STATUS_SENT, PurchaseOrder::STATUS_PARTIAL, PurchaseOrder::STATUS_RECEIVED])->sum('total_amount');
@@ -85,7 +85,7 @@ class AdminPurchaseOrderController extends Controller
         
         // Variants that are low or zero stock for fast selection
         $lowStockVariants = ProductVariant::with(['product', 'color', 'supplier'])
-            ->whereRaw('stock <= COALESCE(reorder_threshold, 5)')
+            ->lowStock()
             ->orderBy('stock')
             ->take(30)
             ->get();
@@ -255,7 +255,7 @@ class AdminPurchaseOrderController extends Controller
 
         // 2. Fetch variants breaching safety thresholds
         $breachedVariants = ProductVariant::with(['product', 'supplier'])
-            ->whereRaw('stock <= COALESCE(reorder_threshold, 5)')
+            ->lowStock()
             ->get();
 
         if ($breachedVariants->isEmpty()) {

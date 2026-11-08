@@ -9,6 +9,8 @@ use App\Services\Auth\TotpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -48,15 +50,41 @@ class TwoFactorAuthenticatedSessionController extends Controller
             return redirect()->route('login');
         }
 
+        if (! $user->hasTwoFactorEnabled()) {
+            $request->session()->forget(['login.id', 'login.remember']);
+            return redirect()->route('login')->withErrors(['email' => 'Two-factor authentication is not active. Please sign in again.']);
+        }
+
+        $attemptKey = '2fa_challenge_attempts:' . $user->id;
+        if (RateLimiter::tooManyAttempts($attemptKey, 5)) {
+            $request->session()->forget(['login.id', 'login.remember']);
+            throw ValidationException::withMessages([
+                'code' => ['Too many failed two-factor attempts. Session terminated for security. Please sign in again.'],
+            ]);
+        }
+
         // 1. Authenticate via standard 6-digit TOTP code
         if ($request->filled('code')) {
             $code = str_replace(' ', '', (string) $request->input('code'));
 
+            // Prevent code replay within the drift window (RFC 6238 §5.2)
+            $replayCacheKey = 'totp_used:' . $user->id . ':' . $code;
+            if (Cache::has($replayCacheKey)) {
+                RateLimiter::hit($attemptKey, 300);
+                throw ValidationException::withMessages([
+                    'code' => ['This authentication code has already been used. Please wait for a new code.'],
+                ]);
+            }
+
             if (! $user->two_factor_secret || ! $this->totp->verify(decrypt($user->two_factor_secret), $code)) {
+                RateLimiter::hit($attemptKey, 300);
                 throw ValidationException::withMessages([
                     'code' => ['The provided two-factor authentication code was invalid.'],
                 ]);
             }
+
+            // Mark this code as consumed for 120 seconds
+            Cache::put($replayCacheKey, true, now()->addSeconds(120));
         }
         // 2. Authenticate via 1-time emergency recovery code
         elseif ($request->filled('recovery_code')) {
@@ -72,6 +100,7 @@ class TwoFactorAuthenticatedSessionController extends Controller
             }
 
             if ($foundIndex === null) {
+                RateLimiter::hit($attemptKey, 300);
                 throw ValidationException::withMessages([
                     'recovery_code' => ['The provided two-factor recovery code was invalid.'],
                 ]);
@@ -87,6 +116,9 @@ class TwoFactorAuthenticatedSessionController extends Controller
                 'code' => ['Please provide your two-factor code or an emergency recovery code.'],
             ]);
         }
+
+        // Clear attempts counter on success
+        RateLimiter::clear($attemptKey);
 
         // Clear temporary challenge session
         $remember = (bool) $request->session()->pull('login.remember', false);

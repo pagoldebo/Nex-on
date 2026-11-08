@@ -3,9 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 
 /*
@@ -39,8 +41,15 @@ Route::middleware('guest')->group(function () {
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
+            $message = 'Too many login attempts. Please try again in ' . $seconds . ' seconds.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors'  => ['email' => [$message]],
+                ], 429);
+            }
             return back()->withErrors([
-                'email' => 'Too many login attempts. Please try again in ' . $seconds . ' seconds.',
+                'email' => $message,
             ])->onlyInput('email');
         }
 
@@ -54,6 +63,12 @@ Route::middleware('guest')->group(function () {
         }
 
         RateLimiter::clear($throttleKey);
+
+        // Transparent cryptographic rehash if work factor or algorithm has upgraded
+        if (Hash::needsRehash($user->password)) {
+            $user->password = Hash::make($credentials['password']);
+            $user->save();
+        }
 
         if ($user->isDeactivated()) {
             return back()->withErrors([
@@ -105,7 +120,7 @@ Route::middleware('guest')->group(function () {
 
         return redirect()->route('verification.2fa.form')
             ->with('status', 'A verification code has been sent to your email.');
-    });
+    })->middleware('throttle:login');
 
     // Two-Step Email OTP Verification Routes
     $showVerifyForm = function () {
@@ -148,13 +163,38 @@ Route::middleware('guest')->group(function () {
             return redirect()->route('login')->withErrors(['email' => 'User not found. Please sign in again.']);
         }
 
-        if ($user->otp_code !== $request->otp) {
-            return back()->withErrors(['otp' => 'The verification code is incorrect.'])->withInput();
+        $attemptKey = 'otp_attempts:' . $user->id;
+        if (RateLimiter::tooManyAttempts($attemptKey, 5)) {
+            $user->clearOtp();
+            session()->forget(['pending_2fa_user_id', 'pending_2fa_remember', 'pending_2fa_email']);
+            $msg = 'Too many failed verification attempts. Your code has been invalidated for security. Please sign in again.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 429);
+            }
+            return redirect()->route('login')->withErrors(['email' => $msg]);
         }
 
-        if ($user->otp_expires_at && now()->isAfter($user->otp_expires_at)) {
-            return back()->withErrors(['otp' => 'The verification code has expired. Please request a new one.'])->withInput();
+        if ($user->otp_code !== $request->otp) {
+            RateLimiter::hit($attemptKey, 300);
+            $remaining = 5 - RateLimiter::attempts($attemptKey);
+            if ($remaining <= 0) {
+                $user->clearOtp();
+                session()->forget(['pending_2fa_user_id', 'pending_2fa_remember', 'pending_2fa_email']);
+                $msg = 'Too many failed verification attempts. Your code has been invalidated. Please sign in again.';
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $msg], 429);
+                }
+                return redirect()->route('login')->withErrors(['email' => $msg]);
+            }
+
+            $msg = "The verification code is incorrect. {$remaining} attempts remaining.";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->withErrors(['otp' => $msg])->withInput();
         }
+
+        RateLimiter::clear($attemptKey);
 
         // Clear OTP & Session
         $user->clearOtp();
@@ -170,8 +210,8 @@ Route::middleware('guest')->group(function () {
         return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . $user->name . '!');
     };
 
-    Route::post('/verify-otp', $verifyOtpHandler)->name('verification.otp');
-    Route::post('/verify-2fa', $verifyOtpHandler)->name('verification.2fa');
+    Route::post('/verify-otp', $verifyOtpHandler)->name('verification.otp')->middleware('throttle:otp_verify');
+    Route::post('/verify-2fa', $verifyOtpHandler)->name('verification.2fa')->middleware('throttle:otp_verify');
 
     $resendOtpHandler = function (Request $request) {
         $pendingUserId = session('pending_2fa_user_id');
@@ -189,6 +229,17 @@ Route::middleware('guest')->group(function () {
             }
             return redirect()->route('login')->withErrors(['email' => 'User not found. Please sign in again.']);
         }
+
+        $resendThrottleKey = 'resend_otp:' . $user->id;
+        if (RateLimiter::tooManyAttempts($resendThrottleKey, 3)) {
+            $seconds = RateLimiter::availableIn($resendThrottleKey);
+            $msg = 'Please wait ' . $seconds . ' seconds before requesting another code.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 429);
+            }
+            return back()->withErrors(['otp' => $msg]);
+        }
+        RateLimiter::hit($resendThrottleKey, 300);
 
         $otp = $user->generateOtp(10);
 
@@ -209,8 +260,8 @@ Route::middleware('guest')->group(function () {
         return back()->with('status', 'A new verification code has been sent to your email.');
     };
 
-    Route::post('/resend-otp', $resendOtpHandler)->name('verification.store');
-    Route::post('/resend-2fa', $resendOtpHandler)->name('verification.2fa.resend');
+    Route::post('/resend-otp', $resendOtpHandler)->name('verification.store')->middleware('throttle:otp_resend');
+    Route::post('/resend-2fa', $resendOtpHandler)->name('verification.2fa.resend')->middleware('throttle:otp_resend');
 
     // Mail OTP Theme Preview Route (for testing & visual review)
     Route::get('/preview-mail/otp', function () {
@@ -240,7 +291,7 @@ Route::middleware('guest')->group(function () {
         $validated = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'phone'    => ['nullable', 'string', 'max:50'],
         ]);
 
@@ -282,24 +333,52 @@ Route::middleware('guest')->group(function () {
         Auth::login($user);
 
         return redirect()->intended(route('home'))->with('success', 'Welcome to ' . config('app.name', 'Nex-on') . '! Your account has been created.');
-    });
+    })->middleware('throttle:register');
 
     Route::get('/forgot-password', function () {
         return view('auth.login', ['forgot' => true]);
     })->name('password.request');
 
     Route::post('/forgot-password', function (Request $request) {
-        $request->validate(['email' => 'required|email']);
-        return back()->with('status', 'If an account matches that email, a password reset link has been sent.');
-    })->name('password.email');
+        $request->validate(['email' => ['required', 'email']]);
+
+        // Send reset link using secure hashed tokens in password_reset_tokens
+        $status = PasswordBroker::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === PasswordBroker::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    })->name('password.email')->middleware('throttle:password_reset');
 
     Route::get('/reset-password/{token}', function (string $token) {
-        return view('auth.login', ['token' => $token]);
+        return view('auth.login', ['token' => $token, 'email' => request('email')]);
     })->name('password.reset');
 
     Route::post('/reset-password', function (Request $request) {
-        return redirect()->route('login')->with('status', 'Password reset successfully.');
-    })->name('password.store');
+        $request->validate([
+            'token'    => ['required'],
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $status = PasswordBroker::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, string $password) {
+                $user->forceFill([
+                    'password'       => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                Auth::login($user);
+            }
+        );
+
+        return $status === PasswordBroker::PASSWORD_RESET
+            ? redirect()->route('home')->with('status', __($status))
+            : back()->withErrors(['email' => [__($status)]]);
+    })->name('password.store')->middleware('throttle:password_reset');
 
     // Two-Factor Authenticator Challenge (TOTP RFC 6238)
     Route::get('/two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
@@ -315,12 +394,16 @@ Route::middleware('auth')->group(function () {
 
     // Two-Factor Authenticator App (TOTP) Management
     Route::post('/user/two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('two-factor.enable');
     Route::post('/user/confirmed-two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'confirm'])
+        ->middleware('throttle:6,1')
         ->name('two-factor.confirm');
     Route::delete('/user/two-factor-authentication', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'destroy'])
+        ->middleware('throttle:6,1')
         ->name('two-factor.disable');
     Route::post('/user/two-factor-recovery-codes', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'regenerateRecoveryCodes'])
+        ->middleware('throttle:6,1')
         ->name('two-factor.regenerate-recovery-codes');
 
     Route::post('/logout', function (Request $request) {

@@ -82,13 +82,14 @@ class TotpService
     }
 
     /**
-     * Generate an image QR code URL (using reliable SVG/charts API).
+     * Generate a self-contained local SVG QR code Data URI.
+     * Prevents third-party disclosure of the user's 2FA secret key.
      */
     public function getQrCodeSvgUrl(string $company, string $email, string $secret): string
     {
         $otpUrl = $this->getQrCodeUrl($company, $email, $secret);
 
-        return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($otpUrl);
+        return (new QrCodeService())->generateDataUri($otpUrl, 200);
     }
 
     /**

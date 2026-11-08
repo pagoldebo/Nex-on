@@ -31,7 +31,8 @@ class WebhookService
     }
 
     /**
-     * Retrieve webhook URLs from config, environment, or settings.
+     * Retrieve webhook URLs from config, environment, or settings,
+     * securely filtering out prohibited internal/SSRF addresses.
      */
     public static function getWebhookUrls(): array
     {
@@ -46,7 +47,10 @@ class WebhookService
         }
 
         $urls = array_map('trim', explode(',', $urlsString));
-        return array_filter($urls, fn ($u) => !empty($u) && filter_var($u, FILTER_VALIDATE_URL));
+        $validUrls = array_filter($urls, fn ($u) => !empty($u) && filter_var($u, FILTER_VALIDATE_URL));
+
+        // Enforce SSRF protection
+        return SsrfProtectionService::filterSafeUrls($validUrls);
     }
 
     /**
@@ -85,15 +89,21 @@ class WebhookService
     }
 
     /**
-     * Post JSON payload to target webhook URL.
+     * Post JSON payload to target webhook URL using SSRF-safe client.
      */
     private static function sendWebhook(string $url, array $payload): void
     {
+        // Enforce SSRF protection before dispatch
+        if (!SsrfProtectionService::isSafeUrl($url)) {
+            Log::warning("WebhookService: Blocked SSRF attempt to dispatch webhook to '{$url}'.");
+            return;
+        }
+
         try {
-            $response = Http::timeout(8)
+            // Using safe client with redirects disabled to prevent SSRF via 30x redirection
+            $response = SsrfProtectionService::createSafeClient(8)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
-                    'User-Agent'   => 'MultiTheme-CMS-Webhook/1.0',
                 ])
                 ->post($url, $payload);
 

@@ -90,7 +90,7 @@ class AdminDashboardController extends Controller
             ->take(6)
             ->get();
 
-        $navLowStockCount = ProductVariant::whereRaw('stock <= COALESCE(reorder_threshold, 5)')->count();
+        $navLowStockCount = ProductVariant::lowStock()->count();
 
         // Top VIP Customers
         $topCustomers = User::withCount('orders')

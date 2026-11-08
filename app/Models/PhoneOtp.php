@@ -18,6 +18,15 @@ class PhoneOtp extends Model
         'is_verified' => 'boolean',
     ];
 
+    /**
+     * Hidden attributes for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'otp',
+    ];
+
     public function isExpired(): bool
     {
         return $this->expires_at->isPast();

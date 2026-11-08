@@ -159,7 +159,7 @@ class Category extends Model
                     'has_children'   => (bool) ($cat->children && $cat->children->count() > 0),
                     'sort_order'     => $cat->sort_order,
                     'depth'          => $depth,
-                    'indent_name'    => $indentPrefix . $cat->name,
+                    'indent_name'    => $indentPrefix . e($cat->name),
                     'image'          => $cat->image,
                     'image_url'      => $cat->image_url,
                     'hierarchy_name' => $cat->hierarchy_name,

@@ -174,7 +174,10 @@ class AdminAttendanceController extends Controller
      */
     public function export(Request $request): StreamedResponse
     {
-        $month = $request->input('month', date('Y-m'));
+        $month = (string) $request->input('month', date('Y-m'));
+        if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+            $month = date('Y-m');
+        }
 
         $attendances = StaffAttendance::with(['user', 'department'])
             ->where('date', 'LIKE', "{$month}%")

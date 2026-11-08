@@ -234,6 +234,8 @@
             renderCartItems();
         }
 
+        const escHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
         function renderCartItems() {
             const container = document.getElementById('cartItems');
             if (!container) return;
@@ -241,17 +243,25 @@
                 container.innerHTML = '<p class="text-center text-sm opacity-40 mt-10 px-4">Your bag is empty.</p>';
                 return;
             }
-            container.innerHTML = cart.map(item => `
+            container.innerHTML = cart.map((item, idx) => `
                 <div class="flex gap-3 py-3 border-b border-current/10">
-                    <img src="${item.image}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0 bg-gray-100">
+                    <img src="${escHtml(item.image)}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0 bg-gray-100">
                     <div class="flex-1 min-w-0">
-                        <p class="font-semibold text-sm truncate">${item.name}</p>
-                        <p class="text-xs opacity-50">${item.colorName} / ${item.size} × ${item.qty}</p>
-                        <p class="font-bold text-sm mt-0.5">₹${(item.price * item.qty).toLocaleString('en-IN')}</p>
+                        <p class="font-semibold text-sm truncate">${escHtml(item.name)}</p>
+                        <p class="text-xs opacity-50">${escHtml(item.colorName)} / ${escHtml(item.size)} × ${Number(item.qty) || 1}</p>
+                        <p class="font-bold text-sm mt-0.5">₹${((Number(item.price) || 0) * (Number(item.qty) || 1)).toLocaleString('en-IN')}</p>
                     </div>
-                    <button onclick="removeFromCart(${item.productId},'${item.colorName}','${item.size}')" class="opacity-40 hover:opacity-100 text-lg leading-none">&times;</button>
+                    <button type="button" onclick="removeFromCartByIndex(${idx})" class="opacity-40 hover:opacity-100 text-lg leading-none">&times;</button>
                 </div>
             `).join('');
+        }
+
+        function removeFromCartByIndex(idx) {
+            if (cart[idx]) {
+                cart.splice(idx, 1);
+                persistCart();
+                updateCartUI();
+            }
         }
 
         function openCartDrawer() {

@@ -7,6 +7,7 @@ use App\Services\Auth\TotpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class TwoFactorAuthenticationController extends Controller
@@ -49,14 +50,25 @@ class TwoFactorAuthenticationController extends Controller
             return back();
         }
 
+        $attemptKey = '2fa_confirm:' . $user->id;
+        if (RateLimiter::tooManyAttempts($attemptKey, 5)) {
+            $seconds = RateLimiter::availableIn($attemptKey);
+            throw ValidationException::withMessages([
+                'code' => ["Too many failed confirmation attempts. Please wait {$seconds} seconds before trying again."],
+            ]);
+        }
+
         $code = str_replace(' ', '', (string) $request->input('code'));
         $secret = decrypt($user->two_factor_secret);
 
         if (! $this->totp->verify($secret, $code)) {
+            RateLimiter::hit($attemptKey, 300);
             throw ValidationException::withMessages([
                 'code' => ['The provided two-factor code was invalid. Check your authenticator app and try again.'],
             ]);
         }
+
+        RateLimiter::clear($attemptKey);
 
         $user->forceFill([
             'two_factor_confirmed_at' => now(),
@@ -70,17 +82,21 @@ class TwoFactorAuthenticationController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'string'],
-        ]);
+        $user = $request->user();
 
-        if (! Hash::check($request->password, $request->user()->password)) {
-            throw ValidationException::withMessages([
-                'password' => ['The provided password does not match our records.'],
+        // If 2FA is actively confirmed and armed, require current password verification
+        if ($user->hasTwoFactorEnabled()) {
+            $request->validate([
+                'password' => ['required', 'string'],
             ]);
+
+            if (! Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'password' => ['The provided password does not match our records.'],
+                ]);
+            }
         }
 
-        $user = $request->user();
         $user->forceFill([
             'two_factor_secret'         => null,
             'two_factor_recovery_codes' => null,
@@ -99,6 +115,14 @@ class TwoFactorAuthenticationController extends Controller
 
         if (! $user->two_factor_secret) {
             return back();
+        }
+
+        if ($user->hasTwoFactorEnabled() && $request->filled('password')) {
+            if (! Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'password' => ['The provided password does not match our records.'],
+                ]);
+            }
         }
 
         $recoveryCodes = $this->totp->generateRecoveryCodes();

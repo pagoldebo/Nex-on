@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductColor extends Model
 {
-    protected $fillable = ['product_id', 'name', 'hex', 'sort_order'];
+    protected $fillable = ['product_id', 'name', 'hex', 'cover_image', 'sort_order'];
 
     public function product()
     {
@@ -30,6 +30,16 @@ class ProductColor extends Model
 
     public function getCoverImageAttribute(): string
     {
+        $coverPath = $this->attributes['cover_image'] ?? null;
+
+        if (!empty($coverPath)) {
+            if (\Illuminate\Support\Str::startsWith($coverPath, ['http://', 'https://'])) {
+                return $coverPath;
+            }
+
+            return asset('storage/' . ltrim($coverPath, '/'));
+        }
+
         $image = $this->images->first();
 
         if (!$image || empty($image->image_path)) {
@@ -49,11 +59,31 @@ class ProductColor extends Model
      */
     public function toPickerArray(): array
     {
+        $gallery = collect();
+        $coverUrl = $this->cover_image;
+
+        if ($coverUrl && $coverUrl !== asset('images/placeholder.jpg')) {
+            $gallery->push($coverUrl);
+        }
+
+        foreach ($this->images as $img) {
+            $url = \Illuminate\Support\Str::startsWith($img->image_path, ['http://', 'https://'])
+                ? $img->image_path
+                : asset('storage/' . ltrim($img->image_path, '/'));
+            if (!$gallery->contains($url)) {
+                $gallery->push($url);
+            }
+        }
+
+        if ($gallery->isEmpty()) {
+            $gallery->push(asset('images/placeholder.jpg'));
+        }
+
         return [
             'id'     => $this->id,
             'name'   => $this->name,
             'hex'    => $this->hex,
-            'images' => $this->images->map(fn ($img) => \Illuminate\Support\Str::startsWith($img->image_path, ['http://', 'https://']) ? $img->image_path : asset('storage/' . ltrim($img->image_path, '/')))->values(),
+            'images' => $gallery->values(),
             'sizes'  => $this->variants->map(fn ($v) => [
                 'variantId'      => $v->id,
                 'sku'            => $v->sku,

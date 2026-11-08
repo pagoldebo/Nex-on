@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class StorefrontController extends Controller
 {
@@ -389,6 +390,12 @@ class StorefrontController extends Controller
             Log::warning('Order webhook dispatch error: ' . $e->getMessage());
         }
 
+        // Store placed order credentials in session for guest order confirmation access control
+        session([
+            'recent_order_id'  => $order->id,
+            'recent_order_ref' => $order->reference,
+        ]);
+
         return response()->json([
             'success'      => true,
             'order_id'     => $order->id,
@@ -428,7 +435,17 @@ class StorefrontController extends Controller
         $orderModel = Order::with(['items.product', 'items.productColor', 'requests'])
             ->where('id', $order)
             ->orWhere('reference', $order)
-            ->first();
+            ->firstOrFail();
+
+        // Broken Object Level Authorization (BOLA) Check:
+        // Only the order owner, an administrator, or the guest session that placed this order may access it.
+        $isOwner = Auth::check() && $orderModel->user_id && $orderModel->user_id === Auth::id();
+        $isAdmin = Auth::check() && Auth::user()->isAdmin();
+        $isSessionGuest = session('recent_order_id') == $orderModel->id || session('recent_order_ref') === $orderModel->reference;
+
+        if (! $isOwner && ! $isAdmin && ! $isSessionGuest) {
+            abort(403, 'Unauthorized access to order confirmation.');
+        }
 
         return view("storefront.{$theme->key}.order-confirmation", compact('theme', 'order', 'orderModel'));
     }
@@ -438,6 +455,15 @@ class StorefrontController extends Controller
      */
     public function applyCoupon(Request $request): JsonResponse
     {
+        $couponThrottleKey = 'coupon_guess:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($couponThrottleKey, 10)) {
+            $seconds = RateLimiter::availableIn($couponThrottleKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many invalid coupon attempts. Please try again in {$seconds} seconds.",
+            ], 429);
+        }
+
         $code     = strtoupper(trim((string) $request->input('code', '')));
         $subtotal = (float) $request->input('subtotal', 0);
 
@@ -447,8 +473,11 @@ class StorefrontController extends Controller
 
         $coupon = Coupon::where('code', $code)->first();
         if (! $coupon) {
+            RateLimiter::hit($couponThrottleKey, 60);
             return response()->json(['success' => false, 'message' => 'Invalid promotional code.'], 404);
         }
+
+        RateLimiter::clear($couponThrottleKey);
 
         $check = $coupon->isValidForAmount($subtotal);
         if (! $check['valid']) {
@@ -593,8 +622,13 @@ class StorefrontController extends Controller
             'comments' => 'nullable|string|max:1000',
         ]);
 
-        if (Auth::check() && $order->user_id && $order->user_id !== Auth::id()) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized action.'], 403);
+        // Broken Object Level Authorization (BOLA) Check:
+        $isOwner = Auth::check() && $order->user_id && $order->user_id === Auth::id();
+        $isAdmin = Auth::check() && Auth::user()->isAdmin();
+        $isSessionGuest = session('recent_order_id') == $order->id || session('recent_order_ref') === $order->reference;
+
+        if (! $isOwner && ! $isAdmin && ! $isSessionGuest) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized. You do not have permission to modify this order.'], 403);
         }
 
         if ($validated['type'] === 'cancel' && ! $order->isCancellable()) {

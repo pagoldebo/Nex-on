@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AdminCustomerController extends Controller
@@ -82,7 +83,7 @@ class AdminCustomerController extends Controller
     public function updatePassword(Request $request, User $customer): RedirectResponse
     {
         $validated = $request->validate([
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $customer->password = Hash::make($validated['password']);

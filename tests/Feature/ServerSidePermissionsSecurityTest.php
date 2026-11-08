@@ -94,6 +94,36 @@ class ServerSidePermissionsSecurityTest extends TestCase
         $staffResponse->assertStatus(403);
     }
 
+    public function test_store_manager_can_control_store_items_sales_and_billing_but_is_forbidden_from_settings_and_roles(): void
+    {
+        $manager = $this->createStaffWithRole('store-manager', 'Vikram Store Manager');
+
+        // Store Manager can access Products (Store Items)
+        $this->actingAs($manager)->get(route('admin.products.index'))->assertStatus(200);
+        $this->actingAs($manager)->get(route('admin.products.create'))->assertStatus(200);
+
+        // Store Manager can access Orders & Billing
+        $this->actingAs($manager)->get(route('admin.orders.index'))->assertStatus(200);
+
+        // Store Manager can access POS billing terminal
+        $this->actingAs($manager)->get(route('admin.pos.index'))->assertStatus(200);
+
+        // Store Manager can access Inventory
+        $this->actingAs($manager)->get(route('admin.inventory.index'))->assertStatus(200);
+
+        // Store Manager CANNOT access general store settings (403 Forbidden)
+        $this->actingAs($manager)->get(route('admin.settings.index'))->assertStatus(403);
+
+        // Store Manager CANNOT access payment gateway credentials (403 Forbidden)
+        $this->actingAs($manager)->get(route('admin.settings.gateways'))->assertStatus(403);
+
+        // Store Manager CANNOT access SMS gateway credentials (403 Forbidden)
+        $this->actingAs($manager)->get(route('admin.settings.sms'))->assertStatus(403);
+
+        // Store Manager CANNOT access Roles & Permissions (403 Forbidden)
+        $this->actingAs($manager)->get(route('admin.roles.index'))->assertStatus(403);
+    }
+
     public function test_inventory_clerk_can_access_inventory_but_is_forbidden_from_settings_and_roles(): void
     {
         $clerk = $this->createStaffWithRole('inventory-clerk', 'Suresh Inventory');

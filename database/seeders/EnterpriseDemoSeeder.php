@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductBatch;
 use App\Models\ProductVariant;
 use App\Models\PurchaseOrder;
+use App\Models\Role;
 use App\Models\StockTransfer;
 use App\Models\Supplier;
 use App\Models\User;
@@ -32,6 +33,25 @@ class EnterpriseDemoSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        $storeManager = User::updateOrCreate(
+            ['email' => 'manager@nexon.app'],
+            [
+                'name'              => 'Store Manager',
+                'password'          => Hash::make('manager123'),
+                'role'              => 'admin',
+                'is_staff'          => true,
+                'designation'       => 'Store Manager',
+                'department_name'   => 'Store Operations',
+                'employment_status' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $storeManagerRole = Role::where('slug', 'store-manager')->first();
+        if ($storeManagerRole) {
+            $storeManager->roles()->syncWithoutDetaching([$storeManagerRole->id]);
+        }
 
         $staff = User::updateOrCreate(
             ['email' => 'staff@nexon.com'],

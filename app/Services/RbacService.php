@@ -56,13 +56,13 @@ class RbacService
         ],
         'store-manager' => [
             'name'        => 'Store Manager',
-            'description' => 'Comprehensive management of inventory, orders, products, and analytics reports.',
+            'description' => 'Comprehensive management of store items, catalog, inventory, orders, sales billing, POS checkout, and reports.',
             'permissions' => [
                 'inventory.view', 'inventory.manage', 'inventory.forecasting', 'inventory.batches',
                 'orders.view', 'orders.manage', 'orders.export',
                 'products.view', 'products.manage',
                 'reports.view', 'reports.export',
-                'pos.access',
+                'pos.access', 'pos.checkout',
             ],
         ],
         'ecommerce-manager' => [

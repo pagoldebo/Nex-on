@@ -1319,6 +1319,7 @@
             </div>
 
             <!-- Staff Accordion -->
+            @if(auth()->user()?->isSuperAdmin() || auth()->user()?->hasPermission('roles.manage'))
             <div>
                 <button type="button" 
                         @click="sidebarCollapsed ? (toggleSidebarCollapse(), toggle('staff')) : toggle('staff')"
@@ -1350,6 +1351,7 @@
                     </a>
                 </div>
             </div>
+            @endif
 
             <!-- Support Accordion -->
             <div>
@@ -1384,6 +1386,7 @@
             </div>
 
             <!-- Settings Accordion -->
+            @if(auth()->user()?->isSuperAdmin() || auth()->user()?->hasPermission('settings.manage'))
             <div>
                 <button type="button" 
                         @click="sidebarCollapsed ? (toggleSidebarCollapse(), toggle('settings')) : toggle('settings')"
@@ -1435,6 +1438,7 @@
                     </a>
                 </div>
             </div>
+            @endif
 
         </nav>
 

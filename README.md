@@ -137,7 +137,8 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 
 | Role | Email / Username | Password | Access URL | Privileges / Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Super Administrator (Default)** | `admin@nexon.app` | `admin123` | `/login` → `/admin` | Full unrestricted access to store operations, settings, ERP, and finances |
+| **Super Administrator** | `admin@nexon.app` | `admin123` | `/login` → `/admin` | Full unrestricted access to store operations, settings, ERP, and finances |
+| **Store Manager** | `manager@nexon.app` | `manager123` | `/login` → `/admin` | Store item catalog, sales orders, billing, invoices, POS checkout & inventory (Settings & Staff restricted) |
 | **Demo Customer / Patron** | `priya.sharma@example.com` | `password123` | `/login` | Storefront browsing, shopping cart, customer checkout & orders |
 
 > [!NOTE]

@@ -3,32 +3,56 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo ========================================================
-echo               Nex-on - Git Push
+echo            Nex-on - Git Push & Release Manager
 echo ========================================================
 echo.
 
-set msg=%*
-if "%msg%"=="" (
-    set /p msg="Enter commit message (or press Enter for default): "
+:: 1. Commit message
+set "msg=%*"
+if "!msg!"=="" (
+    set /p "msg=Enter commit message (or press Enter for default): "
 )
-if "%msg%"=="" (
-    set msg=Update Nexon project files
+if "!msg!"=="" (
+    set "msg=Update Nexon project files"
+)
+
+:: 2. Optional Release Tag
+echo.
+set /p "tag=Enter new release tag (e.g. v0.06, or press Enter to skip): "
+
+:: Automatically ensure 'v' prefix format for future consistency
+if not "!tag!"=="" (
+    set "firstChar=!tag:~0,1!"
+    if /i not "!firstChar!"=="v" (
+        set "tag=v!tag!"
+    )
 )
 
 echo.
-echo [1/3] Staging modified and new files...
+echo [1/4] Staging modified and new files...
 git add .
 
-echo [2/3] Committing changes...
-git commit -m "%msg%"
+echo [2/4] Committing changes...
+git commit -m "!msg!"
 
-echo [3/3] Pushing commits and tags to GitHub (origin/main)...
+:: If a tag was provided, create the tag
+if not "!tag!"=="" (
+    echo [3/4] Creating release tag !tag!...
+    git tag -a "!tag!" -m "Release !tag!: !msg!"
+) else (
+    echo [3/4] Skipping new tag creation...
+)
+
+echo [4/4] Pushing commits and tags to GitHub (origin/main)...
 git push origin main --tags
 
 echo.
 if %ERRORLEVEL% EQU 0 (
     echo ========================================================
-    echo   [SUCCESS] All changes pushed to GitHub successfully!
+    echo   [SUCCESS] Pushed to GitHub successfully!
+    if not "!tag!"=="" (
+        echo   [RELEASE] Release tag !tag! published to GitHub!
+    )
     echo ========================================================
 ) else (
     echo ========================================================

@@ -2,8 +2,11 @@
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+:: Ensure Git and PHP are in PATH
+set "PATH=C:\Program Files\Git\cmd;C:\DevForge\bin\php\8.5;C:\xampp\php;%PATH%"
+
 echo ========================================================
-echo            Nex-on - Git Push & Release Manager
+echo            Nex-on - Git Push and Release Manager
 echo ========================================================
 echo.
 
@@ -51,7 +54,7 @@ if %ERRORLEVEL% EQU 0 (
     echo ========================================================
     echo   [SUCCESS] Pushed to GitHub successfully!
     if not "!tag!"=="" (
-        echo   [RELEASE] Release tag !tag! published to GitHub!
+        echo   [RELEASE] Release tag: !tag! published to GitHub.
     )
     echo ========================================================
 ) else (

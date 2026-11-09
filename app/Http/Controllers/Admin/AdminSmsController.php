@@ -181,7 +181,7 @@ class AdminSmsController extends Controller
                 'message' => $remaining > 0
                     ? "Invalid or expired OTP code. {$remaining} attempts remaining."
                     : 'Too many failed verification attempts. Please request a new OTP.',
-            ], 422);
+            ], 200);
         }
 
         RateLimiter::clear($verifyThrottleKey);

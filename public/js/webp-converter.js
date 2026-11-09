@@ -35,10 +35,31 @@
 
     /* ================= STATE ================= */
     let processingCount = 0;
+    let avifSupported = null; // null = not tested, true/false after test
     let webpSupported = null; // null = not tested yet, true/false after test
     const originalButtonStates = new WeakMap();
 
-    /* ================= WEBP SUPPORT DETECTION ================= */
+    /* ================= FORMAT SUPPORT DETECTION ================= */
+    function detectAvifSupport() {
+        return new Promise(resolve => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1;
+                canvas.height = 1;
+                canvas.toBlob(function (blob) {
+                    avifSupported = (blob && blob.type === 'image/avif' && blob.size > 0);
+                    if (avifSupported) {
+                        console.log('[Nexon Image Optimizer] ✅ Client-side AVIF encoding supported on this device');
+                    }
+                    resolve(avifSupported);
+                }, 'image/avif', 0.5);
+            } catch (e) {
+                avifSupported = false;
+                resolve(false);
+            }
+        });
+    }
+
     function detectWebPSupport() {
         return new Promise(resolve => {
             try {
@@ -48,22 +69,23 @@
                 canvas.toBlob(function (blob) {
                     if (blob && blob.type === 'image/webp' && blob.size > 0) {
                         webpSupported = true;
-                        console.log('[Nexon WebP Converter] ✅ Client-side WebP encoding supported on this device');
+                        console.log('[Nexon Image Optimizer] ✅ Client-side WebP encoding supported on this device');
                     } else {
                         webpSupported = false;
-                        console.log('[Nexon WebP Converter] ⚠️ WebP encoding not supported on this browser, using optimized JPEG');
+                        console.log('[Nexon Image Optimizer] ⚠️ WebP encoding not supported on this browser, using optimized JPEG');
                     }
                     resolve(webpSupported);
                 }, 'image/webp', 0.5);
             } catch (e) {
                 webpSupported = false;
-                console.log('[Nexon WebP Converter] ⚠️ WebP encoding test failed, using JPEG fallback');
+                console.log('[Nexon Image Optimizer] ⚠️ WebP encoding test failed, using JPEG fallback');
                 resolve(false);
             }
         });
     }
 
-    // Run detection immediately
+    // Run detections immediately
+    detectAvifSupport();
     detectWebPSupport();
 
     /* ================= DATATRANSFER SUPPORT DETECTION ================= */
@@ -263,14 +285,22 @@
             return file;
         }
 
-        // If already WebP and within max size, return as-is
-        if (file.type === 'image/webp' && file.size <= CONFIG.TARGET_MAX) {
-            console.log(`[Nexon WebP Converter] ${file.name} is already optimal WebP (${(file.size / 1024).toFixed(1)} KB)`);
+        // Skip SVG files to preserve vector graphics crispness and scalability
+        if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) {
+            return file;
+        }
+
+        // If already AVIF or WebP and within max size, return as-is
+        if ((file.type === 'image/avif' || file.type === 'image/webp') && file.size <= CONFIG.TARGET_MAX) {
+            console.log(`[Nexon Image Optimizer] ${file.name} is already optimal (${(file.size / 1024).toFixed(1)} KB)`);
             return file;
         }
 
         showFullPageLoader();
 
+        if (avifSupported === null) {
+            await detectAvifSupport();
+        }
         if (webpSupported === null) {
             await detectWebPSupport();
         }
@@ -297,6 +327,9 @@
                         ctx.drawImage(img, 0, 0, width, height);
 
                         const formats = [];
+                        if (avifSupported) {
+                            formats.push({ mime: 'image/avif', ext: 'avif' });
+                        }
                         if (webpSupported) {
                             formats.push({ mime: 'image/webp', ext: 'webp' });
                         }
@@ -447,7 +480,10 @@
 
         const input = e.target;
         if (input.tagName !== 'INPUT' || input.type !== 'file') return;
-        if (input.hasAttribute('data-manual-optimize')) return;
+        if (input.name === 'site_logo' || input.id === 'siteLogoInput' || input.hasAttribute('data-no-webp') || input.hasAttribute('data-manual-optimize')) {
+            console.log('[Nexon WebP Converter] Skipping site logo input to preserve PNG vector/format');
+            return;
+        }
 
         const accept = (input.getAttribute('accept') || '').toLowerCase();
         const files = Array.from(input.files || []);
@@ -462,9 +498,12 @@
 
         if (!isImage) return;
 
-        // Skip if all files are already WebP and within target size
-        const allAlreadyWebp = files.every(f => (f.type === 'image/webp' || f.name.toLowerCase().endsWith('.webp')) && f.size <= CONFIG.TARGET_MAX);
-        if (allAlreadyWebp) return;
+        // Skip if all files are already WebP or SVG, and within target size
+        const allAlreadyOptimal = files.every(f => 
+            (f.type === 'image/svg+xml' || f.name.toLowerCase().endsWith('.svg')) ||
+            ((f.type === 'image/webp' || f.name.toLowerCase().endsWith('.webp')) && f.size <= CONFIG.TARGET_MAX)
+        );
+        if (allAlreadyOptimal) return;
 
         handleFileInput(input);
     }, true);

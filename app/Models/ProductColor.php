@@ -37,7 +37,15 @@ class ProductColor extends Model
                 return $coverPath;
             }
 
-            return asset('storage/' . ltrim($coverPath, '/'));
+            $path = ltrim($coverPath, '/');
+            if (str_starts_with($path, 'storage/')) {
+                $path = substr($path, 8);
+            }
+            if (str_starts_with($path, 'images/')) {
+                return asset($path);
+            }
+
+            return asset('images/' . $path);
         }
 
         $image = $this->images->first();
@@ -46,11 +54,7 @@ class ProductColor extends Model
             return asset('images/placeholder.jpg');
         }
 
-        if (\Illuminate\Support\Str::startsWith($image->image_path, ['http://', 'https://'])) {
-            return $image->image_path;
-        }
-
-        return asset('storage/' . ltrim($image->image_path, '/'));
+        return $image->url;
     }
 
     /**
@@ -67,9 +71,7 @@ class ProductColor extends Model
         }
 
         foreach ($this->images as $img) {
-            $url = \Illuminate\Support\Str::startsWith($img->image_path, ['http://', 'https://'])
-                ? $img->image_path
-                : asset('storage/' . ltrim($img->image_path, '/'));
+            $url = $img->url;
             if (!$gallery->contains($url)) {
                 $gallery->push($url);
             }

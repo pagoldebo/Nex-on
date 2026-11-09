@@ -25,7 +25,7 @@
   {{-- 1. HERO BANNER SECTION --}}
   @php
     $organicHeroCustom = \App\Models\Setting::get('organic_hero_image');
-    $organicHeroBg = $organicHeroCustom ? asset('storage/' . $organicHeroCustom) : asset('organic/images/banner-1.jpg');
+    $organicHeroBg = $organicHeroCustom ? asset('images/' . ltrim(str_replace('storage/', '', $organicHeroCustom), '/')) : asset('images/themes/organic/banner-1.jpg');
   @endphp
   <section class="relative bg-cover bg-center overflow-hidden py-16 sm:py-24 lg:py-32" 
            style="background-image: linear-gradient(to right, rgba(249, 248, 243, 0.95) 0%, rgba(249, 248, 243, 0.85) 50%, rgba(249, 248, 243, 0.3) 100%), url('{{ $organicHeroBg }}');">
@@ -193,7 +193,7 @@
       @forelse($categories as $cat)
         @php
           $fallbackIndex = (($loop->index % 8) + 1);
-          $catImg = $cat->image_url ?: asset("organic/images/category-thumb-{$fallbackIndex}.jpg");
+          $catImg = $cat->image_url ?: asset("images/themes/organic/category-thumb-{$fallbackIndex}.jpg");
         @endphp
         <a href="{{ route('category.show', $cat->slug) }}" 
            class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
@@ -226,7 +226,7 @@
              class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
              style="scroll-snap-align: start; scroll-snap-stop: normal;">
             <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-stone-100 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
-              <img src="{{ asset('organic/images/' . $defCat['thumb']) }}" 
+              <img src="{{ asset('images/themes/organic/' . $defCat['thumb']) }}" 
                    alt="{{ $defCat['name'] }}" 
                    class="w-full h-full object-cover rounded-full" 
                    loading="lazy">
@@ -276,7 +276,7 @@
       
       {{-- Banner 1 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(42, 75, 26, 0.85), rgba(42, 75, 26, 0.95)), url('{{ asset('organic/images/banner-ad-1.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(42, 75, 26, 0.85), rgba(42, 75, 26, 0.95)), url('{{ asset('images/themes/organic/banner-ad-1.jpg') }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-organic-300">{{ \App\Models\Setting::get('organic_ad1_kicker', 'Limited Batch') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad1_title', 'Raw Wild Forest Honey') }}</h3>
@@ -292,7 +292,7 @@
 
       {{-- Banner 2 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(249, 95, 9, 0.85), rgba(249, 95, 9, 0.95)), url('{{ asset('organic/images/banner-ad-2.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(249, 95, 9, 0.85), rgba(249, 95, 9, 0.95)), url('{{ asset('images/themes/organic/banner-ad-2.jpg') }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-citrus-light">{{ \App\Models\Setting::get('organic_ad2_kicker', 'Seasonal Deal') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad2_title', 'Cold-Pressed Wood Oils') }}</h3>
@@ -308,7 +308,7 @@
 
       {{-- Banner 3 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.95)), url('{{ asset('organic/images/banner-ad-3.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.95)), url('{{ asset('images/themes/organic/banner-ad-3.jpg') }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-emerald-300">{{ \App\Models\Setting::get('organic_ad3_kicker', 'Daily Essentials') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad3_title', 'A2 Desi Gir Cow Ghee') }}</h3>
@@ -417,9 +417,9 @@
               $organicStoryImg = \App\Models\Setting::get('organic_story_image');
             @endphp
             @if($organicStoryImg)
-              <img src="{{ asset('storage/' . $organicStoryImg) }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
+              <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicStoryImg), '/')) }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
             @else
-              <img src="{{ asset('organic/images/sample-image.jpg') }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
+              <img src="{{ asset('images/themes/organic/sample-image.jpg') }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
             @endif
           </div>
           <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-stone-200 hidden sm:flex items-center gap-4">

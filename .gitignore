@@ -18,6 +18,16 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/*
+!/storage/app/.gitignore
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/framework/*
+!/storage/framework/.gitignore
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
 /storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/framework/views/*
@@ -25,6 +35,7 @@
 !/storage/framework/cache/data/.gitignore
 !/storage/framework/sessions/.gitignore
 !/storage/framework/views/.gitignore
+!/storage/framework/testing/.gitignore
 /storage/logs/*
 !/storage/logs/.gitignore
 /vendor

@@ -93,7 +93,7 @@ class ProductColorCoverAndImageArrangementTest extends TestCase
         Storage::disk('public')->assertExists($rawCover);
 
         // Verify cover image accessor
-        $this->assertStringContainsString('storage/', $color->cover_image);
+        $this->assertStringContainsString('images/', $color->cover_image);
         $this->assertEquals($color->cover_image, $product->cover_image);
 
         // Verify gallery images were saved

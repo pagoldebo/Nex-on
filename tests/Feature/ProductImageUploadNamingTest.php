@@ -94,11 +94,11 @@ class ProductImageUploadNamingTest extends TestCase
 
         // Verify folder is the main category name (men)
         $this->assertStringStartsWith('products/men/', $path);
-        $this->assertStringEndsWith('.webp', $path);
+        $this->assertStringEndsWith('.avif', $path);
 
-        // Verify filename pattern: {product-name}-{base-sku}-{6-char-random}.webp
+        // Verify filename pattern: {product-name}-{base-sku}-{6-char-random}.avif
         $this->assertMatchesRegularExpression(
-            '/^products\/men\/linen-casual-shirt-ls-lin-001-[a-z0-9]{6}\.webp$/',
+            '/^products\/men\/linen-casual-shirt-ls-lin-001-[a-z0-9]{6}\.avif$/',
             $path
         );
 
@@ -151,7 +151,7 @@ class ProductImageUploadNamingTest extends TestCase
 
         $freshImage = ProductColorImage::where('product_color_id', $color->id)->firstOrFail();
         $this->assertMatchesRegularExpression(
-            '/^products\/men\/silk-kurta-ls-kur-555-[a-z0-9]{6}\.webp$/',
+            '/^products\/men\/silk-kurta-ls-kur-555-[a-z0-9]{6}\.avif$/',
             $freshImage->image_path
         );
 
@@ -184,7 +184,7 @@ class ProductImageUploadNamingTest extends TestCase
 
         $this->assertNotNull($image);
         $this->assertMatchesRegularExpression(
-            '/^products\/men\/chino-trousers-ls-tr-900-[a-z0-9]{6}\.webp$/',
+            '/^products\/men\/chino-trousers-ls-tr-900-[a-z0-9]{6}\.avif$/',
             $image->image_path
         );
 

@@ -159,7 +159,7 @@ Converted to a Blade loop, **with a size/color picker added** (since Saaya has n
     @endif
 
     {{-- Real product photo replaces the SVG placeholder --}}
-    <img src="{{ $product->image_path ? asset('storage/'.$product->image_path) : asset('images/placeholder.jpg') }}"
+    <img src="{{ $product->image_path ? asset('images/'.$product->image_path) : asset('images/placeholder.jpg') }}"
          alt="{{ $product->name }}"
          class="card-img-zoom w-full h-full object-cover">
   </div>
@@ -266,7 +266,7 @@ Identical structure, just swap the class tokens to match each theme's design sys
         onclick="selectProductSize(this, {{ $product->id }})">{{ $size }}</button>
 ```
 
-Same `<img>` swap-in replaces every theme's SVG placeholder with `{{ asset('storage/'.$product->image_path) }}`.
+Same `<img>` swap-in replaces every theme's SVG placeholder with `{{ asset('images/'.$product->image_path) }}`.
 
 ---
 
@@ -293,8 +293,8 @@ with a Blade-injected version:
       'name' => $p->name,
       'price' => $p->price,
       'stock' => $p->stock,
-      'baseImg' => $p->image_path ? asset('storage/'.$p->image_path) : asset('images/placeholder.jpg'),
-      'hoverImg' => $p->gallery_paths[0] ?? null ? asset('storage/'.$p->gallery_paths[0]) : asset('images/placeholder.jpg'),
+      'baseImg' => $p->image_path ? asset('images/'.$p->image_path) : asset('images/placeholder.jpg'),
+      'hoverImg' => $p->gallery_paths[0] ?? null ? asset('images/'.$p->gallery_paths[0]) : asset('images/placeholder.jpg'),
       'colors' => $p->colors ?? [],
       'sizes' => $p->sizes ?? [],
   ]));
@@ -302,8 +302,8 @@ with a Blade-injected version:
   const bestSellers = @json($bestsellerProducts->map(fn($p) => [
       'id' => $p->id, 'name' => $p->name, 'price' => $p->price, 'stock' => $p->stock,
       'desc' => $p->description,
-      'baseImg' => $p->image_path ? asset('storage/'.$p->image_path) : asset('images/placeholder.jpg'),
-      'hoverImg' => $p->gallery_paths[0] ?? null ? asset('storage/'.$p->gallery_paths[0]) : asset('images/placeholder.jpg'),
+      'baseImg' => $p->image_path ? asset('images/'.$p->image_path) : asset('images/placeholder.jpg'),
+      'hoverImg' => $p->gallery_paths[0] ?? null ? asset('images/'.$p->gallery_paths[0]) : asset('images/placeholder.jpg'),
   ]));
 </script>
 ```

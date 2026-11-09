@@ -141,10 +141,45 @@ class Setting extends Model
              ?: ($section === 'hero_image' ? static::get('hero_banner_image') : null);
 
         if (!empty($path)) {
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/')) {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
                 return $path;
             }
-            return asset('storage/' . ltrim($path, '/'));
+            $clean = ltrim($path, '/');
+            if (str_starts_with($clean, 'storage/')) {
+                $clean = substr($clean, 8);
+            }
+            if (str_starts_with($clean, 'images/')) {
+                return asset($clean);
+            }
+            return asset('images/' . $clean);
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Get website logo URL with fallback.
+     */
+    public static function siteLogoUrl(?string $fallback = null): ?string
+    {
+        $path = static::get('site_logo');
+
+        if (!empty($path)) {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
+                return $path;
+            }
+            $clean = ltrim($path, '/');
+            if (str_starts_with($clean, 'storage/')) {
+                $clean = substr($clean, 8);
+            }
+            if (str_starts_with($clean, 'images/')) {
+                return asset($clean);
+            }
+            return asset('images/' . $clean);
+        }
+
+        if (file_exists(public_path('images/branding/logo.png'))) {
+            return asset('images/branding/logo.png');
         }
 
         return $fallback;

@@ -209,7 +209,7 @@ class OrganicThemeTest extends TestCase
         $response->assertDontSee('1800-ORGANIC');
 
         // Logo image rendered with store name
-        $response->assertSee('storage/branding/custom_test_logo.png');
+        $response->assertSee('images/branding/custom_test_logo.png');
         $response->assertSee('Organic Roots');
 
         // Main menu displays "Featured Products" and does not have duplicate "Categories"

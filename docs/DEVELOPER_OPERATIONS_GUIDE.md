@@ -48,7 +48,7 @@ flowchart TD
     subgraph StorageLayer["Data & Persistence Layer"]
         MariaDB[("MariaDB / MySQL (InnoDB Engine)")]
         CacheRedis[("Cache / Session (File / Redis)")]
-        StorageDisk[("Public Storage Disks (Banners / Products)")]
+        StorageDisk[("Direct Public Media (public/images/)")]
     end
 
     StorefrontClient --> WebRoutes
@@ -195,7 +195,12 @@ Nex-on implements rigorous defense-in-depth across 11 security domains:
 2. **Cross-Site Scripting (XSS)**: Automatic Blade `{{ }}` entity encoding. Rich HTML descriptions sanitized via `HtmlSanitizerService`.
 3. **Cross-Site Request Forgery (CSRF)**: `@csrf` tokens enforced on all state-altering POST/PUT/PATCH/DELETE requests.
 4. **Broken Object Level Authorization (BOLA/IDOR)**: Customer addresses, orders, and wishlist items scoped strictly to `Auth::id()`.
-5. **File Upload Security**: Strict MIME type validation (`image/jpeg`, `image/png`, `image/webp`), max size boundaries, sanitized SVG parsing, and storage outside web root.
+5. **File Upload Security & AVIF Pipeline**:
+   - Strict MIME validation (`image/jpeg`, `image/png`, `image/webp`, `image/avif`) and file extension checks.
+   - Raster uploads automatically convert to next-gen `.avif` (PHP 8.5 `imageavif` quality 75, speed 6) via `ProductImageService`, maintaining full alpha transparency.
+   - Vector SVGs are strictly sanitized via `HtmlSanitizerService` to strip malicious `<script>`, `onload`, or external entity tags and stored directly as `.svg`.
+   - Store logo (`branding/logo.png`) retains a predictable filename without random hashes or AVIF conversion.
+   - Directory execution protection in `public/images/.htaccess` prevents execution of `.php`, `.phtml`, or shell scripts within upload directories. No symlinks (`storage:link`) required.
 6. **Server-Side Request Forgery (SSRF)**: `SsrfProtectionService` intercepts and blocks webhook / external URLs targeting private IPv4 (RFC 1918), IPv6 loopbacks, or cloud metadata endpoints (`169.254.169.254`).
 7. **Rate Limiting & Anti-Brute Force**: Login, OTP verification, coupon redemption, and pincode checking endpoints protected by Laravel `RateLimiter`.
 8. **Secure Password Hashing**: Passwords hashed using Bcrypt with cost factor 12.
@@ -260,7 +265,8 @@ php artisan test
 ### 4. Troubleshooting Checklist
 * **Site stuck loading**: Check whether `mysqld.exe` is running on port 3306. If stopped, launch it via PowerShell `Start-Process`.
 * **Theme changes not appearing**: Run `php artisan view:clear` to purge compiled blade templates.
-* **Uploaded images not displaying**: Ensure the symbolic storage link exists: `php artisan storage:link`.
+* **Uploaded images not displaying**: Check that files exist in `public/images/products/`, `categories/`, or `banners/`. Media is served directly from `public/images/` via `asset('images/...')` without symbolic links (`php artisan storage:link` is obsolete). Run `php artisan view:clear` if stale view caches remain.
+* **Admin 2FA OTP needed for CLI/Test**: Run `php artisan admin:otp` to fetch or generate the active 10-minute OTP directly in your terminal prompt.
 
 ---
 

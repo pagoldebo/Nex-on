@@ -936,8 +936,8 @@ php artisan view:clear
 # 4. Verify active theme
 php artisan tinker --execute="echo App\Models\Template::where('is_active',true)->first()->key;"
 
-# 5. Check storage symlink (product images)
-php artisan storage:link
+# 5. Media assets (banners, branding, categories, products, slider)
+# Stored directly in public/images/ — no storage symlink needed
 ```
 
 **Environment variables to set:**
@@ -952,4 +952,59 @@ DB_PASSWORD=
 
 ---
 
-*Generated for the Lingerie Site project — four-theme Indian e-commerce storefront.*
+## 14. Media Storage Architecture & AVIF Image Pipeline
+
+### Direct Media Storage (`public/images/`)
+All public static media assets are consolidated directly under `public/images/`. The framework does not rely on symbolic links (`php artisan storage:link` is obsolete).
+The public disk in `config/filesystems.php` points to `public_path('images')`:
+```php
+'public' => [
+    'driver' => 'local',
+    'root' => public_path('images'),
+    'url' => env('APP_URL').'/images',
+    'visibility' => 'public',
+    'throw' => false,
+],
+'links' => [],
+```
+
+#### Directory Layout
+```
+public/images/
+├── .htaccess                     # Script execution protection (disallows .php, allows media MIME types)
+├── banners/                      # Promotional & category hero banners ({hash}.avif)
+├── branding/                     # Store branding assets (fixed logo: branding/logo.png or logo.svg)
+├── categories/                   # Category thumbnails ({hash}.avif)
+├── products/
+│   ├── {main_category}/          # Clean SEO hierarchy ({name}-{sku}-{random6}.avif)
+│   └── ...                       # Top-level demo images
+├── slider/
+│   ├── buttercup/                # Buttercup carousel slides
+│   └── vyra/                     # Vyra neon hero video/poster
+└── themes/
+    └── organic/                  # Organic storefront theme assets (banner-*.jpg, icons)
+```
+
+### Next-Gen AVIF Image Conversion Pipeline
+The system automatically converts raster image uploads (JPEG, PNG, WebP) into next-generation **`.avif`** format via `App\Services\ProductImageService`:
+* **Encoding Engine:** Uses PHP 8.5 native `imageavif($image, null, 75, 6)` (Quality 75, Speed 6) with full alpha channel transparency (`imagesavealpha`).
+* **Magic Byte Validation:** AVIF files are verified via bytes 4–12 (`ftypavif` or `ftypavis`).
+* **Vector File Safety:** Vector SVGs (`.svg`) are never converted to raster images. They are sanitized via `HtmlSanitizerService` to eliminate embedded scripts and saved as `.svg`.
+* **Client-Side Optimization (`public/js/webp-converter.js`):** Feature-detects browser canvas AVIF encoding support (`detectAvifSupport()`). Converts images client-side before form submission to eliminate server CPU compression latency.
+
+### Dedicated Brand Logo Handling
+Store logo uploads (`AdminSettingController@update`) are exempt from random hashing and AVIF conversion:
+* Always saved strictly as `branding/logo.png` (or `branding/logo.svg` for SVGs).
+* Storefront headers and invoices render the logo via `Setting::siteLogoUrl()`, resolving `asset('images/branding/logo.png')` with automatic fallback.
+
+### Terminal Commands
+* **Fetch or Generate Admin 2FA OTP:**
+  ```bash
+  php artisan admin:otp
+  # Or for a specific email:
+  php artisan admin:otp admin@nexon.app
+  ```
+
+---
+
+*Generated for the Lingerie Site project — multi-theme Indian e-commerce storefront.*

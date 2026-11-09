@@ -97,7 +97,7 @@
                 @endphp
                 @if(!empty($siteLogo))
                     <div class="mb-2">
-                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $storeName }}" class="h-10 w-auto max-w-[200px] object-contain">
+                        <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-10 w-auto max-w-[200px] object-contain">
                     </div>
                 @else
                     <div class="flex items-center space-x-2.5">

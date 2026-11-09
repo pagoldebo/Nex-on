@@ -55,6 +55,7 @@ class StoreLogoSettingsTest extends TestCase
 
         $savedLogo = Setting::get('site_logo');
         $this->assertNotEmpty($savedLogo);
+        $this->assertEquals('branding/logo.png', $savedLogo);
         Storage::disk('public')->assertExists($savedLogo);
 
         // Test that all 4 themes render the custom logo
@@ -65,7 +66,7 @@ class StoreLogoSettingsTest extends TestCase
 
             $storefront = $this->get(route('home'));
             $storefront->assertStatus(200);
-            $storefront->assertSee(asset('storage/' . $savedLogo));
+            $storefront->assertSee(asset('images/' . $savedLogo));
             $storefront->assertSee('Nexon Atelier');
         }
     }

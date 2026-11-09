@@ -31,7 +31,7 @@ class AdminCategoryController extends Controller
             'slug'       => 'nullable|string|max:100|unique:categories,slug',
             'parent_id'  => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
-            'image'      => 'nullable|file|mimes:jpeg,png,jpg,webp,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/svg+xml,image/gif|max:5120',
+            'image'      => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif|max:5120',
         ]);
 
         $slug = !empty($validated['slug']) 
@@ -49,11 +49,7 @@ class AdminCategoryController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
-            if (strtolower($imageFile->getClientOriginalExtension()) === 'svg' || str_contains($imageFile->getMimeType() ?? '', 'svg')) {
-                $sanitizedSvg = \App\Services\HtmlSanitizerService::sanitizeSvg(file_get_contents($imageFile->getRealPath()));
-                file_put_contents($imageFile->getRealPath(), $sanitizedSvg);
-            }
-            $imagePath = $imageFile->store('categories', 'public');
+            $imagePath = \App\Services\ProductImageService::storeUpload($imageFile, 'categories');
         }
 
         $category = Category::create([
@@ -78,7 +74,7 @@ class AdminCategoryController extends Controller
             'slug'         => 'nullable|string|max:100|unique:categories,slug,' . $category->id,
             'parent_id'    => 'nullable|exists:categories,id',
             'sort_order'   => 'nullable|integer|min:0',
-            'image'        => 'nullable|file|mimes:jpeg,png,jpg,webp,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/svg+xml,image/gif|max:5120',
+            'image'        => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif|max:5120',
             'remove_image' => 'nullable|boolean',
         ]);
 
@@ -122,11 +118,7 @@ class AdminCategoryController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
             $imageFile = $request->file('image');
-            if (strtolower($imageFile->getClientOriginalExtension()) === 'svg' || str_contains($imageFile->getMimeType() ?? '', 'svg')) {
-                $sanitizedSvg = \App\Services\HtmlSanitizerService::sanitizeSvg(file_get_contents($imageFile->getRealPath()));
-                file_put_contents($imageFile->getRealPath(), $sanitizedSvg);
-            }
-            $updateData['image'] = $imageFile->store('categories', 'public');
+            $updateData['image'] = \App\Services\ProductImageService::storeUpload($imageFile, 'categories');
         }
 
         $category->update($updateData);

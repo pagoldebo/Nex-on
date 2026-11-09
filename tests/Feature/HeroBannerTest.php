@@ -66,7 +66,7 @@ class HeroBannerTest extends TestCase
 
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
-        $storefront->assertSee(asset('storage/' . $savedPath));
+        $storefront->assertSee(asset('images/' . $savedPath));
         $storefront->assertSee('Fearless');
     }
 
@@ -96,8 +96,8 @@ class HeroBannerTest extends TestCase
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
 
-        // Verify video element and public/storage/slider/vyra/banner.mp4 source
-        $storefront->assertSee(asset('storage/slider/vyra/banner.mp4'));
+        // Verify video element and public/images/slider/vyra/banner.mp4 source
+        $storefront->assertSee(asset('images/slider/vyra/banner.mp4'));
         $storefront->assertSee('hero-video');
         $storefront->assertSee('autoplay');
         $storefront->assertSee('muted');
@@ -137,7 +137,7 @@ class HeroBannerTest extends TestCase
 
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
-        $storefront->assertSee(asset('storage/' . $savedPath));
+        $storefront->assertSee(asset('images/' . $savedPath));
         $storefront->assertSee('Heritage Craft');
         $storefront->assertSee('Custom Story');
         $storefront->assertSee('25+');
@@ -294,11 +294,11 @@ class HeroBannerTest extends TestCase
         $response->assertSee('startAutoplay()');
 
         // Verify all 5 full-background slides are present
-        $response->assertSee(asset('storage/slider/buttercup/slide-1.jpg'));
-        $response->assertSee(asset('storage/slider/buttercup/slide-2.jpg'));
-        $response->assertSee(asset('storage/slider/buttercup/slide-3.jpg'));
-        $response->assertSee(asset('storage/slider/buttercup/slide-4.jpg'));
-        $response->assertSee(asset('storage/slider/buttercup/slide-5.jpg'));
+        $response->assertSee(asset('images/slider/buttercup/slide-1.jpg'));
+        $response->assertSee(asset('images/slider/buttercup/slide-2.jpg'));
+        $response->assertSee(asset('images/slider/buttercup/slide-3.jpg'));
+        $response->assertSee(asset('images/slider/buttercup/slide-4.jpg'));
+        $response->assertSee(asset('images/slider/buttercup/slide-5.jpg'));
 
         // Verify slide kickers and titles
         $response->assertSee('New Season Edit');
@@ -352,7 +352,7 @@ class HeroBannerTest extends TestCase
 
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
-        $storefront->assertSee(asset('storage/' . $savedPath));
+        $storefront->assertSee(asset('images/' . $savedPath));
         $storefront->assertSee('Midnight Edition');
         $storefront->assertSee('Silk Sensations');
         $storefront->assertSee('After Dark');

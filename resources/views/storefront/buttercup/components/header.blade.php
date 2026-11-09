@@ -25,7 +25,7 @@
 
             <a href="{{ route('home') }}" class="select-none flex items-center gap-1.5 py-1">
                 @if(!empty($siteLogo))
-                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $storeName }}" class="h-10 md:h-12 w-auto max-w-[200px] object-contain">
+                    <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-10 md:h-12 w-auto max-w-[200px] object-contain">
                 @else
                     <span class="font-display text-3xl text-[#B97680] flex items-center gap-1">
                         Buttercup <span class="text-base">🌼</span>

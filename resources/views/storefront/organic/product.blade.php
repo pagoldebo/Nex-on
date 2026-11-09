@@ -56,10 +56,10 @@
           @foreach($product->colors as $color)
             @foreach($color->images as $img)
               <button type="button" 
-                      onclick="document.getElementById('mainProductImg').src='{{ asset('storage/' . $img->image_path) }}'"
+                      onclick="document.getElementById('mainProductImg').src='{{ $img->url }}'"
                       class="w-16 aspect-[3/4] rounded-2xl bg-white border-2 border-stone-200 hover:border-organic-500 p-1 shrink-0 transition overflow-hidden"
                       style="aspect-ratio: 3/4;">
-                <img src="{{ asset('storage/' . $img->image_path) }}" alt="{{ $color->name }}" class="w-full h-full object-contain">
+                <img src="{{ $img->url }}" alt="{{ $color->name }}" class="w-full h-full object-contain">
               </button>
             @endforeach
           @endforeach

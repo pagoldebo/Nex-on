@@ -174,6 +174,16 @@ Route::middleware('guest')->group(function () {
             return redirect()->route('login')->withErrors(['email' => $msg]);
         }
 
+        if ($user->otp_expires_at && now()->isAfter($user->otp_expires_at)) {
+            $user->clearOtp();
+            session()->forget(['pending_2fa_user_id', 'pending_2fa_remember', 'pending_2fa_email']);
+            $msg = 'The verification code has expired. Please sign in again to receive a fresh code.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->withErrors(['otp' => $msg]);
+        }
+
         if ($user->otp_code !== $request->otp) {
             RateLimiter::hit($attemptKey, 300);
             $remaining = 5 - RateLimiter::attempts($attemptKey);

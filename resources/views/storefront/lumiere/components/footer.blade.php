@@ -18,7 +18,7 @@
         <div>
             @if(!empty($siteLogo))
                 <div class="mb-4">
-                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain bg-white/20 backdrop-blur-xs p-1.5 rounded-xl">
+                    <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain bg-white/20 backdrop-blur-xs p-1.5 rounded-xl">
                 </div>
             @else
                 <p class="font-display italic text-2xl font-black text-white mb-4 tracking-tighter">Lumière.</p>

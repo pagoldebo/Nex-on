@@ -35,10 +35,10 @@
       <div class="flex gap-2 overflow-x-auto pb-1">
         @foreach ($product->colors as $color)
           @foreach ($color->images->take(4) as $img)
-            <button onclick="document.getElementById('mainImg').src='{{ asset('storage/'.$img->image_path) }}'"
+            <button onclick="document.getElementById('mainImg').src='{{ $img->url }}'"
                     class="flex-shrink-0 w-16 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all hover:opacity-100 opacity-60"
                     style="border-color:#D89AA044; aspect-ratio: 3/4;">
-              <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
+              <img src="{{ $img->url }}" class="w-full h-full object-cover">
             </button>
           @endforeach
         @endforeach

@@ -16,11 +16,19 @@ class Category extends Model
             return null;
         }
 
-        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://') || str_starts_with($this->image, '/')) {
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://') || str_starts_with($this->image, '//')) {
             return $this->image;
         }
 
-        return asset('storage/' . $this->image);
+        $path = ltrim($this->image, '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, 8);
+        }
+        if (str_starts_with($path, 'images/')) {
+            return asset($path);
+        }
+
+        return asset('images/' . $path);
     }
 
     public function parent()

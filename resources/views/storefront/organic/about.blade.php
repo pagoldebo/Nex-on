@@ -95,9 +95,9 @@
       <div class="reveal">
         <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/3] bg-stone-100">
           @if($storyImg)
-            <img src="{{ asset('storage/' . $storyImg) }}" alt="{{ $storyTitle }}" class="w-full h-full object-cover">
+            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $storyImg), '/')) }}" alt="{{ $storyTitle }}" class="w-full h-full object-cover">
           @else
-            <img src="{{ asset('organic/images/sample-image-2.jpg') }}" alt="Organic Indian farmers in fields" class="w-full h-full object-cover">
+            <img src="{{ asset('images/themes/organic/sample-image-2.jpg') }}" alt="Organic Indian farmers in fields" class="w-full h-full object-cover">
           @endif
         </div>
       </div>

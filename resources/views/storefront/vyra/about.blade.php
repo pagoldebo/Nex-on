@@ -54,7 +54,7 @@
             $vyraStoryImg = \App\Models\Setting::get('vyra_story_image');
           @endphp
           @if($vyraStoryImg)
-            <img src="{{ asset('storage/' . $vyraStoryImg) }}" alt="About Vyra" class="w-full h-full object-cover">
+            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraStoryImg), '/')) }}" alt="About Vyra" class="w-full h-full object-cover">
           @else
             <div class="w-full h-full bg-gradient-to-b from-[#1A1A1D] to-[#0E0E10] flex flex-col items-center justify-center p-8 text-center">
               <svg viewBox="0 0 100 120" class="w-24 h-28 text-[#FF3D5A]/40 mb-3" fill="currentColor">

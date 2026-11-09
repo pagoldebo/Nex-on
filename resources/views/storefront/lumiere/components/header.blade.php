@@ -25,7 +25,7 @@
 
             <a href="{{ route('home') }}" class="select-none flex items-center py-1 shrink-0">
                 @if(!empty($siteLogo))
-                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $storeName }}" class="h-8 sm:h-9 md:h-11 w-auto max-w-[125px] sm:max-w-[200px] object-contain">
+                    <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-8 sm:h-9 md:h-11 w-auto max-w-[125px] sm:max-w-[200px] object-contain">
                 @else
                     <span class="font-display italic text-xl sm:text-2xl font-black tracking-tighter text-pink-600">Lumière.</span>
                 @endif

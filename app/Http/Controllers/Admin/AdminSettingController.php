@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Setting;
+use App\Services\HtmlSanitizerService;
+use App\Services\ProductImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,27 +64,29 @@ class AdminSettingController extends Controller
             'vyra_story_image',
             'buttercup_story_image',
             'lumiere_story_image',
+            'organic_hero_image',
             'organic_story_image',
             'hero_banner_image',
         ];
 
         $request->validate([
-            'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:5120',
-            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_slide_3_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_slide_4_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
-            'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp|max:10240',
+            'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:5120',
+            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_slide_3_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_slide_4_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'organic_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
         ]);
 
         // Validate webhook URLs against SSRF (mitigates internal network scanning & cloud metadata access)
@@ -119,18 +123,54 @@ class AdminSettingController extends Controller
         // Process whitelisted file uploads only (prevents arbitrary file uploads)
         foreach ($allowedImageKeys as $fileKey) {
             if ($request->hasFile($fileKey)) {
-                $folder = ($fileKey === 'site_logo') ? 'branding' : 'banners';
                 $oldImg = Setting::get($fileKey);
-                if ($oldImg && Storage::disk('public')->exists($oldImg)) {
-                    Storage::disk('public')->delete($oldImg);
-                }
                 $uploadedFile = $request->file($fileKey);
-                if (strtolower($uploadedFile->getClientOriginalExtension()) === 'svg' || str_contains($uploadedFile->getMimeType() ?? '', 'svg')) {
-                    $sanitized = \App\Services\HtmlSanitizerService::sanitizeSvg(file_get_contents($uploadedFile->getRealPath()));
-                    file_put_contents($uploadedFile->getRealPath(), $sanitized);
+
+                if ($fileKey === 'site_logo') {
+                    // Logo is stored as branding/logo.png (or logo.svg), not converted to webp or random hash
+                    if ($oldImg && $oldImg !== 'branding/logo.png' && $oldImg !== 'branding/logo.svg' && Storage::disk('public')->exists($oldImg)) {
+                        Storage::disk('public')->delete($oldImg);
+                    }
+
+                    $ext = strtolower($uploadedFile->getClientOriginalExtension());
+                    $mime = $uploadedFile->getMimeType() ?? '';
+                    $isSvg = ($ext === 'svg' || str_contains($mime, 'svg'));
+
+                    if ($isSvg) {
+                        $sanitized = HtmlSanitizerService::sanitizeSvg(file_get_contents($uploadedFile->getRealPath()));
+                        Storage::disk('public')->put('branding/logo.svg', $sanitized);
+                        Setting::set('site_logo', 'branding/logo.svg');
+                    } else {
+                        $raw = file_get_contents($uploadedFile->getRealPath());
+                        $saved = false;
+                        if (function_exists('imagecreatefromstring')) {
+                            $im = @imagecreatefromstring($raw);
+                            if ($im !== false) {
+                                imagepalettetotruecolor($im);
+                                imagealphablending($im, false);
+                                imagesavealpha($im, true);
+                                ob_start();
+                                imagepng($im);
+                                $pngData = ob_get_clean();
+                                imagedestroy($im);
+                                if ($pngData !== false && strlen($pngData) > 0) {
+                                    Storage::disk('public')->put('branding/logo.png', $pngData);
+                                    $saved = true;
+                                }
+                            }
+                        }
+                        if (!$saved) {
+                            $uploadedFile->storeAs('branding', 'logo.png', 'public');
+                        }
+                        Setting::set('site_logo', 'branding/logo.png');
+                    }
+                } else {
+                    if ($oldImg && Storage::disk('public')->exists($oldImg)) {
+                        Storage::disk('public')->delete($oldImg);
+                    }
+                    $storedPath = ProductImageService::storeUpload($uploadedFile, 'banners');
+                    Setting::set($fileKey, $storedPath);
                 }
-                $storedPath = $uploadedFile->store($folder, 'public');
-                Setting::set($fileKey, $storedPath);
             }
         }
 

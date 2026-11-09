@@ -215,7 +215,7 @@ class DeliveryFleetManagementTest extends TestCase
         ]);
 
         // Step 1: Driver marks out for delivery
-        $startResponse = $this->post(route('driver.order.status', $order), [
+        $startResponse = $this->withSession(['driver_phone' => $driver->phone])->post(route('driver.order.status', $order), [
             'action' => 'start',
         ]);
 
@@ -228,7 +228,7 @@ class DeliveryFleetManagementTest extends TestCase
         $this->assertNotNull($order->shipped_at);
 
         // Step 2: Driver completes delivery with proof
-        $completeResponse = $this->post(route('driver.order.status', $order), [
+        $completeResponse = $this->withSession(['driver_phone' => $driver->phone])->post(route('driver.order.status', $order), [
             'action'          => 'complete',
             'proof_signature' => 'Shreya Ghoshal (Self)',
             'proof_notes'     => 'Received with security seal intact.',

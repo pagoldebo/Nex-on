@@ -53,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         // Dynamically share project logo and store name across all themes and views
         View::composer('*', function ($view) {
             $view->with('siteLogo', Setting::get('site_logo'));
+            $view->with('siteLogoUrl', Setting::siteLogoUrl());
             $view->with('storeName', Setting::get('store_name', config('app.name', 'Nexon')));
             $view->with('organicTopNotice', Setting::get('organic_top_notice', '100% Certified Organic • Direct from Local Farmers & Sustainable Harvests'));
             $view->with('organicTopShippingNotice', Setting::get('organic_top_shipping_notice', 'Delivery to All Major Indian Pincodes'));

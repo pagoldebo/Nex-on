@@ -288,7 +288,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
 <div class="grid grid-cols-3 gap-6">
   @foreach ($templates as $template)
     <div class="border rounded-xl p-4 {{ $template->is_active ? 'ring-2 ring-green-500' : '' }}">
-      <img src="{{ asset('storage/'.$template->preview_image) }}" class="rounded-lg mb-3 aspect-video object-cover">
+      <img src="{{ asset('images/'.$template->preview_image) }}" class="rounded-lg mb-3 aspect-video object-cover">
       <h3 class="font-semibold">{{ $template->label }}</h3>
 
       @if($template->is_active)
@@ -380,7 +380,7 @@ Example swap inside `saaya/home.blade.php`:
             {{ strtoupper($product->badge) }}
           </span>
         @endif
-        <img src="{{ asset('storage/'.$product->image_path) }}" class="card-img-zoom w-full h-full object-cover">
+        <img src="{{ asset('images/'.$product->image_path) }}" class="card-img-zoom w-full h-full object-cover">
       </div>
       <div class="p-4">
         <p class="text-[11px] tracking-widest text-gold-dark uppercase">{{ $product->category->name }}</p>
@@ -426,14 +426,15 @@ class ProductController extends Controller
             'price'            => 'required|numeric|min:0',
             'compare_at_price' => 'nullable|numeric|min:0',
             'badge'            => 'nullable|string|max:30',
-            'image'            => 'nullable|image|max:4096',
+            'image'            => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:10240',
             'stock'            => 'required|integer|min:0',
             'is_active'        => 'boolean',
             'is_featured'      => 'boolean',
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('products', 'public');
+            // Converts to .avif format and stores directly in public/images/products/{category}/
+            $data['image_path'] = app(\App\Services\ProductImageService::class)->storeUpload($request->file('image'), 'products');
         }
 
         Product::create($data);
@@ -448,11 +449,11 @@ class ProductController extends Controller
             'name'        => 'required|string|max:255',
             'price'       => 'required|numeric|min:0',
             'stock'       => 'required|integer|min:0',
-            'image'       => 'nullable|image|max:4096',
+            'image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:10240',
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('products', 'public');
+            $data['image_path'] = app(\App\Services\ProductImageService::class)->store($request->file('image'), $product);
         }
 
         $product->update($data);
@@ -469,7 +470,8 @@ class ProductController extends Controller
 ```
 
 ```bash
-php artisan storage:link   # so /storage/products/... images are web-accessible
+# Images are located directly inside public/images/products/... (no symlink required)
+# ProductImageService automatically converts raster uploads to AVIF format with alpha preservation
 ```
 
 ---

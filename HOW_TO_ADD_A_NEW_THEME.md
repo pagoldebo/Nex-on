@@ -20,7 +20,7 @@ flowchart TD
     
     I["Admin Settings (/admin/settings)"] --> J["Dynamic Theme Tabs (@foreach templates)"]
     J --> K["Theme Settings Fields (Hero, Story, Badges)"]
-    K --> L["AdminSettingController@update (Storage + Settings Table)"]
+    K --> L["AdminSettingController@update (public/images + Settings Table)"]
 ```
 
 ---
@@ -230,8 +230,8 @@ $allowedImageKeys = [
 
 $request->validate([
     // ... existing rules
-    'aurora_hero_image'  => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
-    'aurora_story_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
+    'aurora_hero_image'  => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:10240',
+    'aurora_story_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:10240',
 ]);
 ```
 
@@ -249,7 +249,7 @@ Under the **Homepage Hero Banners & Visuals** section, add your theme's Alpine c
             <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center gap-3">
                 @if(!empty($auroraImg))
                     <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                        <img src="{{ asset('storage/' . $auroraImg) }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('images/' . $auroraImg) }}" class="w-full h-full object-cover">
                     </div>
                     <label class="inline-flex items-center gap-1.5 text-xs text-rose-600 cursor-pointer">
                         <input type="checkbox" name="remove_aurora_hero_image" value="1" class="rounded">

@@ -52,7 +52,7 @@ class CategoryImageTest extends TestCase
         $category = Category::where('slug', 'men-premium')->firstOrFail();
         $this->assertNotNull($category->image);
         Storage::disk('public')->assertExists($category->image);
-        $this->assertStringContainsString('storage/' . $category->image, $category->image_url);
+        $this->assertStringContainsString('images/' . $category->image, $category->image_url);
     }
 
     public function test_admin_can_update_and_replace_category_image()

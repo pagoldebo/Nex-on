@@ -58,7 +58,7 @@
                     @if(!empty($settings['site_logo']))
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3 relative group">
                             <div class="p-4 bg-white rounded-lg border border-slate-200/70 shadow-xs flex items-center justify-center min-h-[90px] w-full">
-                                <img id="currentLogoPreview" src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Store Logo" class="max-h-16 max-w-full object-contain">
+                                <img id="currentLogoPreview" src="{{ asset('images/' . ltrim(str_replace('storage/', '', $settings['site_logo']), '/')) }}" alt="Store Logo" class="max-h-16 max-w-full object-contain">
                             </div>
                             <div class="flex items-center justify-between w-full pt-1">
                                 <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -95,10 +95,10 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Upload New Project Logo</label>
                         <div class="relative">
-                            <input type="file" name="site_logo" id="siteLogoInput" accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                            <input type="file" name="site_logo" id="siteLogoInput" data-no-webp="true" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
                                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1.5">Supported formats: PNG, SVG, JPG, WEBP. Max size: 2MB. Transparent background recommended for seamless integration with theme headers.</p>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Saved directly as PNG (<code>branding/logo.png</code>) to preserve transparent raster quality and crisp branding without WebP conversion.</p>
                     </div>
 
                     <div>
@@ -214,13 +214,13 @@
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-[#D4FF3D] animate-pulse"></span>
                                 <span class="font-bold text-[#F2F0EC]">Top Slider Background Video</span>
-                                <span class="font-mono text-[10px] text-slate-400">public/storage/slider/vyra/banner.mp4</span>
+                                <span class="font-mono text-[10px] text-slate-400">public/images/slider/vyra/banner.mp4</span>
                             </div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[#0E0E10] bg-[#D4FF3D] px-2.5 py-0.5 rounded-full">Active • 3.0 MB</span>
                         </div>
                         <div class="relative w-full aspect-[16/9] max-w-sm rounded-lg overflow-hidden border border-slate-700 shadow-md bg-black">
-                            <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('storage/slider/vyra/banner-1.jpg') }}">
-                                <source src="{{ asset('storage/slider/vyra/banner.mp4') }}" type="video/mp4">
+                            <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/vyra/banner-1.jpg') }}">
+                                <source src="{{ asset('images/slider/vyra/banner.mp4') }}" type="video/mp4">
                             </video>
                             <span class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur-xs">Live Looping Video</span>
                         </div>
@@ -246,7 +246,7 @@
                                     <div>
                                         @if(!empty($vyraImg))
                                             <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                                <img src="{{ asset('storage/' . $vyraImg) }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
+                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraImg), '/')) }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
@@ -520,11 +520,11 @@
                                             <div>
                                                 @if(!empty($slideImg))
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                                        <img src="{{ asset('storage/' . $slideImg) }}" class="w-full h-full object-cover">
+                                                        <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $slideImg), '/')) }}" class="w-full h-full object-cover">
                                                     </div>
                                                 @else
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/30 bg-cover bg-center"
-                                                         style="background-image: url('{{ asset("storage/slider/buttercup/slide-{$s}.jpg") }}');">
+                                                         style="background-image: url('{{ asset("images/slider/buttercup/slide-{$s}.jpg") }}');">
                                                         <div class="absolute inset-0 bg-black/30 flex items-center justify-center p-4">
                                                             <span class="text-xs text-white font-bold bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs">Default Slide {{ $s }} Image</span>
                                                         </div>
@@ -723,7 +723,7 @@
                                     <div>
                                         @if(!empty($lumImg))
                                             <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-[32px] overflow-hidden shadow-md">
-                                                <img src="{{ asset('storage/' . $lumImg) }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumImg), '/')) }}" class="w-full h-full object-cover">
                                             </div>
                                         @else
                                             <div class="w-full aspect-[4/5] w-56 bg-white/60 rounded-[32px] flex flex-col items-center justify-center p-6 text-center">
@@ -884,7 +884,7 @@
                                     <div>
                                         @if(!empty($saayaImg))
                                             <div class="relative w-full aspect-[3/4] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                                <img src="{{ asset('storage/' . $saayaImg) }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaImg), '/')) }}" class="w-full h-full object-cover">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
@@ -1058,7 +1058,7 @@
                                     <div>
                                         @if(!empty($organicImg))
                                             <div class="relative w-full aspect-video max-w-[340px] rounded-xl overflow-hidden shadow-md">
-                                                <img src="{{ asset('storage/' . $organicImg) }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicImg), '/')) }}" class="w-full h-full object-cover">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
@@ -1421,7 +1421,7 @@
                                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3">
                                     @if(!empty($genericImg))
                                         <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                            <img src="{{ asset('storage/' . $genericImg) }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $genericImg), '/')) }}" class="w-full h-full object-cover">
                                         </div>
                                         <div class="flex items-center justify-between w-full pt-2 border-t border-slate-200">
                                             <span class="text-[11px] text-emerald-600 font-semibold">Active</span>
@@ -1666,7 +1666,7 @@
                                 <div>
                                     @if(!empty($vyraStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-xl overflow-hidden shadow-md border-2 border-[#FF3D5A]">
-                                            <img src="{{ asset('storage/' . $vyraStoryImg) }}" class="w-full h-full object-cover" alt="Current Vyra Story">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Vyra Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -1819,7 +1819,7 @@
                                 <div>
                                     @if(!empty($bcStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-[24px] overflow-hidden shadow-md border-2 border-[#D89AA0]">
-                                            <img src="{{ asset('storage/' . $bcStoryImg) }}" class="w-full h-full object-cover" alt="Current Buttercup Story">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $bcStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Buttercup Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -1978,7 +1978,7 @@
                                 <div>
                                     @if(!empty($saayaStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-xl overflow-hidden shadow-md border-2 border-[#C9A24B]">
-                                            <img src="{{ asset('storage/' . $saayaStoryImg) }}" class="w-full h-full object-cover" alt="Current Saaya Story">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Saaya Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -2137,7 +2137,7 @@
                                 <div>
                                     @if(!empty($lumStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-[32px] overflow-hidden shadow-md border-2 border-pink-300">
-                                            <img src="{{ asset('storage/' . $lumStoryImg) }}" class="w-full h-full object-cover" alt="Current Lumiere Story">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Lumiere Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -2300,7 +2300,7 @@
                                 <div>
                                     @if(!empty($organicStory))
                                         <div class="relative w-full aspect-[4/3] max-w-[320px] rounded-xl overflow-hidden shadow-md">
-                                            <img src="{{ asset('storage/' . $organicStory) }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicStory), '/')) }}" class="w-full h-full object-cover">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else

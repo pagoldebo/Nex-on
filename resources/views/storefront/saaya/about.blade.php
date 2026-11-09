@@ -57,7 +57,7 @@
             $saayaStoryImg = \App\Models\Setting::get('saaya_story_image');
           @endphp
           @if($saayaStoryImg)
-            <img src="{{ asset('storage/' . $saayaStoryImg) }}" alt="Our Story" class="w-full h-full object-cover">
+            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaStoryImg), '/')) }}" alt="Our Story" class="w-full h-full object-cover">
           @else
             <div class="w-full h-full bg-gradient-to-b from-blush/30 to-maroon/20 flex flex-col items-center justify-center p-8 text-center">
               <svg class="w-24 h-32 text-maroon/25 mb-4" fill="currentColor" viewBox="0 0 80 110">

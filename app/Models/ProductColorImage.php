@@ -23,6 +23,14 @@ class ProductColorImage extends Model
             return $this->image_path;
         }
 
-        return asset('storage/' . ltrim($this->image_path, '/'));
+        $path = ltrim($this->image_path, '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, 8);
+        }
+        if (str_starts_with($path, 'images/')) {
+            return asset($path);
+        }
+
+        return asset('images/' . $path);
     }
 }

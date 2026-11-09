@@ -4,7 +4,7 @@
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
-[![Tests Passing](https://img.shields.io/badge/Tests-253%20Passed-brightgreen?style=for-the-badge)](tests)
+[![Tests Passing](https://img.shields.io/badge/Tests-411%20Passed-brightgreen?style=for-the-badge)](tests)
 
 **Nex-on** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
 
@@ -26,8 +26,11 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Auto-Submit & Resend Cooldown**: Auto-submits on 4 digits typed/pasted, paired with a 60-second AJAX resend timer.
 * **Responsive HTML Mail Theme**: Polished email template with prominent code block, expiration countdown, and security warnings. Preview available at `/preview-mail/otp`.
 
-### 3. Zero-Server-Load WebP Image Conversion
-* Automatic client-side canvas converter transforms uploaded JPEG/PNG images into modern `.webp` format on the client machine before uploading, dramatically saving server CPU, memory, and bandwidth.
+### 3. Next-Gen AVIF Image Conversion & Direct Public Media
+* Automatic conversion transforms uploaded product, category, and banner images into next-generation **`.avif`** format (PHP 8.5 native `imageavif` with alpha transparency, quality 75, speed 6), delivering up to 50% smaller payloads than WebP and 80% smaller than JPEG.
+* Client-side canvas converter (`webp-converter.js`) auto-detects browser AVIF encoding support before upload to optimize client-side where possible.
+* Direct `public/images/` storage architecture eliminates symlink dependencies (`php artisan storage:link` is obsolete) and features `.htaccess` execution protection.
+* Strict brand logo retention: The store logo is preserved directly as `branding/logo.png` (or `.svg`), never converted or hashed. Vector SVGs remain intact with strict SVG sanitization.
 
 ### 4. Hierarchical Category Management
 * Multi-level parent-child tree navigation with accordion auto-collapse in the admin dashboard.
@@ -65,7 +68,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Backend Framework**: Laravel 12 (PHP 8.2+)
 * **Database**: MySQL 8.x / MariaDB
 * **Frontend**: Blade Components, Tailwind CSS, Alpine.js, HTML5 Canvas
-* **Testing**: PHPUnit / Pest (253 tests, 1,422 assertions)
+* **Testing**: PHPUnit / Pest (411 tests, 2,245 assertions)
 * **Auth**: Custom Patron Auth with Two-Factor Email OTP
 * **PWA**: Web App Manifest & service worker readiness
 
@@ -121,10 +124,8 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
    php artisan migrate --seed
    ```
 
-6. **Create Storage Symlink**:
-   ```bash
-   php artisan storage:link
-   ```
+6. **Direct Media Assets (No Symlink Needed)**:
+   Media assets (`banners/`, `branding/`, `categories/`, `products/`, `slider/`, `themes/`) are stored directly inside `public/images/`. No symbolic link (`php artisan storage:link`) is needed.
 
 7. **Start Development Server** (if not using Apache/XAMPP):
    ```bash
@@ -144,9 +145,9 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 > [!NOTE]
 > **Two-Step Verification (OTP):**
 > Upon submitting your email and password, a secure 4-digit verification code is dispatched. In local development (`MAIL_MAILER=log`), the OTP is written directly to **`storage/logs/laravel.log`** and saved in the **`otp_code`** column on the `users` table.
-> You can also check the current OTP via CLI at any time:
+> You can also fetch or generate a fresh OTP anytime via the dedicated Artisan CLI command:
 > ```bash
-> php artisan tinker --execute="echo App\Models\User::where('email', 'admin@nexon.app')->value('otp_code');"
+> php artisan admin:otp
 > ```
 
 ---
@@ -189,7 +190,7 @@ Nexon/
 │   ├── web.php               # Storefront & Admin ERP Routes
 │   └── auth.php              # Login, Registration & OTP Verification Routes
 └── tests/
-    └── Feature/              # 253 Automated Feature & Integration Tests
+    └── Feature/              # 411 Automated Feature & Integration Tests (2,245 assertions)
 ```
 
 ---

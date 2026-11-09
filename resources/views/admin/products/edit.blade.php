@@ -203,8 +203,8 @@
                             @php
                                 $rawCover = $color->getRawOriginal('cover_image');
                                 $currentCoverUrl = $rawCover 
-                                    ? (\Illuminate\Support\Str::startsWith($rawCover, ['http://', 'https://']) ? $rawCover : asset('storage/' . ltrim($rawCover, '/')))
-                                    : ($color->images->first() ? asset('storage/'.$color->images->first()->image_path) : null);
+                                    ? (\Illuminate\Support\Str::startsWith($rawCover, ['http://', 'https://']) ? $rawCover : asset('images/' . ltrim(str_replace('storage/', '', $rawCover), '/')))
+                                    : ($color->images->first() ? $color->images->first()->url : null);
                             @endphp
                             <div class="cover-preview-wrapper relative w-24 h-28 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
                                 <img src="{{ $currentCoverUrl ?? '' }}" class="cover-preview-img {{ $currentCoverUrl ? '' : 'hidden' }} w-full h-full object-cover" alt="Cover preview">
@@ -265,7 +265,7 @@
                                             </span>
                                         </div>
 
-                                        <img src="{{ asset('storage/'.$image->image_path) }}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Product image">
+                                        <img src="{{ $image->url }}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Product image">
 
                                         {{-- Bottom Controls Overlay --}}
                                         <div class="relative z-10 p-1 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 opacity-95 sm:opacity-0 group-hover:opacity-100 transition">

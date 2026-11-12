@@ -89,7 +89,7 @@
       </div>
 
       {{-- Thumbnail strip --}}
-      <div id="pdpThumbs" class="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+      <div id="pdpThumbs" class="relative flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
         @if($firstColor)
           @foreach($firstColor['images'] as $i => $img)
             <button type="button"
@@ -645,7 +645,7 @@
       }, 140);
     }
 
-    // Update active thumbnail borders and scroll active thumb into view
+    // Update active thumbnail borders and scroll active thumb into view (horizontal only, never window)
     if (thumbWrap) {
       const thumbs = thumbWrap.querySelectorAll('.pdp-thumb');
       thumbs.forEach((b, i) => {
@@ -657,7 +657,10 @@
         b.classList.toggle('border-gold/20', !isActive);
         b.classList.toggle('opacity-60', !isActive);
         if (isActive) {
-          b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+          // IMPORTANT: Scroll ONLY the horizontal thumbnail container.
+          // NEVER call b.scrollIntoView() which forces the entire browser window/document to jump to the top!
+          const targetLeft = b.offsetLeft - (thumbWrap.clientWidth / 2) + (b.clientWidth / 2);
+          thumbWrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
         }
       });
     }
@@ -688,8 +691,12 @@
     goToSlide(currentImageIdx - 1, userInitiated);
   }
 
+  let galleryInViewport = true;
+
   function startAutoSlide() {
     stopAutoSlide();
+    // Do not run auto-slide if gallery is scrolled out of viewport or if tab is inactive
+    if (!galleryInViewport || (typeof document !== 'undefined' && document.hidden)) return;
     const imgs = getActiveImages();
     if (imgs.length <= 1) return;
     autoSlideTimer = setInterval(() => {
@@ -707,7 +714,9 @@
   function restartAutoSlide() {
     stopAutoSlide();
     setTimeout(() => {
-      startAutoSlide();
+      if (galleryInViewport) {
+        startAutoSlide();
+      }
     }, 6000);
   }
 
@@ -759,8 +768,34 @@
   const galleryWrap = document.querySelector('.pdp-gallery');
   if (galleryWrap) {
     galleryWrap.addEventListener('mouseenter', stopAutoSlide);
-    galleryWrap.addEventListener('mouseleave', startAutoSlide);
+    galleryWrap.addEventListener('mouseleave', () => {
+      if (galleryInViewport) startAutoSlide();
+    });
+
+    // Viewport IntersectionObserver: pauses auto-sliding whenever gallery is scrolled out of viewport
+    if ('IntersectionObserver' in window) {
+      const galleryObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          galleryInViewport = entry.isIntersecting;
+          if (!galleryInViewport) {
+            stopAutoSlide();
+          } else {
+            startAutoSlide();
+          }
+        });
+      }, { threshold: 0.1 });
+      galleryObserver.observe(galleryWrap);
+    }
   }
+
+  // Also pause auto-sliding when browser tab/window is hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopAutoSlide();
+    } else if (galleryInViewport) {
+      startAutoSlide();
+    }
+  });
 
   // Touch swipe support for mobile
   let touchStartX = 0;

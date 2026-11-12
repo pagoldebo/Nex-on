@@ -980,4 +980,75 @@ class StorefrontController extends Controller
 
         return view('storefront.common.custom-page', compact('theme', 'page'));
     }
+
+    /**
+     * Generate dynamic XML Sitemap compliant with sitemaps.org and Google Image Search.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function sitemap()
+    {
+        $products = Product::where('is_active', true)
+            ->with(['colors.images'])
+            ->select('id', 'name', 'slug', 'updated_at')
+            ->get();
+
+        $categories = Category::select('id', 'name', 'slug', 'updated_at')->get();
+
+        $curatedCollections = [
+            'featured-products' => 0.8,
+            'sale'              => 0.8,
+            'new-arrivals'      => 0.8,
+            'new-launches'      => 0.8,
+        ];
+
+        $staticPages = [
+            'about'           => ['changefreq' => 'monthly', 'priority' => 0.7],
+            'contact'         => ['changefreq' => 'monthly', 'priority' => 0.7],
+            'faq'             => ['changefreq' => 'weekly',  'priority' => 0.6],
+            'terms'           => ['changefreq' => 'monthly', 'priority' => 0.5],
+            'privacy'         => ['changefreq' => 'monthly', 'priority' => 0.5],
+            'shipping-policy' => ['changefreq' => 'monthly', 'priority' => 0.5],
+            'return-policy'   => ['changefreq' => 'monthly', 'priority' => 0.5],
+            'size-guide'      => ['changefreq' => 'monthly', 'priority' => 0.6],
+            'help'            => ['changefreq' => 'weekly',  'priority' => 0.6],
+        ];
+
+        $xml = view('storefront.common.sitemap', compact(
+            'products',
+            'categories',
+            'curatedCollections',
+            'staticPages'
+        ))->render();
+
+        return response($xml, 200)
+            ->header('Content-Type', 'application/xml; charset=utf-8')
+            ->header('Cache-Control', 'public, max-age=3600');
+    }
+
+    /**
+     * Generate dynamic robots.txt pointing to the canonical sitemap.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function robots()
+    {
+        $sitemapUrl = url('/sitemap.xml');
+        $content = "User-agent: *\n"
+            . "Allow: /\n"
+            . "Disallow: /admin/\n"
+            . "Disallow: /admin/*\n"
+            . "Disallow: /account/\n"
+            . "Disallow: /account/*\n"
+            . "Disallow: /checkout\n"
+            . "Disallow: /checkout/*\n"
+            . "Disallow: /cart\n"
+            . "Disallow: /wishlist\n"
+            . "Disallow: /compare\n"
+            . "Disallow: /search\n\n"
+            . "Sitemap: {$sitemapUrl}\n";
+
+        return response($content, 200)
+            ->header('Content-Type', 'text/plain; charset=utf-8');
+    }
 }

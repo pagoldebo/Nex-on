@@ -187,17 +187,19 @@ class CatalogueSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Emerald Silk Bias Slip Chemise',
-                'slug' => 'emerald-silk-bias-slip-chemise',
+                'name' => 'Ratri Saree',
+                'slug' => 'ratri-saree',
+                'sku' => 'SARE-RATR-QBL7',
                 'category_slug' => 'nightwear-robes',
-                'description' => 'Lulu & Sky runway favorite in liquid emerald silk charmeuse, cut on the bias for an effortless silhouette.',
+                'description' => '<p><strong>Fabric:</strong> Handwoven tussar by cotton &nbsp;|&nbsp; <strong>Blouse Piece:</strong> No &nbsp;|&nbsp; <strong>Colour:</strong> Black</p><p>An ode to the magic of Nobomi night. Crafted in deep black handwoven Tussar-by-Cotton, carrying delicate embroidered motifs across its body, finished with intricate lace edging and a statement embroidered pallu.</p>',
+                'long_description' => '<div class="product-highlights mb-6"><h3 style="font-family: Georgia, serif; color: #1a1a1a; font-size: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #d4af37; padding-left: 12px; line-height: 1.2;">Product Highlights</h3><ul style="list-style: none; padding: 0; margin: 0;" class="space-y-2 text-sm text-gray-700"><li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;"><span style="color: #6b7280; font-weight: 500;">Works:</span><span style="font-weight: 600; color: #111827;">Embroidery</span></li><li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;"><span style="color: #6b7280; font-weight: 500;">Fabric:</span><span style="font-weight: 600; color: #111827;">Handwoven tussar by cotton</span></li><li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;"><span style="color: #6b7280; font-weight: 500;">Saree Length:</span><span style="font-weight: 600; color: #111827;">5.5 meters</span></li><li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;"><span style="color: #6b7280; font-weight: 500;">Blouse Piece:</span><span style="font-weight: 600; color: #111827;">No</span></li><li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;"><span style="color: #6b7280; font-weight: 500;">Colour:</span><span style="font-weight: 600; color: #111827;">Black</span></li></ul></div><div class="story-box mb-6" style="margin-top: 1.5rem;"><h3 style="font-family: Georgia, serif; color: #1a1a1a; font-size: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #d4af37; padding-left: 12px; line-height: 1.2;">Story</h3><div style="padding-left: 4px;"><p style="font-weight: 700; color: #990000; font-size: 1.1rem; margin-bottom: 0.75rem;">RATRI | রাত্রী</p><p style="margin-bottom: 0.75rem; line-height: 1.7; color: #374151;">There’s something about <strong style="color: #990000;">Nobomi night</strong>—the lights, the quiet after the chaos, the last few hours of Pujo that feel almost magical.</p><p style="margin-bottom: 0.75rem; line-height: 1.7; color: #374151;"><strong style="color: #990000;">RATRI</strong> is an ode to that night.</p><p style="margin-bottom: 0.75rem; line-height: 1.7; color: #374151;">Crafted in a beautiful handwoven Tussar-by-Cotton, this deep black saree carries delicate embroidered <span style="color: #990000; font-weight: 600;">motifs</span> across its body, finished with intricate lace edging and a statement embroidered pallu.</p><p style="margin-bottom: 0.75rem; line-height: 1.7; color: #374151;">Understated yet dramatic, traditional yet effortlessly contemporary—<strong style="color: #990000;">RATRI</strong> is made for the woman who lets the night do the talking.</p><p style="margin-top: 1rem; font-style: italic; color: #990000; font-weight: 600;">RATRI — An ode to the night. A final chapter of Pujo.</p></div></div><div class="care-and-disclaimer" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><div style="margin-bottom: 1rem;"><span style="font-size: 0.95rem; font-weight: 700; color: #111827; display: block; margin-bottom: 0.25rem;">Wash &amp; Care:</span><p style="font-size: 0.875rem; color: #4b5563; margin: 0; line-height: 1.5;">Dry clean only recommended to maintain the longevity of the fabric.</p></div><div style="margin-bottom: 1.25rem;"><span style="font-size: 0.95rem; font-weight: 700; color: #111827; display: block; margin-bottom: 0.25rem;">Production Time:</span><p style="font-size: 0.875rem; color: #4b5563; margin: 0; line-height: 1.5;">Handcrafted artisanal saree. Please allow 10-12 days for production.</p></div><div style="background-color: #fff5f5; border-radius: 8px; padding: 14px; border-left: 4px solid #e53e3e;"><span style="font-size: 0.9rem; font-weight: 700; display: block; margin-bottom: 6px; color: #c53030;">Disclaimer:</span><ul style="font-size: 0.825rem; color: #4a5568; margin: 0; padding-left: 18px; line-height: 1.6;"><li>Photos are captured in natural light to avoid discrepancies; minor shade variations may occur due to individual screen calibration.</li><li>For bespoke customizations, please contact our concierge team. Customized items cannot be returned or exchanged.</li></ul></div></div>',
                 'badge' => 'HOT',
                 'is_featured' => true,
                 'is_bestseller' => false,
                 'colors' => [
                     [
-                        'name' => 'Emerald Green',
-                        'hex' => '#065F46',
+                        'name' => 'Black',
+                        'hex' => '#000000',
                         'images' => ['products/emerald-satin-chemise.jpg'],
                         'sizes' => [
                             ['size' => 'S', 'price' => 3299, 'compare_at' => 3999, 'stock' => 10],
@@ -276,10 +278,12 @@ class CatalogueSeeder extends Seeder
             $product = Product::updateOrCreate(
                 ['slug' => $pData['slug']],
                 [
-                    'category_id'   => $cat->id,
-                    'name'          => $pData['name'],
-                    'description'   => $pData['description'],
-                    'badge'         => $pData['badge'],
+                    'category_id'      => $cat->id,
+                    'name'             => $pData['name'],
+                    'sku'              => $pData['sku'] ?? null,
+                    'description'      => $pData['description'],
+                    'long_description' => $pData['long_description'] ?? null,
+                    'badge'            => $pData['badge'],
                     'is_active'     => true,
                     'is_featured'   => $pData['is_featured'],
                     'is_bestseller' => $pData['is_bestseller'],

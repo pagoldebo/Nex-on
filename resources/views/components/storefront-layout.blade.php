@@ -10,13 +10,84 @@
       - Accessible Tailwind CSS styling and smooth transition animations
 --}}
 @props([
-    'theme'    => null,
-    'title'    => config('app.name', 'Nex-on'),
-    'metaDesc' => config('app.name', 'Nex-on') . ' - Online Store.',
+    'theme'     => null,
+    'title'     => null,
+    'metaDesc'  => null,
+    'canonical' => null,
+    'ogImage'   => null,
+    'ogType'    => 'website',
+    'jsonLd'    => null,
+    'noindex'   => false,
+    'product'   => null,
+    'category'  => null,
 ])
 
 @php
     $theme = $theme ?? \App\Models\Template::active();
+    $seoService = app(\App\Services\SeoService::class);
+    $storeName = \App\Models\Setting::get('store_name', config('app.name', 'Saaya'));
+    $storeTagline = \App\Models\Setting::get('store_tagline', 'Heritage Luxury Bridalwear & Handcrafted Sarees');
+    $defaultMeta = \App\Models\Setting::get('store_meta_description', "Explore handcrafted bridalwear, luxury sarees, designer lehengas, and bespoke couture at {$storeName}. Exclusive handcrafted creations delivered worldwide.");
+
+    // Resolve Product Context if passed
+    if ($product && $product instanceof \App\Models\Product) {
+        $title = $title ?: ($product->name . ' — ' . ($product->category?->name ?? 'Heritage Collection'));
+        $metaDesc = $metaDesc ?: \Illuminate\Support\Str::limit(strip_tags($product->short_description ?: $product->description ?: $product->name), 155);
+        $canonical = $canonical ?: route('product.show', $product->slug);
+        $ogImage = $ogImage ?: ($product->cover_image ? asset($product->cover_image) : null);
+        $ogType = 'product';
+        if ($jsonLd === null) {
+            $jsonLd = $seoService->generateProductJsonLd($product);
+        }
+    }
+
+    // Resolve Category Context if passed
+    if ($category && $category instanceof \App\Models\Category && !$product) {
+        $title = $title ?: ($category->name . ' Collection');
+        $metaDesc = $metaDesc ?: "Explore the {$category->name} collection at {$storeName}. Handcrafted designer fashion and bespoke luxury trousseau.";
+        $canonical = $canonical ?: route('category.show', $category->slug);
+        $ogImage = $ogImage ?: ($category->image_url ?: null);
+        if ($jsonLd === null) {
+            $jsonLd = $seoService->generateCategoryJsonLd($category);
+        }
+    }
+
+    // Title Formula
+    if (empty($title) || $title === 'Home' || $title === config('app.name')) {
+        $resolvedTitle = $storeName . ' — ' . $storeTagline;
+    } elseif (str_contains($title, $storeName) || str_contains($title, config('app.name'))) {
+        $resolvedTitle = $title;
+    } else {
+        $resolvedTitle = $title . ' | ' . $storeName;
+    }
+
+    // Automatically protect transactional and dynamic search pages from indexing
+    if (!$noindex) {
+        $noindex = request()->is('cart*', 'checkout*', 'account*', 'wishlist*', 'compare*', 'order-confirmation*', 'search*');
+    }
+
+    $resolvedMetaDesc = $metaDesc ?: $defaultMeta;
+    $resolvedCanonical = $canonical ?: url()->current();
+    $resolvedOgImage = $ogImage ? $seoService->ensureAbsoluteUrl($ogImage) : $seoService->ensureAbsoluteUrl('images/branding/logo.png');
+
+    // Default Site-wide Schemas (Organization & WebSite)
+    $siteSchemas = [
+        $seoService->generateOrganizationJsonLd(),
+        $seoService->generateWebSiteJsonLd(),
+    ];
+
+    if (!empty($jsonLd)) {
+        if (is_array($jsonLd) && isset($jsonLd['@context'])) {
+            $allSchemas = array_merge($siteSchemas, [$jsonLd]);
+        } elseif (is_array($jsonLd)) {
+            $allSchemas = array_merge($siteSchemas, $jsonLd);
+        } else {
+            $allSchemas = $siteSchemas;
+        }
+    } else {
+        $allSchemas = $siteSchemas;
+    }
+
     // Header, footer, tab bar and category sheet need root categories with hierarchical subcategories
     $categories = \App\Models\Category::with(['children.children', 'products:id,category_id,name,slug'])
         ->whereNull('parent_id')
@@ -30,9 +101,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="{{ $metaDesc }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }} — {{ config('app.name') }}</title>
+
+    {{-- SEO Canonical URL --}}
+    <link rel="canonical" href="{{ $resolvedCanonical }}">
+
+    {{-- Robots Meta Directive --}}
+    <meta name="robots" content="{{ $noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }}">
+
+    {{-- Primary Meta Tags --}}
+    <title>{{ $resolvedTitle }}</title>
+    <meta name="title" content="{{ $resolvedTitle }}">
+    <meta name="description" content="{{ $resolvedMetaDesc }}">
+
+    {{-- Open Graph / Facebook / WhatsApp --}}
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:site_name" content="{{ $storeName }}">
+    <meta property="og:url" content="{{ $resolvedCanonical }}">
+    <meta property="og:title" content="{{ $resolvedTitle }}">
+    <meta property="og:description" content="{{ $resolvedMetaDesc }}">
+    <meta property="og:image" content="{{ $resolvedOgImage }}">
+    <meta property="og:locale" content="{{ str_replace('-', '_', app()->getLocale()) }}">
+    @if($ogType === 'product' && $product)
+    <meta property="product:price:amount" content="{{ $product->starting_price ?? $product->price }}">
+    <meta property="product:price:currency" content="{{ \App\Models\Setting::get('currency_code', 'INR') }}">
+    @endif
+
+    {{-- Twitter Cards --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ $resolvedCanonical }}">
+    <meta name="twitter:title" content="{{ $resolvedTitle }}">
+    <meta name="twitter:description" content="{{ $resolvedMetaDesc }}">
+    <meta name="twitter:image" content="{{ $resolvedOgImage }}">
+
+    {{-- Structured Data (Schema.org JSON-LD) --}}
+    @foreach($allSchemas as $schema)
+    <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    @endforeach
 
     {{-- PWA Web App Manifest & Mobile Meta Tags --}}
     <link rel="manifest" href="{{ asset('manifest.json') }}">
@@ -69,7 +174,7 @@
         ::selection { background: var(--color-accent, #DB2777); color: #fff; }
 
         .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-        .reveal.in-view { opacity: 1; transform: translateY(0); }
+        .reveal.in-view, .reveal.visible { opacity: 1 !important; transform: translateY(0) !important; }
 
         .swipe-track { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:1rem; }
         .swipe-track::-webkit-scrollbar { display:none; }

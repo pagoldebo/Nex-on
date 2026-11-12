@@ -23,6 +23,9 @@ class EnterpriseDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Sync Default Roles & Permissions
+        app(\App\Services\RbacService::class)->syncDefaults();
+
         // 1. Seed Staff & Admin Accounts
         $admin = User::updateOrCreate(
             ['email' => 'admin@nexon.app'],

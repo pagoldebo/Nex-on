@@ -77,6 +77,10 @@ Route::get('/collections/new-launches',        [StorefrontController::class, 'ne
 Route::get('/new-launches',                    [StorefrontController::class, 'newArrivalsList'])->name('new.launches');
 Route::get('/collections/{slug}',              [StorefrontController::class, 'collectionBySlug'])->name('collections.show');
 
+// Google SEO Engine & Crawl Discovery
+Route::get('/sitemap.xml',                      [StorefrontController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt',                       [StorefrontController::class, 'robots'])->name('robots');
+
 // PWA Mobile App Manifest
 Route::get('/manifest.json', function () {
     $storeName = \App\Models\Setting::get('store_name');

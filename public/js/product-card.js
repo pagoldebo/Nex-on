@@ -32,7 +32,21 @@ function initProductCard(card) {
     const swatchActiveClasses   = (card.dataset.swatchActiveClass   || 'ring-2').trim().split(/\s+/).filter(Boolean);
     const swatchInactiveClasses = (card.dataset.swatchInactiveClass || 'opacity-60').trim().split(/\s+/).filter(Boolean);
     const pillActiveClasses     = (card.dataset.pillActiveClass     || 'bg-gray-900 text-white').trim().split(/\s+/).filter(Boolean);
+    let   pillInactiveClasses   = (card.dataset.pillInactiveClass   || '').trim().split(/\s+/).filter(Boolean);
     const defaultPillBase       = card.dataset.pillBaseClass        || 'size-pill text-[10px] w-7 h-7 rounded-full border';
+
+    // If no explicit inactive classes were provided, auto-extract conflicting color/border/bg classes from defaultPillBase
+    if (!pillInactiveClasses.length) {
+        pillInactiveClasses = defaultPillBase.split(/\s+/).filter(c => {
+            if (/^text-(?!\[\d|xs|sm|base|lg|xl|2xl|3xl|left|right|center|justify)/.test(c)) return true;
+            if (/^border-(?!\[\d|\d|t|b|l|r|x|y|solid|dashed|dotted|none|collapse)/.test(c)) return true;
+            if (/^bg-(?!\[\d|none|transparent|auto|cover|contain)/.test(c)) return true;
+            return false;
+        });
+    }
+
+    // Filter base classes to ensure invariant structural classes without conflicting color/border overrides
+    const basePillClasses = defaultPillBase.split(/\s+/).filter(c => !pillInactiveClasses.includes(c)).join(' ');
 
     function setBtnLabel(text, disabled = false) {
         if (!addBtn) return;
@@ -57,12 +71,14 @@ function initProductCard(card) {
         setBtnLabel(card.dataset.selectSizeLabel || 'SELECT PACK / SIZE', false);
 
         if (sizePillsEl) {
+            const initialPillClass = [basePillClasses, ...pillInactiveClasses].filter(Boolean).join(' ');
             sizePillsEl.innerHTML = color.sizes.map(s => {
-                const stockClasses = s.inStock ? 'cursor-pointer hover:border-organic-500' : 'opacity-30 cursor-not-allowed';
+                const stockClasses = s.inStock ? 'cursor-pointer' : 'opacity-30 cursor-not-allowed';
                 return `
                     <button type="button"
-                            class="${defaultPillBase} ${stockClasses}"
+                            class="${initialPillClass} ${stockClasses}"
                             data-size="${s.size}"
+                            aria-selected="false"
                             ${s.inStock ? '' : 'disabled'}
                             title="${s.inStock ? s.size : s.size + ' (Out of stock)'}">${s.size}</button>
                 `;
@@ -116,7 +132,17 @@ function initProductCard(card) {
         if (sizePillsEl) {
             sizePillsEl.querySelectorAll('.size-pill').forEach(p => {
                 const isActive = p === pillEl;
-                pillActiveClasses.forEach(c => c && p.classList.toggle(c, isActive));
+                p.classList.toggle('active', isActive);
+                p.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                p.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+                if (isActive) {
+                    pillInactiveClasses.forEach(c => c && p.classList.remove(c));
+                    pillActiveClasses.forEach(c => c && p.classList.add(c));
+                } else {
+                    pillActiveClasses.forEach(c => c && p.classList.remove(c));
+                    pillInactiveClasses.forEach(c => c && p.classList.add(c));
+                }
             });
         }
 

@@ -14,8 +14,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TemplateSeeder::class,
             CatalogueSeeder::class,
+            HierarchicalCategoriesSeeder::class,
+            SkuAndAddonSeeder::class,
             OrderSeeder::class,
             ReviewSeeder::class,
+            StoreOperationsSeeder::class,
+            StaffReferenceSeeder::class,
+            EnterpriseDemoSeeder::class,
         ]);
     }
 }

@@ -20,7 +20,7 @@
     Operations & Maintenance:
       - Only displays active products (is_active = 1)
 --}}
-<x-storefront-layout>
+<x-storefront-layout :theme="$theme" :category="$category">
 
 <div class="bg-ivory min-h-screen">
 

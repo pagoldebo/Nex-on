@@ -24,8 +24,9 @@
          data-product='@json($cardData)'
          data-swatch-active-class="border-rose-dark scale-110"
          data-swatch-inactive-class="border-rose/30"
-         data-pill-base-class="size-pill text-[10px] w-7 h-7 rounded-full border border-rose/40 text-ink/60"
-         data-pill-active-class="bg-rose text-cream"
+         data-pill-base-class="size-pill text-[10px] w-7 h-7 rounded-full border inline-flex items-center justify-center font-semibold transition-all"
+         data-pill-inactive-class="border-rose/40 text-ink/70 hover:border-rose hover:text-rose"
+         data-pill-active-class="bg-rose text-cream border-rose shadow-xs"
          data-add-to-bag-label="Add to Cart"
          data-select-size-label="Select a Size">
 

@@ -20,7 +20,7 @@
     Operations & Maintenance:
       - Only displays active products (is_active = 1)
 --}}
-<x-storefront-layout :theme="$theme" :title="$category->name">
+<x-storefront-layout :theme="$theme" :category="$category">
 
 <style>
   .animate-fade { animation: pageFadeIn .5s ease both; }

@@ -27,8 +27,9 @@
          data-product='@json($cardData)'
          data-swatch-active-class="border-[#D4FF3D] scale-110"
          data-swatch-inactive-class="border-white/20"
-         data-pill-base-class="size-pill text-[9px] w-6 h-6 rounded-full border border-[#FF3D5A]/40 text-[#F2F0EC]/70 flex items-center justify-center font-mono font-medium"
-         data-pill-active-class="bg-[#FF3D5A] text-white">
+         data-pill-base-class="size-pill text-[9px] w-6 h-6 rounded-full border inline-flex items-center justify-center font-mono font-semibold transition-all"
+         data-pill-inactive-class="border-[#FF3D5A]/40 text-[#F2F0EC]/70 hover:border-[#FF3D5A] hover:text-[#FF3D5A]"
+         data-pill-active-class="bg-[#FF3D5A] text-white border-[#FF3D5A] shadow-xs">
 
     <a href="{{ route('product.show', $product->slug) }}" class="card-img-wrap block relative aspect-[3/4] bg-black/40 overflow-hidden rounded-t-[24px] md:rounded-t-[28px] cursor-pointer shadow-xs border border-white/5">
         @if(!empty($product->badge))

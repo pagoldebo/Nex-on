@@ -15,7 +15,7 @@
       - Delivery pincode serviceability checker
       - Verified customer reviews & moderation feedback
 --}}
-<x-storefront-layout :theme="$theme" :title="$product->name">
+<x-storefront-layout :theme="$theme" :product="$product">
 
 <style>
   .animate-fade { animation: pageFadeIn .5s ease both; }

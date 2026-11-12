@@ -39,4 +39,15 @@ tailwind.config = {
 <style>
   body{font-family:'Quicksand',sans-serif;background:#FFFAF5;color:#4A3B3A;--color-accent:#D89AA0;}
   .font-display{font-family:'Fraunces',serif;}
+
+  /* Size pill active styling */
+  .size-pill.active,
+  .size-pill[aria-selected="true"],
+  .pdp-size-pill.active,
+  .pdp-size-pill[aria-selected="true"] {
+    background-color: #D89AA0 !important;
+    color: #FFFAF5 !important;
+    border-color: #D89AA0 !important;
+    font-weight: 700 !important;
+  }
 </style>

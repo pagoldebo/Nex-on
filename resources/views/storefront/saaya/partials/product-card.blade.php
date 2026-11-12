@@ -24,8 +24,9 @@
          data-product='@json($cardData)'
          data-swatch-active-class="border-maroon scale-110"
          data-swatch-inactive-class="border-gold/30"
-         data-pill-base-class="size-pill text-[10px] w-7 h-7 rounded-full border border-gold/30 text-maroon/70"
-         data-pill-active-class="bg-maroon text-ivory"
+         data-pill-base-class="size-pill text-[10px] w-7 h-7 rounded-full border inline-flex items-center justify-center font-semibold transition-all"
+         data-pill-inactive-class="border-gold/40 text-maroon/80 hover:border-maroon hover:text-maroon"
+         data-pill-active-class="bg-maroon text-ivory border-maroon shadow-xs"
          data-add-to-bag-label="ADD TO BAG"
          data-select-size-label="SELECT A SIZE">
 

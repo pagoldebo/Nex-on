@@ -20,7 +20,7 @@
     Operations & Maintenance:
       - Only displays active products (is_active = 1)
 --}}
-<x-storefront-layout :theme="$theme" :title="$category->name">
+<x-storefront-layout :theme="$theme" :category="$category">
   
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
     

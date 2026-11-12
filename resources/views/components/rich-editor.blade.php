@@ -31,7 +31,7 @@
         
         {{-- Format Selector --}}
         <select onchange="window.richEditorExec('{{ $editorId }}', 'formatBlock', this.value); this.value='';"
-                class="text-xs bg-white border border-slate-300 rounded px-2 py-1 text-slate-700 outline-none hover:border-slate-400 focus:border-indigo-500"
+                class="rich-editor-format-btn text-xs bg-white border border-slate-300 rounded px-2 py-1 text-slate-700 outline-none hover:border-slate-400 focus:border-indigo-500"
                 title="Heading / Text Format">
             <option value="" disabled selected>Format</option>
             <option value="p">Paragraph</option>
@@ -45,7 +45,7 @@
         {{-- Bold --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'bold')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs font-bold text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs font-bold text-slate-700 transition" 
                 title="Bold (Ctrl+B)">
             <strong>B</strong>
         </button>
@@ -53,7 +53,7 @@
         {{-- Italic --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'italic')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs italic font-serif text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs italic font-serif text-slate-700 transition" 
                 title="Italic (Ctrl+I)">
             <em>I</em>
         </button>
@@ -61,7 +61,7 @@
         {{-- Underline --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'underline')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs underline text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs underline text-slate-700 transition" 
                 title="Underline (Ctrl+U)">
             <u>U</u>
         </button>
@@ -69,13 +69,13 @@
         {{-- Strike --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'strikeThrough')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs line-through text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs line-through text-slate-700 transition" 
                 title="Strikethrough">
             <s>S</s>
         </button>
 
         {{-- Text Color & Highlight Dropdown --}}
-        <div class="relative inline-block" x-data="{ colorMenu: false, currentColor: '#0f172a' }">
+        <div class="relative inline-block rich-editor-format-btn" x-data="{ colorMenu: false, currentColor: '#0f172a' }">
             <button type="button" 
                     @click="window.richEditorSaveSelection('{{ $editorId }}'); colorMenu = !colorMenu"
                     class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition flex items-center gap-1" 
@@ -170,7 +170,7 @@
         {{-- Bullet List --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'insertUnorderedList')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition flex items-center gap-1" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition flex items-center gap-1" 
                 title="Bullet Points">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M2 6h.01M2 12h.01M2 18h.01"/></svg>
             <span class="hidden sm:inline">Bullets</span>
@@ -179,7 +179,7 @@
         {{-- Numbered List --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'insertOrderedList')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition flex items-center gap-1" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition flex items-center gap-1" 
                 title="Numbered List">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h11M9 12h11M9 19h11M5 6V3m0 0L3 4m2-1v3m-2 7h2.5a1.5 1.5 0 001.5-1.5V11a1.5 1.5 0 00-1.5-1.5H3m0 7h4v2H3v-2z"/></svg>
             <span class="hidden sm:inline">Numbers</span>
@@ -188,7 +188,7 @@
         <span class="h-4 w-px bg-slate-300 mx-0.5"></span>
 
         {{-- Table / Chart Generator Button --}}
-        <div class="relative inline-block" x-data="{ tableMenu: false }">
+        <div class="relative inline-block rich-editor-format-btn" x-data="{ tableMenu: false }">
             <button type="button" 
                     @click="tableMenu = !tableMenu"
                     class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded text-xs font-semibold flex items-center gap-1.5 transition"
@@ -241,14 +241,14 @@
         {{-- Text Alignment --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'justifyLeft')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
                 title="Align Left">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
         </button>
 
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'justifyCenter')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
                 title="Align Center">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
         </button>
@@ -256,7 +256,7 @@
         {{-- Link --}}
         <button type="button" 
                 onclick="window.richEditorCreateLink('{{ $editorId }}')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-700 transition" 
                 title="Insert Link">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
         </button>
@@ -264,7 +264,7 @@
         {{-- Remove Formatting --}}
         <button type="button" 
                 onclick="window.richEditorExec('{{ $editorId }}', 'removeFormat')" 
-                class="p-1.5 hover:bg-slate-200 rounded text-xs text-slate-500 hover:text-slate-800 transition" 
+                class="rich-editor-format-btn p-1.5 hover:bg-slate-200 rounded text-xs text-slate-500 hover:text-slate-800 transition" 
                 title="Clear Formatting">
             <span class="text-xs font-semibold">T<sub class="text-[9px]">x</sub></span>
         </button>
@@ -272,11 +272,12 @@
         <div class="ml-auto flex items-center gap-1.5">
             {{-- HTML Code View Toggle --}}
             <button type="button" 
+                    id="{{ $editorId }}_toggle_btn"
                     onclick="window.richEditorToggleCode('{{ $editorId }}')" 
-                    class="px-2 py-1 text-[11px] font-mono font-bold bg-white border border-slate-300 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1"
+                    class="rich-editor-toggle-btn px-2.5 py-1 text-[11px] font-mono font-bold bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                     title="Toggle HTML Source Code View">
-                <span>&lt;/&gt;</span>
-                <span class="hidden md:inline text-[10px]">HTML</span>
+                <span class="font-bold">&lt;/&gt;</span>
+                <span class="rich-editor-toggle-label text-[10px] font-sans font-semibold uppercase tracking-wider">HTML</span>
             </button>
         </div>
 
@@ -293,10 +294,17 @@
     <textarea name="{{ $name }}"
               id="{{ $editorId }}"
               rows="{{ $rows }}"
-              class="rich-editor-raw hidden w-full px-4 py-3 font-mono text-xs text-slate-800 bg-slate-900 text-slate-100 outline-none resize-y"
-              style="min-height: {{ $minHeight }};">{!! $value !!}</textarea>
+              class="rich-editor-raw hidden w-full px-4 py-3 font-mono text-xs text-emerald-400 bg-slate-950 border-0 outline-none resize-y leading-relaxed"
+              style="min-height: {{ $minHeight }};"
+              placeholder="Paste or write clean HTML source code here...">{!! $value !!}</textarea>
 
 </div>
+
+<script>
+    if (typeof window.initRichEditors === 'function') {
+        window.initRichEditors();
+    }
+</script>
 
 @once
 @push('scripts')
@@ -349,195 +357,6 @@
     margin: 0.5rem 0;
 }
 </style>
-<script>
-window.richEditorSavedSelections = window.richEditorSavedSelections || {};
-
-window.richEditorSaveSelection = function(editorId) {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-        window.richEditorSavedSelections[editorId] = sel.getRangeAt(0).cloneRange();
-    }
-};
-
-window.richEditorRestoreSelection = function(editorId) {
-    const range = window.richEditorSavedSelections[editorId];
-    if (range) {
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
-};
-
-window.richEditorSetColor = function(editorId, color) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    canvas.focus();
-    window.richEditorRestoreSelection(editorId);
-    document.execCommand('foreColor', false, color);
-    window.richEditorSync(editorId);
-};
-
-window.richEditorSetHighlight = function(editorId, color) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    canvas.focus();
-    window.richEditorRestoreSelection(editorId);
-    if (!document.execCommand('hiliteColor', false, color)) {
-        document.execCommand('backColor', false, color);
-    }
-    window.richEditorSync(editorId);
-};
-
-window.richEditorSync = function(editorId) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    const textarea = document.getElementById(editorId);
-    if (canvas && textarea) {
-        textarea.value = canvas.innerHTML.trim();
-    }
-};
-
-window.richEditorExec = function(editorId, command, value = null) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    canvas.focus();
-    document.execCommand(command, false, value);
-    window.richEditorSync(editorId);
-};
-
-window.richEditorCreateLink = function(editorId) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    const url = prompt('Enter the link URL (e.g. https://example.com):', 'https://');
-    if (url && url !== 'https://') {
-        canvas.focus();
-        document.execCommand('createLink', false, url);
-        window.richEditorSync(editorId);
-    }
-};
-
-window.richEditorInsertTable = function(editorId, rows = 3, cols = 3) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    canvas.focus();
-
-    let tableHtml = '<table class="w-full border-collapse border border-slate-300 my-3"><thead><tr class="bg-slate-100">';
-    for (let c = 1; c <= cols; c++) {
-        tableHtml += `<th class="border border-slate-300 p-2 font-bold text-left">Header ${c}</th>`;
-    }
-    tableHtml += '</tr></thead><tbody>';
-    for (let r = 1; r <= rows; r++) {
-        tableHtml += '<tr>';
-        for (let c = 1; c <= cols; c++) {
-            tableHtml += `<td class="border border-slate-300 p-2">Item ${r}.${c}</td>`;
-        }
-        tableHtml += '</tr>';
-    }
-    tableHtml += '</tbody></table><p><br></p>';
-
-    document.execCommand('insertHTML', false, tableHtml);
-    window.richEditorSync(editorId);
-};
-
-window.richEditorTableAction = function(editorId, action) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    if (!canvas) return;
-    
-    // Find selected table or first table
-    const sel = window.getSelection();
-    let node = sel.anchorNode;
-    let table = null;
-    while (node && node !== canvas) {
-        if (node.nodeName === 'TABLE') { table = node; break; }
-        node = node.parentNode;
-    }
-    if (!table) {
-        table = canvas.querySelector('table');
-    }
-    if (!table) {
-        window.richEditorInsertTable(editorId, 3, 3);
-        return;
-    }
-
-    if (action === 'addRow') {
-        const tbody = table.querySelector('tbody') || table;
-        const lastRow = tbody.querySelector('tr:last-child') || table.querySelector('tr:last-child');
-        const cols = lastRow ? lastRow.children.length : 3;
-        const newRow = document.createElement('tr');
-        for (let i = 0; i < cols; i++) {
-            const td = document.createElement('td');
-            td.className = 'border border-slate-300 p-2';
-            td.innerHTML = 'New data';
-            newRow.appendChild(td);
-        }
-        tbody.appendChild(newRow);
-    } else if (action === 'addCol') {
-        const rows = table.querySelectorAll('tr');
-        rows.forEach((row, idx) => {
-            const cell = idx === 0 && row.parentElement.nodeName === 'THEAD' ? document.createElement('th') : document.createElement('td');
-            cell.className = 'border border-slate-300 p-2' + (cell.nodeName === 'TH' ? ' font-bold text-left bg-slate-100' : '');
-            cell.innerHTML = cell.nodeName === 'TH' ? 'New Col' : 'Data';
-            row.appendChild(cell);
-        });
-    }
-
-    window.richEditorSync(editorId);
-};
-
-window.richEditorToggleCode = function(editorId) {
-    const canvas = document.getElementById(editorId + '_canvas');
-    const textarea = document.getElementById(editorId);
-    if (!canvas || !textarea) return;
-
-    if (canvas.classList.contains('hidden')) {
-        // Switch back to Visual WYSIWYG
-        canvas.innerHTML = textarea.value;
-        canvas.classList.remove('hidden');
-        textarea.classList.add('hidden');
-    } else {
-        // Switch to Raw HTML Code
-        textarea.value = canvas.innerHTML.trim();
-        canvas.classList.add('hidden');
-        textarea.classList.remove('hidden');
-        textarea.focus();
-    }
-};
-
-window.initRichEditors = function() {
-    document.querySelectorAll('.rich-editor-wrapper').forEach(wrap => {
-        if (wrap.dataset.initialized) return;
-        wrap.dataset.initialized = 'true';
-        const editorId = wrap.dataset.editorId;
-        const canvas = document.getElementById(editorId + '_canvas');
-        const textarea = document.getElementById(editorId);
-
-        if (canvas && textarea) {
-            canvas.addEventListener('input', () => window.richEditorSync(editorId));
-            canvas.addEventListener('blur', () => window.richEditorSync(editorId));
-            textarea.addEventListener('input', () => {
-                canvas.innerHTML = textarea.value;
-            });
-
-            // Ensure form submit has latest content
-            const form = wrap.closest('form');
-            if (form) {
-                form.addEventListener('submit', () => {
-                    if (!canvas.classList.contains('hidden')) {
-                        textarea.value = canvas.innerHTML.trim();
-                    }
-                });
-            }
-        }
-    });
-};
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.initRichEditors);
-} else {
-    window.initRichEditors();
-}
-window.addEventListener('pjax:complete', window.initRichEditors);
-window.addEventListener('turbo:load', window.initRichEditors);
-window.addEventListener('livewire:navigated', window.initRichEditors);
-</script>
+<script src="{{ asset('js/rich-editor.js') }}"></script>
 @endpush
 @endonce

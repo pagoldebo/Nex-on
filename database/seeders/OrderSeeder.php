@@ -20,8 +20,10 @@ class OrderSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'priya.sharma@example.com'],
             [
-                'name'     => 'Priya Sharma',
-                'password' => Hash::make('password123'),
+                'name'              => 'Priya Sharma',
+                'password'          => Hash::make('password123'),
+                'role'              => 'customer',
+                'email_verified_at' => now(),
             ]
         );
 

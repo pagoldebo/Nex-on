@@ -1828,6 +1828,12 @@
                         try { window.Alpine.initTree(currWorkspace); } catch (e) {}
                     }
 
+                    // Re-init rich editors & dispatch pjax completion event
+                    if (typeof window.initRichEditors === 'function') {
+                        try { window.initRichEditors(); } catch (e) {}
+                    }
+                    window.dispatchEvent(new CustomEvent('pjax:complete', { detail: { url: url } }));
+
                     // Update sidebar active highlights WITHOUT reloading or shifting the sidebar
                     updateSidebarHighlights(url);
 
@@ -1946,6 +1952,8 @@
     </script>
     {{-- Client-Side WebP Converter: Converts JPG/PNG to WebP on uploader machine --}}
     <script src="{{ asset('js/webp-converter.js') }}"></script>
+    {{-- Rich WYSIWYG & HTML Editor Studio --}}
+    <script src="{{ asset('js/rich-editor.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

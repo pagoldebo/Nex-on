@@ -97,5 +97,16 @@ tailwind.config = {
     background: #699E4B;
     color: #FFFFFF;
   }
+
+  /* Size pill active styling */
+  .size-pill.active,
+  .size-pill[aria-selected="true"],
+  .pdp-size-pill.active,
+  .pdp-size-pill[aria-selected="true"] {
+    background-color: #699E4B !important;
+    color: #FFFFFF !important;
+    border-color: #699E4B !important;
+    font-weight: 700 !important;
+  }
 </style>
 

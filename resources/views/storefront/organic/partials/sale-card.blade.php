@@ -23,8 +23,9 @@
          data-product='@json($cardData)'
          data-swatch-active-class="border-citrus ring-2 ring-citrus/30 scale-110"
          data-swatch-inactive-class="border-stone-200"
-         data-pill-base-class="size-pill text-[10px] font-bold px-2.5 py-1 rounded-lg border border-citrus/30 text-stone-700 hover:border-citrus transition"
-         data-pill-active-class="bg-citrus text-white border-citrus"
+         data-pill-base-class="size-pill text-[10px] font-bold px-2.5 py-1 rounded-lg border inline-flex items-center justify-center transition-all"
+         data-pill-inactive-class="border-citrus/30 text-stone-700 hover:border-citrus hover:text-citrus"
+         data-pill-active-class="bg-citrus text-white border-citrus shadow-xs"
          data-add-to-bag-label="CLAIM DEAL"
          data-select-size-label="SELECT SIZE">
 

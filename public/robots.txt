@@ -3,8 +3,12 @@ Allow: /
 Disallow: /admin/
 Disallow: /admin/*
 Disallow: /account/
+Disallow: /account/*
 Disallow: /checkout
 Disallow: /checkout/*
 Disallow: /cart
+Disallow: /wishlist
+Disallow: /compare
+Disallow: /search
 
-Sitemap: https://lingeriestore.in/sitemap.xml
+Sitemap: http://nexon.test/sitemap.xml

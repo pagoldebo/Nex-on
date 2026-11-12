@@ -21,7 +21,7 @@
   $firstColor = $card['colors'][0] ?? null;
 @endphp
 
-<x-storefront-layout>
+<x-storefront-layout :theme="$theme" :product="$product">
 
 <div class="bg-ivory min-h-screen">
 
@@ -51,15 +51,37 @@
     <div class="pdp-gallery">
 
       {{-- Main image — foil-frame --}}
-      <div class="foil-frame relative aspect-[3/4] overflow-hidden bg-blush/20" style="aspect-ratio: 3/4;">
+      <div class="foil-frame relative aspect-[3/4] overflow-hidden bg-blush/20 group select-none" style="aspect-ratio: 3/4;">
         <svg class="frame-line" viewBox="0 0 100 100" preserveAspectRatio="none">
           <rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke"/>
         </svg>
         @if($card['badge'])
-          <span class="absolute top-4 left-4 z-10 bg-gold text-maroon text-[10px] px-3 py-1 tracking-widest uppercase font-body">
+          <span class="absolute top-4 left-4 z-10 bg-gold text-maroon text-[10px] px-3 py-1 tracking-widest uppercase font-body font-semibold shadow-xs">
             {{ $card['badge'] }}
           </span>
         @endif
+
+        {{-- Slide Counter Badge --}}
+        <div id="pdpSlideBadge" class="absolute bottom-3 right-3 z-10 bg-maroon/75 backdrop-blur-md text-gold text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full border border-gold/30 shadow-xs pointer-events-none">
+          1 / {{ count($firstColor['images'] ?? []) ?: 1 }}
+        </div>
+
+        {{-- Previous Slide Arrow --}}
+        <button type="button" 
+                id="pdpPrevBtn"
+                class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-ivory/90 hover:bg-gold text-maroon hover:text-maroon border border-gold/40 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                aria-label="Previous image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        {{-- Next Slide Arrow --}}
+        <button type="button" 
+                id="pdpNextBtn"
+                class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-ivory/90 hover:bg-gold text-maroon hover:text-maroon border border-gold/40 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                aria-label="Next image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
         <img id="pdpMainImage"
              src="{{ $firstColor ? ($firstColor['images'][0] ?? $card['coverImage']) : $card['coverImage'] }}"
              alt="{{ $product->name }}"
@@ -71,10 +93,12 @@
         @if($firstColor)
           @foreach($firstColor['images'] as $i => $img)
             <button type="button"
-                    class="pdp-thumb flex-shrink-0 w-16 aspect-[3/4] border-2 overflow-hidden transition-all duration-200 {{ $i === 0 ? 'border-gold' : 'border-gold/20' }}"
+                    class="pdp-thumb flex-shrink-0 w-16 aspect-[3/4] border-2 overflow-hidden transition-all duration-200 cursor-pointer {{ $i === 0 ? 'border-gold scale-105 shadow-xs opacity-100' : 'border-gold/20 opacity-60 hover:opacity-100' }}"
                     style="aspect-ratio: 3/4;"
-                    data-src="{{ $img }}">
-              <img src="{{ $img }}" alt="" class="w-full h-full object-cover">
+                    data-idx="{{ $i }}"
+                    data-src="{{ $img }}"
+                    title="View image {{ $i + 1 }}">
+              <img src="{{ $img }}" alt="{{ $product->name }} view {{ $i + 1 }}" class="w-full h-full object-cover pointer-events-none">
             </button>
           @endforeach
         @endif
@@ -532,11 +556,13 @@
         activeSizeIdx = idx;
 
         sizePills.querySelectorAll('.pdp-size-pill').forEach(b => {
-          b.classList.remove('bg-maroon','text-ivory','border-maroon');
+          b.classList.remove('bg-maroon','text-ivory','border-maroon','active');
           b.classList.add('border-gold/40','text-maroon');
+          b.setAttribute('aria-selected', 'false');
         });
-        btn.classList.add('bg-maroon','text-ivory','border-maroon');
+        btn.classList.add('bg-maroon','text-ivory','border-maroon','active');
         btn.classList.remove('border-gold/40','text-maroon');
+        btn.setAttribute('aria-selected', 'true');
 
         if (sizeName) sizeName.textContent = size.size;
         updatePrice(size);
@@ -589,28 +615,172 @@
     }
   }
 
+  /* ────── GALLERY SLIDER & THUMBNAILS ────── */
+  let currentImageIdx = 0;
+  let autoSlideTimer = null;
+  const AUTO_SLIDE_DELAY = 4200; // 4.2 seconds auto-slide interval
+
+  function getActiveImages() {
+    return (colors[activeColorIdx]?.images && colors[activeColorIdx].images.length)
+      ? colors[activeColorIdx].images
+      : (productData.coverImage ? [productData.coverImage] : []);
+  }
+
+  function goToSlide(idx, userInitiated = false) {
+    const imgs = getActiveImages();
+    if (!imgs.length) return;
+
+    if (idx < 0) idx = imgs.length - 1;
+    if (idx >= imgs.length) idx = 0;
+    currentImageIdx = idx;
+
+    const targetSrc = imgs[currentImageIdx];
+
+    // Smooth image transition
+    if (mainImg) {
+      mainImg.style.opacity = '0';
+      setTimeout(() => {
+        mainImg.src = targetSrc;
+        mainImg.style.opacity = '1';
+      }, 140);
+    }
+
+    // Update active thumbnail borders and scroll active thumb into view
+    if (thumbWrap) {
+      const thumbs = thumbWrap.querySelectorAll('.pdp-thumb');
+      thumbs.forEach((b, i) => {
+        const isActive = i === currentImageIdx;
+        b.classList.toggle('border-gold', isActive);
+        b.classList.toggle('scale-105', isActive);
+        b.classList.toggle('shadow-xs', isActive);
+        b.classList.toggle('opacity-100', isActive);
+        b.classList.toggle('border-gold/20', !isActive);
+        b.classList.toggle('opacity-60', !isActive);
+        if (isActive) {
+          b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
+      });
+    }
+
+    // Update slide counter badge
+    const badge = document.getElementById('pdpSlideBadge');
+    if (badge) {
+      badge.textContent = `${currentImageIdx + 1} / ${imgs.length}`;
+      badge.style.display = imgs.length > 1 ? 'block' : 'none';
+    }
+
+    // Update arrow visibility
+    const prevBtn = document.getElementById('pdpPrevBtn');
+    const nextBtn = document.getElementById('pdpNextBtn');
+    if (prevBtn) prevBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+
+    if (userInitiated) {
+      restartAutoSlide();
+    }
+  }
+
+  function nextSlide(userInitiated = false) {
+    goToSlide(currentImageIdx + 1, userInitiated);
+  }
+
+  function prevSlide(userInitiated = false) {
+    goToSlide(currentImageIdx - 1, userInitiated);
+  }
+
+  function startAutoSlide() {
+    stopAutoSlide();
+    const imgs = getActiveImages();
+    if (imgs.length <= 1) return;
+    autoSlideTimer = setInterval(() => {
+      nextSlide(false);
+    }, AUTO_SLIDE_DELAY);
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideTimer) {
+      clearInterval(autoSlideTimer);
+      autoSlideTimer = null;
+    }
+  }
+
+  function restartAutoSlide() {
+    stopAutoSlide();
+    setTimeout(() => {
+      startAutoSlide();
+    }, 6000);
+  }
+
   /* ────── render thumbnails ────── */
   function renderThumbs(colorIdx) {
     if (!thumbWrap) return;
-    const imgs = colors[colorIdx]?.images || [];
+    const imgs = (colors[colorIdx]?.images && colors[colorIdx].images.length)
+      ? colors[colorIdx].images
+      : (productData.coverImage ? [productData.coverImage] : []);
+
+    currentImageIdx = 0;
+
     thumbWrap.innerHTML = imgs.map((src, i) => `
       <button type="button"
-              class="pdp-thumb flex-shrink-0 w-16 aspect-[3/4] border-2 overflow-hidden transition-all duration-200 ${i === 0 ? 'border-gold' : 'border-gold/20'}"
+              class="pdp-thumb flex-shrink-0 w-16 aspect-[3/4] border-2 overflow-hidden transition-all duration-200 cursor-pointer ${i === 0 ? 'border-gold scale-105 shadow-xs opacity-100' : 'border-gold/20 opacity-60 hover:opacity-100 hover:border-gold/60'}"
               style="aspect-ratio: 3/4;"
-              data-src="${esc(src)}">
-        <img src="${esc(src)}" alt="" class="w-full h-full object-cover">
+              data-idx="${i}"
+              data-src="${esc(src)}"
+              title="View image ${i + 1}">
+        <img src="${esc(src)}" alt="" class="w-full h-full object-cover pointer-events-none">
       </button>`).join('');
 
     thumbWrap.querySelectorAll('.pdp-thumb').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (mainImg) { mainImg.style.opacity = '0'; setTimeout(() => { mainImg.src = btn.dataset.src; mainImg.style.opacity = '1'; }, 180); }
-        thumbWrap.querySelectorAll('.pdp-thumb').forEach(b => b.classList.replace('border-gold','border-gold/20'));
-        btn.classList.replace('border-gold/20','border-gold');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = Number(btn.dataset.idx);
+        goToSlide(idx, true);
       });
     });
 
-    // set first thumb as main
-    if (imgs[0] && mainImg) { mainImg.style.opacity = '0'; setTimeout(() => { mainImg.src = imgs[0]; mainImg.style.opacity = '1'; }, 80); }
+    goToSlide(0, false);
+    startAutoSlide();
+  }
+
+  // Prev / Next button listeners
+  document.getElementById('pdpPrevBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    prevSlide(true);
+  });
+  document.getElementById('pdpNextBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    nextSlide(true);
+  });
+
+  // Pause auto-sliding when mouse hovers over gallery, resume on leave
+  const galleryWrap = document.querySelector('.pdp-gallery');
+  if (galleryWrap) {
+    galleryWrap.addEventListener('mouseenter', stopAutoSlide);
+    galleryWrap.addEventListener('mouseleave', startAutoSlide);
+  }
+
+  // Touch swipe support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const mainImageContainer = mainImg?.closest('.foil-frame');
+  if (mainImageContainer) {
+    mainImageContainer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    mainImageContainer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) {
+          nextSlide(true); // Swipe left -> next image
+        } else {
+          prevSlide(true); // Swipe right -> prev image
+        }
+      }
+    }, { passive: true });
   }
 
   /* ────── color swatch clicks ────── */
@@ -841,6 +1011,7 @@
   };
 
   /* ────── init ────── */
+  renderThumbs(0);
   renderSizePills(0);
 
 })();

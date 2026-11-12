@@ -51,8 +51,8 @@ tailwind.config = {
   .foil-frame.in-view svg.frame-line rect { stroke-dashoffset:0; }
 
   /* Scroll/fade reveal */
-  .reveal { opacity:0; transform:translateY(24px); transition:opacity .9s ease,transform .9s ease; }
-  .reveal.in-view { opacity:1; transform:translateY(0); }
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease,transform .7s ease; }
+  .reveal.in-view, .reveal.visible { opacity:1 !important; transform:translateY(0) !important; }
 
   /* Gold underline grow on desktop nav */
   .underline-grow { position:relative; }
@@ -77,6 +77,17 @@ tailwind.config = {
     transition:background .3s ease, transform .3s ease, box-shadow .3s ease;
   }
   .gold-btn:hover { background:#E3CC8C; transform:translateY(-2px); box-shadow:0 10px 30px -10px rgba(201,162,75,.6); }
+
+  /* Size pill active styling: high-contrast silk ivory text on deep heritage velvet maroon */
+  .size-pill.active,
+  .size-pill[aria-selected="true"],
+  .pdp-size-pill.active,
+  .pdp-size-pill[aria-selected="true"] {
+    background-color: #3D0C11 !important;
+    color: #F7F1E6 !important;
+    border-color: #3D0C11 !important;
+    font-weight: 700 !important;
+  }
 
   /* Card image zoom */
   .card-img-zoom { transition:transform 1.1s cubic-bezier(.16,1,.3,1); }

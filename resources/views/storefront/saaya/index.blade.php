@@ -269,7 +269,7 @@
     {{-- Products grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
       @foreach($curatedProducts->take(8) as $product)
-        <div class="reveal">
+        <div>
           @include('storefront.saaya.partials.product-card', ['product' => $product])
         </div>
       @endforeach
@@ -313,7 +313,7 @@
     {{-- Products grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6" id="saleGrid">
       @foreach($saleProducts->take(8) as $product)
-        <div class="sale-card reveal" data-category="{{ $product->category_slugs_string }}">
+        <div class="sale-card" data-category="{{ $product->category_slugs_string }}">
           @include('storefront.saaya.partials.sale-card', ['product' => $product])
         </div>
       @endforeach
@@ -359,7 +359,7 @@
     {{-- Products grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6" id="bsGrid">
       @foreach($bestSellerItems as $product)
-        <div class="bs-card reveal" data-category="{{ $product->category_slugs_string }}">
+        <div class="bs-card" data-category="{{ $product->category_slugs_string }}">
           @include('storefront.saaya.partials.product-card', ['product' => $product])
         </div>
       @endforeach
@@ -450,7 +450,7 @@
       : \App\Models\ProductReview::where('is_approved', true)->with(['product', 'user.addresses'])->latest()->take(3)->get();
 @endphp
 @if($displayReviews && $displayReviews->count())
-<section class="bg-ivory pt-8 pb-10 sm:pt-10 sm:pb-12 lg:pt-10 lg:pb-14 border-t border-gold/15">
+<section class="bg-ivory pt-8 pb-10 sm:pt-10 sm:pb-12 lg:pt-10 lg:pb-14 border-t border-gold/15" id="reviewsSection">
   <div class="max-w-7xl mx-auto px-6 lg:px-12">
     <div class="text-center mb-8 reveal">
       <p class="font-display italic text-gold text-base lg:text-lg mb-1">Patron Praise</p>
@@ -616,19 +616,29 @@
   document.querySelector('.bs-tab.active')?.classList.remove('border-ivory/20','text-ivory/60');
 
   /* ── Reveal on scroll ── */
+  function revealElements() {
+    document.querySelectorAll('.reveal:not(.in-view)').forEach(el => {
+      el.classList.add('in-view', 'visible');
+    });
+  }
+
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+          entry.target.classList.add('in-view', 'visible');
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.05, rootMargin: '0px 0px 60px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Fallback: automatically reveal all elements after load so content is never stuck hidden
+    setTimeout(revealElements, 600);
+    window.addEventListener('load', () => setTimeout(revealElements, 300));
   } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    revealElements();
   }
 })();
 </script>

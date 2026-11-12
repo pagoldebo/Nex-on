@@ -24,8 +24,9 @@
          data-product='@json($cardData)'
          data-swatch-active-class="border-organic-600 ring-2 ring-organic-300 scale-110"
          data-swatch-inactive-class="border-stone-200"
-         data-pill-base-class="size-pill text-[10px] font-bold px-2.5 py-1 rounded-lg border border-stone-200 text-stone-600 hover:border-organic-500 hover:text-organic-700 transition"
-         data-pill-active-class="bg-organic-500 text-white border-organic-500"
+         data-pill-base-class="size-pill text-[10px] font-bold px-2.5 py-1 rounded-lg border inline-flex items-center justify-center transition-all"
+         data-pill-inactive-class="border-stone-200 text-stone-600 hover:border-organic-500 hover:text-organic-700"
+         data-pill-active-class="bg-organic-500 text-white border-organic-500 shadow-xs"
          data-add-to-bag-label="ADD TO BASKET"
          data-select-size-label="SELECT PACK / SIZE">
 

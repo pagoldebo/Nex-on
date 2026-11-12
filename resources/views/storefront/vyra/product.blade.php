@@ -14,7 +14,7 @@
       - Universal Pincode delivery ETA checker
       - Customer impressions & moderation review submission form
 --}}
-<x-storefront-layout :theme="$theme" :title="$product->name">
+<x-storefront-layout :theme="$theme" :product="$product">
 <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
 
   <nav class="font-body text-xs flex items-center gap-2 mb-8 opacity-50 text-[#F2F0EC] uppercase">

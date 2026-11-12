@@ -89,10 +89,17 @@
       {{-- Size selector --}}
       <div>
         <div class="flex items-center justify-between mb-3">
-          <p class="font-body text-xs font-bold uppercase tracking-widest opacity-50 text-[#4A3B3A]">
-            Size: <span id="selectedSizeName" style="color:#D89AA0">—</span>
-          </p>
-          <p id="stockWarning" class="font-body text-xs text-red-400 font-semibold hidden"></p>
+          <div class="flex items-center gap-3">
+            <p class="font-body text-xs font-bold uppercase tracking-widest opacity-50 text-[#4A3B3A]">
+              Size: <span id="selectedSizeName" style="color:#D89AA0">—</span>
+            </p>
+            <p id="stockWarning" class="font-body text-xs text-red-400 font-semibold hidden"></p>
+          </div>
+          <button type="button" 
+                  class="pdp-size-guide-trigger text-xs font-bold text-[#D89AA0] hover:text-[#B97680] underline transition-colors cursor-pointer flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+            Size Guide
+          </button>
         </div>
         <div class="flex gap-2 flex-wrap" id="sizePills"></div>
       </div>
@@ -496,4 +503,7 @@ async function submitButtercupReview(form) {
 document.addEventListener('DOMContentLoaded', () => selectColor(0, pd.colors[0]?.name || ''));
 </script>
 @endpush
+
+@include('storefront.common.size-guide-modal', ['product' => $product, 'theme' => $theme])
+
 </x-storefront-layout>

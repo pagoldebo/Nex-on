@@ -168,7 +168,8 @@
               Size: <span id="pdpSizeName" class="text-maroon normal-case font-normal tracking-normal">—</span>
             </p>
             <button type="button" id="pdpSizeGuide"
-                    class="text-xs font-body text-gold underline-grow hover:text-gold-dark transition-colors">
+                    class="pdp-size-guide-trigger text-xs font-body text-gold underline-grow hover:text-gold-dark transition-colors flex items-center gap-1 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
               Size Guide
             </button>
           </div>
@@ -439,41 +440,9 @@
 
 
 {{-- ═══════════════════════════════════════════════
-     SIZE GUIDE MODAL
+     CATEGORY-LINKED SIZE GUIDE MODAL (Option 2: Tabbed)
 ═══════════════════════════════════════════════ --}}
-<div id="sizeGuideModal"
-     class="hidden fixed inset-0 z-[60] bg-maroon-dark/80 backdrop-blur-sm items-center justify-center p-6"
-     role="dialog" aria-modal="true" aria-labelledby="sgTitle">
-  <div class="bg-ivory max-w-lg w-full p-8 relative foil-frame max-h-[80vh] overflow-y-auto">
-    <svg class="frame-line" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke"/>
-    </svg>
-    <button id="sgClose" class="absolute top-4 right-4 text-maroon/40 hover:text-maroon transition-colors" aria-label="Close">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-    <h2 id="sgTitle" class="font-display text-2xl text-maroon mb-6">Size Guide</h2>
-    <p class="font-body text-xs text-maroon/50 mb-4">All measurements in inches (chest circumference).</p>
-    <table class="w-full text-sm font-body text-maroon/80 border-collapse">
-      <thead>
-        <tr class="border-b border-gold/30">
-          <th class="text-left py-2 pr-4 font-semibold text-maroon">Size</th>
-          <th class="text-left py-2 pr-4 font-semibold text-maroon">Chest (in)</th>
-          <th class="text-left py-2 font-semibold text-maroon">Fits Cup</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gold/15">
-        @foreach([['XS','30–32','A–B'],['S','32–34','A–C'],['M','34–36','B–D'],['L','36–38','C–D'],['XL','38–40','D–E'],['XXL','40–42','DD–F']] as [$s,$c,$cup])
-          <tr>
-            <td class="py-2.5 pr-4 font-semibold">{{ $s }}</td>
-            <td class="py-2.5 pr-4">{{ $c }}</td>
-            <td class="py-2.5">{{ $cup }}</td>
-          </tr>
-        @endforeach
-      </tbody>
-    </table>
-    <p class="font-body text-xs text-maroon/40 mt-6">When between sizes, we recommend sizing up for comfort.</p>
-  </div>
-</div>
+@include('storefront.common.size-guide-modal', ['product' => $product, 'theme' => $theme])
 
 </div>{{-- /bg-ivory --}}
 
@@ -889,16 +858,6 @@
     });
   });
 
-  /* ────── size guide modal ────── */
-  const sgModal = document.getElementById('sizeGuideModal');
-  document.getElementById('pdpSizeGuide')?.addEventListener('click', () => {
-    sgModal?.classList.remove('hidden'); sgModal?.classList.add('flex');
-  });
-  document.getElementById('sgClose')?.addEventListener('click', () => {
-    sgModal?.classList.add('hidden'); sgModal?.classList.remove('flex');
-  });
-  sgModal?.addEventListener('click', e => { if (e.target === sgModal) { sgModal.classList.add('hidden'); sgModal.classList.remove('flex'); } });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { sgModal?.classList.add('hidden'); sgModal?.classList.remove('flex'); } });
 
   /* ────── reveal on scroll ────── */
   if ('IntersectionObserver' in window) {

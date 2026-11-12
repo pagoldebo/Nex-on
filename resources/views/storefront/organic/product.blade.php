@@ -144,9 +144,18 @@
 
           {{-- Pack Size / Weight Variant Pills --}}
           <div>
-            <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">
-              Select Pack / Net Weight:
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider">
+                Select Pack / Net Weight:
+              </label>
+              <button type="button" 
+                      class="pdp-size-guide-trigger text-xs font-bold text-organic-700 hover:text-organic-800 underline flex items-center gap-1 cursor-pointer transition"
+                      data-size-tab="packs"
+                      title="View size, pack volume and weight conversions">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                Size &amp; Pack Guide
+              </button>
+            </div>
             <div class="flex items-center gap-2.5 flex-wrap" id="sizePillsWrapper">
               @forelse($variants as $vi => $v)
                 <button type="button" 
@@ -461,6 +470,8 @@
       }
     }
   </script>
+
+  @include('storefront.common.size-guide-modal', ['product' => $product, 'theme' => $theme])
 
 </x-storefront-layout>
 

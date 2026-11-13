@@ -151,6 +151,12 @@ class AdminSettingController extends Controller
                     if ($targetKey === 'saaya_slide_1_image') {
                         Setting::set('saaya_hero_image', '');
                     }
+                    if ($targetKey === 'buttercup_hero_image') {
+                        Setting::set('buttercup_slide_1_image', '');
+                    }
+                    if ($targetKey === 'buttercup_slide_1_image') {
+                        Setting::set('buttercup_hero_image', '');
+                    }
                 }
             }
         }
@@ -216,7 +222,8 @@ class AdminSettingController extends Controller
                     $isSlider = str_starts_with($fileKey, 'vyra_hero')
                         || str_starts_with($fileKey, 'saaya_slide')
                         || str_starts_with($fileKey, 'buttercup_slide')
-                        || $fileKey === 'saaya_hero_image';
+                        || $fileKey === 'saaya_hero_image'
+                        || $fileKey === 'buttercup_hero_image';
                     $targetFolder = $isSlider ? 'slider' : 'banners';
                     $storedPath = ProductImageService::storeUpload($uploadedFile, $targetFolder);
                     Setting::set($fileKey, $storedPath);
@@ -225,6 +232,12 @@ class AdminSettingController extends Controller
                     }
                     if ($fileKey === 'saaya_hero_image') {
                         Setting::set('saaya_slide_1_image', $storedPath);
+                    }
+                    if ($fileKey === 'buttercup_slide_1_image') {
+                        Setting::set('buttercup_hero_image', $storedPath);
+                    }
+                    if ($fileKey === 'buttercup_hero_image') {
+                        Setting::set('buttercup_slide_1_image', $storedPath);
                     }
                 }
             }

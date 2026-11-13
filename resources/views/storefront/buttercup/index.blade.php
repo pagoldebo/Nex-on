@@ -24,55 +24,78 @@
 
 {{-- ===== HERO SLIDER (5 FULL BACKGROUND IMAGES, 3-SECOND AUTOPLAY) ===== --}}
 @php
-  $heroSlides = [
-    [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_1_image') ?: \App\Models\Setting::get('buttercup_hero_image')),
-      'kicker'    => \App\Models\Setting::get('buttercup_slide_1_badge', \App\Models\Setting::get('buttercup_hero_badge', 'New Season Edit')),
-      'title'     => \App\Models\Setting::get('buttercup_slide_1_title', \App\Models\Setting::get('buttercup_hero_title', "Comfort that\nFeels Like Home")),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_1_subtitle', \App\Models\Setting::get('buttercup_hero_subtitle', 'Buttery-soft everyday lingerie, made for real bodies and real days — because comfort should never be a compromise.')),
-      'btn1_text' => \App\Models\Setting::get('buttercup_slide_1_btn1_text', 'Shop Now'),
-      'btn1_url'  => \App\Models\Setting::get('buttercup_slide_1_btn1_url', route('home') . '#products'),
-      'btn2_text' => \App\Models\Setting::get('buttercup_slide_1_btn2_text', 'Explore'),
-      'btn2_url'  => \App\Models\Setting::get('buttercup_slide_1_btn2_url', route('search')),
+  $heroSlides = [];
+  $buttercupDefs = [
+    1 => [
+      'badge'    => 'New Season Edit',
+      'title'    => "Comfort that\nFeels Like Home",
+      'subtitle' => 'Buttery-soft everyday lingerie, made for real bodies and real days — because comfort should never be a compromise.',
+      'btn1_text'=> 'Shop Now',
+      'btn1_url' => route('home') . '#products',
+      'btn2_text'=> 'Explore',
+      'btn2_url' => route('search'),
     ],
-    [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_2_image')),
-      'kicker'    => \App\Models\Setting::get('buttercup_slide_2_badge', 'Cloud-Soft Intimates'),
-      'title'     => \App\Models\Setting::get('buttercup_slide_2_title', "Second-Skin Ease,\nAll Day Long"),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_2_subtitle', 'Breathable modal and organic cotton with zero pinch. Gentle, weightless support made to move with you.'),
-      'btn1_text' => \App\Models\Setting::get('buttercup_slide_2_btn1_text', 'Shop Intimates'),
-      'btn1_url'  => \App\Models\Setting::get('buttercup_slide_2_btn1_url', route('home') . '#products'),
-      'btn2_text' => \App\Models\Setting::get('buttercup_slide_2_btn2_text', 'View Collection'),
-      'btn2_url'  => \App\Models\Setting::get('buttercup_slide_2_btn2_url', route('featured.products')),
+    2 => [
+      'badge'    => 'Cloud-Soft Intimates',
+      'title'    => "Second-Skin Ease,\nAll Day Long",
+      'subtitle' => 'Breathable modal and organic cotton with zero pinch. Gentle, weightless support made to move with you.',
+      'btn1_text'=> 'Shop Intimates',
+      'btn1_url' => route('home') . '#products',
+      'btn2_text'=> 'View Collection',
+      'btn2_url' => route('featured.products'),
     ],
-    [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_3_image')),
-      'kicker'    => \App\Models\Setting::get('buttercup_slide_3_badge', 'Pure Indulgence'),
-      'title'     => \App\Models\Setting::get('buttercup_slide_3_title', "Soft as a Whisper,\nCrafted for You"),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_3_subtitle', 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.'),
-      'btn1_text' => \App\Models\Setting::get('buttercup_slide_3_btn1_text', 'Explore Bestsellers'),
-      'btn1_url'  => \App\Models\Setting::get('buttercup_slide_3_btn1_url', route('home') . '#products'),
-      'btn2_text' => \App\Models\Setting::get('buttercup_slide_3_btn2_text', 'Discover More'),
-      'btn2_url'  => \App\Models\Setting::get('buttercup_slide_3_btn2_url', route('search')),
+    3 => [
+      'badge'    => 'Pure Indulgence',
+      'title'    => "Soft as a Whisper,\nCrafted for You",
+      'subtitle' => 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.',
+      'btn1_text'=> 'Explore Bestsellers',
+      'btn1_url' => route('home') . '#products',
+      'btn2_text'=> 'Discover More',
+      'btn2_url' => route('search'),
     ],
-    [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_4_image')),
-      'kicker'    => \App\Models\Setting::get('buttercup_slide_4_badge', 'Wire-Free Freedom'),
-      'title'     => \App\Models\Setting::get('buttercup_slide_4_title', "Zero Pinching,\n100% Pure Comfort"),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_4_subtitle', 'Say goodbye to painful underwires forever. Our contour bands adapt harmoniously to your natural curves.'),
-      'btn1_text' => \App\Models\Setting::get('buttercup_slide_4_btn1_text', 'Shop Wire-Free'),
-      'btn1_url'  => \App\Models\Setting::get('buttercup_slide_4_btn1_url', route('home') . '#products'),
-      'btn2_text' => \App\Models\Setting::get('buttercup_slide_4_btn2_text', 'Our Fit Guide'),
-      'btn2_url'  => \App\Models\Setting::get('buttercup_slide_4_btn2_url', route('search')),
+    4 => [
+      'badge'    => 'Wire-Free Freedom',
+      'title'    => "Zero Pinching,\n100% Pure Comfort",
+      'subtitle' => 'Say goodbye to painful underwires forever. Our contour bands adapt harmoniously to your natural curves.',
+      'btn1_text'=> 'Shop Wire-Free',
+      'btn1_url' => route('home') . '#products',
+      'btn2_text'=> 'Our Fit Guide',
+      'btn2_url' => route('search'),
     ],
-    [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_5_image')),
-      'kicker'    => \App\Models\Setting::get('buttercup_slide_5_badge', 'Lounge & Sleep'),
-      'title'     => \App\Models\Setting::get('buttercup_slide_5_title', "Dreamy Loungewear\nfor Cozy Evenings"),
-      'subtitle'  => \App\Models\Setting::get('buttercup_slide_5_subtitle', 'From quiet morning coffee to tranquil midnight slumber — wrap yourself in the soothing bliss of buttery loungewear.'),
-      'btn1_text' => \App\Models\Setting::get('buttercup_slide_5_btn1_text', 'Shop Loungewear'),
-      'btn1_url'  => \App\Models\Setting::get('buttercup_slide_5_btn1_url', route('home') . '#products'),
-      'btn2_text' => \App\Models\Setting::get('buttercup_slide_5_btn2_text', 'Explore All'),
+    5 => [
+      'badge'    => 'Lounge & Sleep',
+      'title'    => "Dreamy Loungewear\nfor Cozy Evenings",
+      'subtitle' => 'From quiet morning coffee to tranquil midnight slumber — wrap yourself in the soothing bliss of buttery loungewear.',
+      'btn1_text'=> 'Shop Loungewear',
+      'btn1_url' => route('home') . '#products',
+      'btn2_text'=> 'Explore All',
+      'btn2_url' => route('featured.products'),
+    ],
+  ];
+
+  for ($s = 1; $s <= 5; $s++) {
+    $custom = \App\Models\Setting::get("buttercup_slide_{$s}_image");
+    if ($s === 1 && empty($custom)) {
+      $custom = \App\Models\Setting::get('buttercup_hero_image');
+    }
+    $imgUrl = \App\Models\Setting::imageUrl($custom);
+    if (!$imgUrl && file_exists(public_path("images/slider/slide-{$s}.jpg"))) {
+      $imgUrl = asset("images/slider/slide-{$s}.jpg");
+    }
+
+    $d = $buttercupDefs[$s];
+    $heroSlides[] = [
+      'image'     => $imgUrl,
+      'kicker'    => \App\Models\Setting::get("buttercup_slide_{$s}_badge", $s === 1 ? \App\Models\Setting::get('buttercup_hero_badge', $d['badge']) : $d['badge']),
+      'title'     => \App\Models\Setting::get("buttercup_slide_{$s}_title", $s === 1 ? \App\Models\Setting::get('buttercup_hero_title', $d['title']) : $d['title']),
+      'subtitle'  => \App\Models\Setting::get("buttercup_slide_{$s}_subtitle", $s === 1 ? \App\Models\Setting::get('buttercup_hero_subtitle', $d['subtitle']) : $d['subtitle']),
+      'btn1_text' => \App\Models\Setting::get("buttercup_slide_{$s}_btn1_text", $d['btn1_text']),
+      'btn1_url'  => \App\Models\Setting::get("buttercup_slide_{$s}_btn1_url", $d['btn1_url']),
+      'btn2_text' => \App\Models\Setting::get("buttercup_slide_{$s}_btn2_text", $d['btn2_text']),
+      'btn2_url'  => \App\Models\Setting::get("buttercup_slide_{$s}_btn2_url", $d['btn2_url']),
+    ];
+  }
+@endphp
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_5_btn2_url', route('featured.products')),
     ],
   ];

@@ -567,6 +567,14 @@
                                                 @if(!empty($slideImg))
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-slate-300">
                                                         <img src="{{ \App\Models\Setting::imageUrl($slideImg) }}" class="w-full h-full object-cover">
+                                                        <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
+                                                    </div>
+                                                @elseif(file_exists(public_path("images/slider/slide-{$s}.jpg")))
+                                                    <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/40 bg-cover bg-center"
+                                                         style="background-image: url('{{ asset("images/slider/slide-{$s}.jpg") }}');">
+                                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center p-4">
+                                                            <span class="text-xs text-white font-bold bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs">Default (images/slider/slide-{{ $s }}.jpg)</span>
+                                                        </div>
                                                     </div>
                                                 @else
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/30 bg-[#FBE7E4] flex flex-col items-center justify-center p-6 text-center">

@@ -462,7 +462,8 @@
                                     {{ $cat->slug }}
                                 </td>
                                 <td class="px-5 py-3.5 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $cat->products_count > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-slate-100 text-slate-400' }}">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $cat->products_count > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-slate-100 text-slate-400' }}"
+                                          title="{{ $hasChildren ? 'Total: '.$cat->products_count.' '.Str::plural('piece', $cat->products_count).' (Direct: '.($cat->direct_products_count ?? $cat->products_count).', Subcategories: '.max(0, $cat->products_count - ($cat->direct_products_count ?? 0)).')' : $cat->products_count.' '.Str::plural('piece', $cat->products_count) }}">
                                         {{ $cat->products_count }} {{ Str::plural('piece', $cat->products_count) }}
                                     </span>
                                 </td>

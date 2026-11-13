@@ -21,6 +21,32 @@ class AdminCategoryController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
+        $directCounts = $categories->pluck('products_count', 'id')->all();
+        $grouped = $categories->groupBy(fn ($cat) => $cat->parent_id ? (int) $cat->parent_id : 0);
+        $getDescendants = function (int $id, array &$seen = []) use ($grouped, &$getDescendants): array {
+            if (in_array($id, $seen, true)) {
+                return [];
+            }
+            $seen[] = $id;
+            $ids = [$id];
+            foreach ($grouped->get($id, []) as $child) {
+                $ids = array_merge($ids, $getDescendants((int) $child->id, $seen));
+            }
+            return $ids;
+        };
+
+        foreach ($categories as $cat) {
+            $seen = [];
+            $dIds = $getDescendants((int) $cat->id, $seen);
+            $total = 0;
+            foreach ($dIds as $did) {
+                $total += ($directCounts[$did] ?? 0);
+            }
+            $cat->direct_products_count = $directCounts[$cat->id] ?? 0;
+            $cat->all_products_count    = $total;
+            $cat->products_count        = $total;
+        }
+
         return view('admin.categories.index', compact('categories', 'flatTree'));
     }
 

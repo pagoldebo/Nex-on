@@ -340,4 +340,117 @@ class SubCategoryManagementTest extends TestCase
         $child->delete();
         $parent->delete();
     }
+
+    public function test_admin_category_table_shows_sum_of_subcategory_products_for_parent_category()
+    {
+        // 1. Setup multi-level hierarchy: Men -> (Shirt -> Formal Shirt), Men -> Pants
+        $men = Category::create([
+            'name' => 'Men Rollup Test',
+            'slug' => 'men-rollup-test',
+            'parent_id' => null,
+            'is_active' => true,
+        ]);
+
+        $shirt = Category::create([
+            'name' => 'Shirt Rollup Test',
+            'slug' => 'shirt-rollup-test',
+            'parent_id' => $men->id,
+            'is_active' => true,
+        ]);
+
+        $formalShirt = Category::create([
+            'name' => 'Formal Shirt Rollup Test',
+            'slug' => 'formal-shirt-rollup-test',
+            'parent_id' => $shirt->id,
+            'is_active' => true,
+        ]);
+
+        $pants = Category::create([
+            'name' => 'Pants Rollup Test',
+            'slug' => 'pants-rollup-test',
+            'parent_id' => $men->id,
+            'is_active' => true,
+        ]);
+
+        // 2. Add 1 product directly into Pants
+        $pantProduct = Product::create([
+            'name' => 'Men Chino Pants',
+            'slug' => 'men-chino-pants',
+            'price' => 1999,
+            'category_id' => $pants->id,
+            'is_active' => true,
+            'stock_quantity' => 5,
+        ]);
+
+        // Verify flat tree rollup for Pants=1, Men=1 (even though Men has 0 direct)
+        $flat = Category::getFlatTree();
+        $menItem = $flat->firstWhere('slug', 'men-rollup-test');
+        $pantsItem = $flat->firstWhere('slug', 'pants-rollup-test');
+        $shirtItem = $flat->firstWhere('slug', 'shirt-rollup-test');
+
+        $this->assertNotNull($menItem);
+        $this->assertEquals(1, $menItem->products_count, 'Parent Men category must rollup 1 item from Pants subcategory');
+        $this->assertEquals(0, $menItem->direct_products_count);
+        $this->assertEquals(1, $menItem->all_products_count);
+
+        $this->assertNotNull($pantsItem);
+        $this->assertEquals(1, $pantsItem->products_count);
+        $this->assertEquals(1, $pantsItem->direct_products_count);
+
+        $this->assertNotNull($shirtItem);
+        $this->assertEquals(0, $shirtItem->products_count);
+
+        // Also test model total_products_count accessor
+        $this->assertEquals(1, $men->total_products_count);
+
+        // 3. Add 1 product into deeply nested Formal Shirt (Men -> Shirt -> Formal Shirt)
+        $shirtProduct = Product::create([
+            'name' => 'Men Classic Formal Shirt',
+            'slug' => 'men-classic-formal-shirt',
+            'price' => 2499,
+            'category_id' => $formalShirt->id,
+            'is_active' => true,
+            'stock_quantity' => 8,
+        ]);
+
+        $flatUpdated = Category::getFlatTree();
+        $menItemUpdated = $flatUpdated->firstWhere('slug', 'men-rollup-test');
+        $shirtItemUpdated = $flatUpdated->firstWhere('slug', 'shirt-rollup-test');
+        $formalItemUpdated = $flatUpdated->firstWhere('slug', 'formal-shirt-rollup-test');
+
+        // Men now has Pants(1) + FormalShirt(1) = 2
+        $this->assertEquals(2, $menItemUpdated->products_count);
+        $this->assertEquals(0, $menItemUpdated->direct_products_count);
+
+        // Shirt has FormalShirt(1) = 1
+        $this->assertEquals(1, $shirtItemUpdated->products_count);
+
+        // Formal Shirt has 1
+        $this->assertEquals(1, $formalItemUpdated->products_count);
+
+        // 4. Request Admin Categories page and verify HTML rendering
+        $response = $this->actingAs($this->admin)->get(route('admin.categories.index'));
+        $response->assertStatus(200);
+
+        $content = $response->getContent();
+
+        // Men row must show 2 pieces and not 0 pieces
+        $this->assertStringContainsString('Men Rollup Test', $content);
+        $this->assertStringContainsString('Pants Rollup Test', $content);
+        $this->assertStringContainsString('Formal Shirt Rollup Test', $content);
+
+        // Verify HTML snippet for Men category shows 2 pieces
+        $patternMen = '/Men Rollup Test.*?(\d+)\s+pieces/s';
+        if (preg_match($patternMen, $content, $matches)) {
+            $this->assertEquals('2', $matches[1], 'Men category row must show 2 pieces in the admin table');
+        }
+
+        // Clean up
+        $shirtProduct->delete();
+        $pantProduct->delete();
+        $formalShirt->delete();
+        $shirt->delete();
+        $pants->delete();
+        $men->delete();
+    }
 }

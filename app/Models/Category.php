@@ -105,6 +105,18 @@ class Category extends Model
     }
 
     /**
+     * Total products count across this category and all its subcategories recursively.
+     */
+    public function getTotalProductsCountAttribute(): int
+    {
+        if (isset($this->attributes['all_products_count'])) {
+            return (int) $this->attributes['all_products_count'];
+        }
+        $descendantIds = $this->getAllDescendantIds();
+        return \App\Models\Product::whereIn('category_id', $descendantIds)->count();
+    }
+
+    /**
      * Tree of top-level categories with recursive children and products.
      */
     public static function tree()
@@ -131,6 +143,36 @@ class Category extends Model
             return $cat->parent_id ? (int) $cat->parent_id : 0;
         });
 
+        // Compute direct and recursive product counts for each category in memory
+        $directCounts = $all->pluck('products_count', 'id')->all();
+
+        $getDescendantIds = function (int $categoryId, array &$seen = []) use ($grouped, &$getDescendantIds): array {
+            if (in_array($categoryId, $seen, true)) {
+                return [];
+            }
+            $seen[] = $categoryId;
+            $ids = [$categoryId];
+            $children = $grouped->get($categoryId);
+            if ($children) {
+                foreach ($children as $child) {
+                    $ids = array_merge($ids, $getDescendantIds((int) $child->id, $seen));
+                }
+            }
+            return $ids;
+        };
+
+        foreach ($all as $cat) {
+            $seen = [];
+            $descendantIds = $getDescendantIds((int) $cat->id, $seen);
+            $totalCount = 0;
+            foreach ($descendantIds as $id) {
+                $totalCount += ($directCounts[$id] ?? 0);
+            }
+            $cat->direct_products_count = $directCounts[$cat->id] ?? 0;
+            $cat->all_products_count    = $totalCount;
+            $cat->products_count        = $totalCount;
+        }
+
         $result = collect();
         $visited = [];
 
@@ -155,20 +197,23 @@ class Category extends Model
 
                 $indentPrefix = $depth > 0 ? str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $depth - 1) . '↳ ' : '';
                 $result->push(new \Illuminate\Support\Fluent([
-                    'id'             => $cat->id,
-                    'name'           => $cat->name,
-                    'slug'           => $cat->slug,
-                    'parent_id'      => $cat->parent_id ? (int) $cat->parent_id : null,
-                    'root_id'        => $currentRootId,
-                    'ancestor_ids'   => $currentAncestors,
-                    'has_children'   => (bool) ($cat->children && $cat->children->count() > 0),
-                    'sort_order'     => $cat->sort_order,
-                    'depth'          => $depth,
-                    'indent_name'    => $indentPrefix . e($cat->name),
-                    'image'          => $cat->image,
-                    'image_url'      => $cat->image_url,
-                    'hierarchy_name' => $cat->hierarchy_name,
-                    'category'       => $cat,
+                    'id'                    => $cat->id,
+                    'name'                  => $cat->name,
+                    'slug'                  => $cat->slug,
+                    'parent_id'             => $cat->parent_id ? (int) $cat->parent_id : null,
+                    'root_id'               => $currentRootId,
+                    'ancestor_ids'          => $currentAncestors,
+                    'has_children'          => (bool) ($cat->children && $cat->children->count() > 0),
+                    'sort_order'            => $cat->sort_order,
+                    'depth'                 => $depth,
+                    'indent_name'           => $indentPrefix . e($cat->name),
+                    'image'                 => $cat->image,
+                    'image_url'             => $cat->image_url,
+                    'hierarchy_name'        => $cat->hierarchy_name,
+                    'products_count'        => $cat->products_count,
+                    'direct_products_count' => $cat->direct_products_count,
+                    'all_products_count'    => $cat->all_products_count,
+                    'category'              => $cat,
                 ]));
 
                 $traverse((int) $cat->id, $depth + 1, $currentRootId, array_merge($currentAncestors, [(int) $cat->id]));

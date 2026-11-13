@@ -26,12 +26,12 @@
 @php
   $vyraHeroCustom = \App\Models\Setting::get('vyra_hero_image') ?: \App\Models\Setting::get('vyra_hero_video');
   $vyraMediaUrl = \App\Models\Setting::imageUrl($vyraHeroCustom);
-  if (!$vyraMediaUrl && file_exists(public_path('images/slider/vyra/banner.mp4'))) {
-      $vyraMediaUrl = asset('images/slider/vyra/banner.mp4');
+  if (!$vyraMediaUrl && file_exists(public_path('images/slider/banner.mp4'))) {
+      $vyraMediaUrl = asset('images/slider/banner.mp4');
   }
   $mediaExt = strtolower(pathinfo(parse_url($vyraMediaUrl ?? '', PHP_URL_PATH), PATHINFO_EXTENSION));
   $isVyraVideo = in_array($mediaExt, ['mp4', 'webm', 'mov', 'ogg'], true);
-  $vyraPosterSrc = asset('images/slider/vyra/banner-1.jpg');
+  $vyraPosterSrc = asset('images/slider/banner-1.jpg');
 
   $vyraSlides = [
     [

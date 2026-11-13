@@ -96,8 +96,8 @@ class HeroBannerTest extends TestCase
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
 
-        // Verify video element and public/images/slider/vyra/banner.mp4 source
-        $storefront->assertSee(asset('images/slider/vyra/banner.mp4'));
+        // Verify video element and public/images/slider/banner.mp4 source
+        $storefront->assertSee(asset('images/slider/banner.mp4'));
         $storefront->assertSee('hero-video');
         $storefront->assertSee('autoplay');
         $storefront->assertSee('muted');

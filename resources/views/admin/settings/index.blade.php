@@ -215,7 +215,7 @@
                     @php
                         $vyraCustomMedia = $settings['vyra_hero_image'] ?? ($settings['vyra_hero_video'] ?? '');
                         $vyraActiveUrl = \App\Models\Setting::imageUrl($vyraCustomMedia);
-                        $vyraDefaultVideoUrl = file_exists(public_path('images/slider/vyra/banner.mp4')) ? asset('images/slider/vyra/banner.mp4') : null;
+                        $vyraDefaultVideoUrl = file_exists(public_path('images/slider/banner.mp4')) ? asset('images/slider/banner.mp4') : null;
                         if (!$vyraActiveUrl && $vyraDefaultVideoUrl) {
                             $vyraActiveUrl = $vyraDefaultVideoUrl;
                         }
@@ -255,7 +255,7 @@
                                         @if(!empty($vyraActiveUrl))
                                             <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-black">
                                                 @if($vyraActiveIsVideo)
-                                                    <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/vyra/banner-1.jpg') }}">
+                                                    <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/banner-1.jpg') }}">
                                                         <source src="{{ $vyraActiveUrl }}" type="video/{{ $vyraActiveExt === 'mov' ? 'quicktime' : ($vyraActiveExt === 'ogg' ? 'ogg' : ($vyraActiveExt === 'webm' ? 'webm' : 'mp4')) }}">
                                                     </video>
                                                     <span class="absolute bottom-2 left-2 {{ !empty($vyraCustomMedia) ? 'bg-emerald-600' : 'bg-slate-800' }} text-white text-[10px] font-bold px-2 py-0.5 rounded shadow backdrop-blur-xs">
@@ -290,7 +290,7 @@
                                     </div>
                                 @else
                                     <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
-                                        <span class="text-[11px] text-slate-400 font-mono">public/images/slider/vyra/banner.mp4</span>
+                                        <span class="text-[11px] text-slate-400 font-mono">public/images/slider/banner.mp4</span>
                                         <span class="text-[10px] font-bold uppercase tracking-wider text-[#0E0E10] bg-[#D4FF3D] px-2 py-0.5 rounded-full">Default Active</span>
                                     </div>
                                 @endif

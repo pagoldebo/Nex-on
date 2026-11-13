@@ -197,7 +197,7 @@ class AdminSettingController extends Controller
                             @unlink($publicOldFile);
                         }
                     }
-                    $targetFolder = str_starts_with($fileKey, 'vyra_hero') ? 'slider/vyra' : 'banners';
+                    $targetFolder = str_starts_with($fileKey, 'vyra_hero') ? 'slider' : 'banners';
                     $storedPath = ProductImageService::storeUpload($uploadedFile, $targetFolder);
                     Setting::set($fileKey, $storedPath);
                 }

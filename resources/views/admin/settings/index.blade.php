@@ -158,7 +158,10 @@
                  previewButtercupStory: null,
                  previewLumiereStory: null,
                  previewOrganicHero: null,
-                 previewOrganicStory: null
+                 previewOrganicStory: null,
+                 previewOrganicAd1: null,
+                 previewOrganicAd2: null,
+                 previewOrganicAd3: null
              }">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 gap-3">
                 <div class="flex items-center gap-3">
@@ -1223,6 +1226,45 @@
                         <!-- Banner 1: Wild Honey -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
                             <span class="text-xs font-bold text-slate-800 uppercase block">Banner 1 (Wild Honey)</span>
+                            
+                            {{-- Background Image Upload --}}
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
+                                @php
+                                    $ad1Custom = $settings['organic_ad1_image'] ?? '';
+                                    $ad1Src = $ad1Custom ? (str_starts_with($ad1Custom, 'http') ? $ad1Custom : asset($ad1Custom)) : asset('images/themes/organic/banner-ad-1.jpg');
+                                @endphp
+                                <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
+                                    <template x-if="previewOrganicAd1">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
+                                            <img :src="previewOrganicAd1" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="!previewOrganicAd1">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                            <img src="{{ $ad1Src }}" class="w-full h-full object-cover" alt="Banner 1 Background">
+                                            <span class="absolute bottom-1 left-1 {{ $ad1Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                {{ $ad1Custom ? 'Custom Image' : 'Default Image' }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                    @if(!empty($ad1Custom))
+                                        <div class="flex items-center justify-between pt-1">
+                                            <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
+                                                <input type="checkbox" name="remove_organic_ad1_image" value="1" class="w-3 h-3 text-rose-600 rounded">
+                                                <span>Reset to Default</span>
+                                            </label>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="organic_ad1_image" accept="image/*"
+                                           @change="previewOrganicAd1 = URL.createObjectURL($event.target.files[0])"
+                                           class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-[11px] text-slate-500 mb-1">Tag / Kicker</label>
                                 <input type="text" name="organic_ad1_kicker" value="{{ $settings['organic_ad1_kicker'] ?? 'Limited Batch' }}" class="w-full px-3 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white">
@@ -1250,6 +1292,45 @@
                         <!-- Banner 2: Wood Oils -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
                             <span class="text-xs font-bold text-slate-800 uppercase block">Banner 2 (Cold-Pressed Oils)</span>
+                            
+                            {{-- Background Image Upload --}}
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
+                                @php
+                                    $ad2Custom = $settings['organic_ad2_image'] ?? '';
+                                    $ad2Src = $ad2Custom ? (str_starts_with($ad2Custom, 'http') ? $ad2Custom : asset($ad2Custom)) : asset('images/themes/organic/banner-ad-2.jpg');
+                                @endphp
+                                <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
+                                    <template x-if="previewOrganicAd2">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
+                                            <img :src="previewOrganicAd2" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="!previewOrganicAd2">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                            <img src="{{ $ad2Src }}" class="w-full h-full object-cover" alt="Banner 2 Background">
+                                            <span class="absolute bottom-1 left-1 {{ $ad2Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                {{ $ad2Custom ? 'Custom Image' : 'Default Image' }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                    @if(!empty($ad2Custom))
+                                        <div class="flex items-center justify-between pt-1">
+                                            <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
+                                                <input type="checkbox" name="remove_organic_ad2_image" value="1" class="w-3 h-3 text-rose-600 rounded">
+                                                <span>Reset to Default</span>
+                                            </label>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="organic_ad2_image" accept="image/*"
+                                           @change="previewOrganicAd2 = URL.createObjectURL($event.target.files[0])"
+                                           class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-[11px] text-slate-500 mb-1">Tag / Kicker</label>
                                 <input type="text" name="organic_ad2_kicker" value="{{ $settings['organic_ad2_kicker'] ?? 'Seasonal Deal' }}" class="w-full px-3 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white">
@@ -1277,6 +1358,45 @@
                         <!-- Banner 3: Gir Cow Ghee -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
                             <span class="text-xs font-bold text-slate-800 uppercase block">Banner 3 (Gir Cow Ghee)</span>
+                            
+                            {{-- Background Image Upload --}}
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
+                                @php
+                                    $ad3Custom = $settings['organic_ad3_image'] ?? '';
+                                    $ad3Src = $ad3Custom ? (str_starts_with($ad3Custom, 'http') ? $ad3Custom : asset($ad3Custom)) : asset('images/themes/organic/banner-ad-3.jpg');
+                                @endphp
+                                <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
+                                    <template x-if="previewOrganicAd3">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
+                                            <img :src="previewOrganicAd3" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="!previewOrganicAd3">
+                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                            <img src="{{ $ad3Src }}" class="w-full h-full object-cover" alt="Banner 3 Background">
+                                            <span class="absolute bottom-1 left-1 {{ $ad3Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                {{ $ad3Custom ? 'Custom Image' : 'Default Image' }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                    @if(!empty($ad3Custom))
+                                        <div class="flex items-center justify-between pt-1">
+                                            <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
+                                                <input type="checkbox" name="remove_organic_ad3_image" value="1" class="w-3 h-3 text-rose-600 rounded">
+                                                <span>Reset to Default</span>
+                                            </label>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="organic_ad3_image" accept="image/*"
+                                           @change="previewOrganicAd3 = URL.createObjectURL($event.target.files[0])"
+                                           class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-[11px] text-slate-500 mb-1">Tag / Kicker</label>
                                 <input type="text" name="organic_ad3_kicker" value="{{ $settings['organic_ad3_kicker'] ?? 'Daily Essentials' }}" class="w-full px-3 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white">

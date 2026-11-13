@@ -271,12 +271,20 @@
   </section>
 
   {{-- 5. TRIPLE PROMOTIONAL AD BANNERS --}}
+  @php
+    $ad1Img = \App\Models\Setting::get('organic_ad1_image');
+    $ad1Url = $ad1Img ? (str_starts_with($ad1Img, 'http') ? $ad1Img : asset($ad1Img)) : asset('images/themes/organic/banner-ad-1.jpg');
+    $ad2Img = \App\Models\Setting::get('organic_ad2_image');
+    $ad2Url = $ad2Img ? (str_starts_with($ad2Img, 'http') ? $ad2Img : asset($ad2Img)) : asset('images/themes/organic/banner-ad-2.jpg');
+    $ad3Img = \App\Models\Setting::get('organic_ad3_image');
+    $ad3Url = $ad3Img ? (str_starts_with($ad3Img, 'http') ? $ad3Img : asset($ad3Img)) : asset('images/themes/organic/banner-ad-3.jpg');
+  @endphp
   <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
       {{-- Banner 1 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(42, 75, 26, 0.85), rgba(42, 75, 26, 0.95)), url('{{ asset('images/themes/organic/banner-ad-1.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(42, 75, 26, 0.85), rgba(42, 75, 26, 0.95)), url('{{ $ad1Url }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-organic-300">{{ \App\Models\Setting::get('organic_ad1_kicker', 'Limited Batch') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad1_title', 'Raw Wild Forest Honey') }}</h3>
@@ -292,7 +300,7 @@
 
       {{-- Banner 2 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(249, 95, 9, 0.85), rgba(249, 95, 9, 0.95)), url('{{ asset('images/themes/organic/banner-ad-2.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(249, 95, 9, 0.85), rgba(249, 95, 9, 0.95)), url('{{ $ad2Url }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-citrus-light">{{ \App\Models\Setting::get('organic_ad2_kicker', 'Seasonal Deal') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad2_title', 'Cold-Pressed Wood Oils') }}</h3>
@@ -308,7 +316,7 @@
 
       {{-- Banner 3 --}}
       <div class="rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-cover bg-center shadow-md text-white min-h-[220px] flex flex-col justify-between"
-           style="background-image: linear-gradient(to bottom, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.95)), url('{{ asset('images/themes/organic/banner-ad-3.jpg') }}');">
+           style="background-image: linear-gradient(to bottom, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.95)), url('{{ $ad3Url }}');">
         <div>
           <span class="text-[10px] font-black uppercase tracking-widest text-emerald-300">{{ \App\Models\Setting::get('organic_ad3_kicker', 'Daily Essentials') }}</span>
           <h3 class="text-xl font-black font-display mt-1 text-white">{{ \App\Models\Setting::get('organic_ad3_title', 'A2 Desi Gir Cow Ghee') }}</h3>

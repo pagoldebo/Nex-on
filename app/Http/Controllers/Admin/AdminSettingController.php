@@ -66,6 +66,9 @@ class AdminSettingController extends Controller
             'lumiere_story_image',
             'organic_hero_image',
             'organic_story_image',
+            'organic_ad1_image',
+            'organic_ad2_image',
+            'organic_ad3_image',
             'hero_banner_image',
         ];
 
@@ -86,6 +89,9 @@ class AdminSettingController extends Controller
             'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'organic_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'organic_ad1_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'organic_ad2_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'organic_ad3_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
         ]);
 

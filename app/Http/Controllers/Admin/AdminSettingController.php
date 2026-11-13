@@ -74,7 +74,7 @@ class AdminSettingController extends Controller
 
         $request->validate([
             'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:5120',
-            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif,mp4,webm,mov,ogg|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif,video/mp4,video/webm,video/quicktime,video/ogg|max:51200',
             'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
@@ -132,6 +132,9 @@ class AdminSettingController extends Controller
                         }
                     }
                     Setting::set($targetKey, '');
+                    if ($targetKey === 'vyra_hero_image') {
+                        Setting::set('vyra_hero_video', '');
+                    }
                 }
             }
         }
@@ -194,7 +197,8 @@ class AdminSettingController extends Controller
                             @unlink($publicOldFile);
                         }
                     }
-                    $storedPath = ProductImageService::storeUpload($uploadedFile, 'banners');
+                    $targetFolder = str_starts_with($fileKey, 'vyra_hero') ? 'slider/vyra' : 'banners';
+                    $storedPath = ProductImageService::storeUpload($uploadedFile, $targetFolder);
                     Setting::set($fileKey, $storedPath);
                 }
             }

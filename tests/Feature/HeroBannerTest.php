@@ -110,6 +110,37 @@ class HeroBannerTest extends TestCase
         $storefront->assertSee('Shop Drop 03');
     }
 
+    public function test_admin_can_upload_vyra_video_and_configure_explore_button()
+    {
+        Storage::fake('public');
+
+        $video = UploadedFile::fake()->create('custom-vyra.mp4', 1024, 'video/mp4');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'vyra_hero_image'     => $video,
+            'vyra_hero_btn2_text' => 'Custom Explore',
+            'vyra_hero_btn2_url'  => 'https://example.com/custom-vyra-explore',
+        ]);
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('success');
+
+        $savedPath = Setting::get('vyra_hero_image');
+        $this->assertNotEmpty($savedPath);
+        $this->assertStringEndsWith('.mp4', $savedPath);
+        Storage::disk('public')->assertExists($savedPath);
+
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'vyra')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $storefront = $this->get(route('home'));
+        $storefront->assertStatus(200);
+        $storefront->assertSee(asset('images/' . $savedPath));
+        $storefront->assertSee('Custom Explore');
+        $storefront->assertSee('https://example.com/custom-vyra-explore');
+    }
+
     public function test_admin_can_upload_and_render_saaya_story_image()
     {
         Storage::fake('public');

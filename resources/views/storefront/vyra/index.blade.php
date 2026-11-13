@@ -24,10 +24,14 @@
 
 {{-- ===== HERO TOP SLIDER WITH GLORIA-FREE VIDEO BACKGROUND ===== --}}
 @php
-  $vyraHeroImg   = \App\Models\Setting::get('vyra_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
-  $vyraHeroVideo = \App\Models\Setting::get('vyra_hero_video');
-  $vyraVideoSrc  = \App\Models\Setting::imageUrl($vyraHeroVideo, asset('images/slider/vyra/banner.mp4'));
-  $vyraPosterSrc = \App\Models\Setting::imageUrl($vyraHeroImg, asset('images/slider/vyra/banner-1.jpg'));
+  $vyraHeroCustom = \App\Models\Setting::get('vyra_hero_image') ?: \App\Models\Setting::get('vyra_hero_video');
+  $vyraMediaUrl = \App\Models\Setting::imageUrl($vyraHeroCustom);
+  if (!$vyraMediaUrl && file_exists(public_path('images/slider/vyra/banner.mp4'))) {
+      $vyraMediaUrl = asset('images/slider/vyra/banner.mp4');
+  }
+  $mediaExt = strtolower(pathinfo(parse_url($vyraMediaUrl ?? '', PHP_URL_PATH), PATHINFO_EXTENSION));
+  $isVyraVideo = in_array($mediaExt, ['mp4', 'webm', 'mov', 'ogg'], true);
+  $vyraPosterSrc = asset('images/slider/vyra/banner-1.jpg');
 
   $vyraSlides = [
     [
@@ -36,8 +40,8 @@
       'subtitle' => \App\Models\Setting::get('vyra_hero_subtitle', "Bold cuts. Mesh, lace, and second-skin fabrics built for a generation that doesn't ask permission."),
       'btn_text' => \App\Models\Setting::get('vyra_hero_btn_text', 'Shop Drop 03'),
       'btn_url'  => \App\Models\Setting::get('vyra_hero_btn_url', route('home').'#products'),
-      'btn2_text'=> 'Explore',
-      'btn2_url' => route('search'),
+      'btn2_text'=> \App\Models\Setting::get('vyra_hero_btn2_text', 'Explore'),
+      'btn2_url' => \App\Models\Setting::get('vyra_hero_btn2_url', route('search')),
     ],
     [
       'badge'    => \App\Models\Setting::get('vyra_slide_2_badge', 'High Voltage / New In'),
@@ -106,26 +110,34 @@
          aria-roledescription="carousel"
          aria-label="Vyra Top Hero Slider">
 
-  {{-- FULL BACKGROUND VIDEO (from banner.mp4 stored in public/images/slider/vyra) --}}
-  <video class="hero-video absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0 opacity-100"
-         autoplay
-         muted
-         loop
-         playsinline
-         preload="auto"
-         poster="{{ $vyraPosterSrc }}">
-    <source src="{{ $vyraVideoSrc }}" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  {{-- FULL BACKGROUND MEDIA: Video or Image (Uploaded by Admin or default banner.mp4) --}}
+  @if($isVyraVideo)
+    <video class="hero-video absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0 opacity-100"
+           autoplay
+           muted
+           loop
+           playsinline
+           preload="auto"
+           poster="{{ $vyraPosterSrc }}">
+      <source src="{{ $vyraMediaUrl }}" type="video/{{ $mediaExt === 'mov' ? 'quicktime' : ($mediaExt === 'ogg' ? 'ogg' : ($mediaExt === 'webm' ? 'webm' : 'mp4')) }}">
+      Your browser does not support the video tag.
+    </video>
+  @elseif($vyraMediaUrl)
+    <img src="{{ $vyraMediaUrl }}"
+         alt="{{ $vyraSlides[0]['title'] }}"
+         class="hero-image absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0 opacity-100">
+  @else
+    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1A1A1D] via-[#0E0E10] to-black z-0"></div>
+  @endif
 
-  {{-- SUBTLE SOFT OVERLAY (MINIMAL BLACK GRADIENT FOR MAXIMUM VIDEO CLARITY) --}}
-  <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/40 via-black/15 to-transparent"></div>
+  {{-- SUBTLE SOFT OVERLAY (DARK GRADIENT FOR MAXIMUM TEXT LEGIBILITY & MEDIA CLARITY) --}}
+  <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/75 via-black/45 to-black/20"></div>
 
   {{-- SLIDER CONTENT (CONTAINER) --}}
-  <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-10 py-16 sm:py-24 w-full grid lg:grid-cols-12 gap-8 items-center">
+  <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-10 py-16 sm:py-24 w-full">
     
     {{-- Left: Text Slides --}}
-    <div class="lg:col-span-8 max-w-xl">
+    <div class="max-w-xl">
       @foreach($vyraSlides as $index => $slide)
         <div x-show="currentSlide === {{ $index }}"
              x-transition:enter="transition ease-out duration-700"
@@ -170,15 +182,6 @@
         </div>
       @endforeach
     </div>
-
-    {{-- Right: Optional Custom Image Frame if uploaded by Admin --}}
-    @if($vyraHeroImg)
-      <div class="lg:col-span-4 hidden lg:flex justify-end">
-        <div class="overflow-hidden aspect-[4/5] w-72 rounded-2xl border border-[#FF3D5A]/30 shadow-2xl bg-black/60 backdrop-blur-sm p-1.5 group">
-          <img src="{{ \App\Models\Setting::imageUrl($vyraHeroImg) }}" alt="{{ $vyraSlides[0]['title'] }}" class="w-full h-full object-cover rounded-xl transition duration-500 group-hover:scale-105">
-        </div>
-      </div>
-    @endif
 
   </div>
 

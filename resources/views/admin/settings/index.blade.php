@@ -144,6 +144,7 @@
              x-data="{ 
                  activeTab: '{{ $activeTheme->key ?? 'vyra' }}',
                  previewVyra: null,
+                 previewVyraIsVideo: false,
                  previewButtercup: null,
                  previewButtercupSlide1: null,
                  previewButtercupSlide2: null,
@@ -211,77 +212,100 @@
                         </a>
                     </div>
 
-                    {{-- Vyra Top Slider Background Video Status Card --}}
-                    <div class="p-4 bg-[#0E0E10] text-[#F2F0EC] rounded-xl border border-slate-800 space-y-3">
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-[#D4FF3D] animate-pulse"></span>
-                                <span class="font-bold text-[#F2F0EC]">Top Slider Background Video</span>
-                                <span class="font-mono text-[10px] text-slate-400">public/images/slider/vyra/banner.mp4</span>
-                            </div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[#0E0E10] bg-[#D4FF3D] px-2.5 py-0.5 rounded-full">Active • 3.0 MB</span>
-                        </div>
-                        <div class="relative w-full aspect-[16/9] max-w-sm rounded-lg overflow-hidden border border-slate-700 shadow-md bg-black">
-                            <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/vyra/banner-1.jpg') }}">
-                                <source src="{{ asset('images/slider/vyra/banner.mp4') }}" type="video/mp4">
-                            </video>
-                            <span class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur-xs">Live Looping Video</span>
-                        </div>
-                    </div>
+                    @php
+                        $vyraCustomMedia = $settings['vyra_hero_image'] ?? ($settings['vyra_hero_video'] ?? '');
+                        $vyraActiveUrl = \App\Models\Setting::imageUrl($vyraCustomMedia);
+                        $vyraDefaultVideoUrl = file_exists(public_path('images/slider/vyra/banner.mp4')) ? asset('images/slider/vyra/banner.mp4') : null;
+                        if (!$vyraActiveUrl && $vyraDefaultVideoUrl) {
+                            $vyraActiveUrl = $vyraDefaultVideoUrl;
+                        }
+                        $vyraActiveExt = strtolower(pathinfo(parse_url($vyraActiveUrl ?? '', PHP_URL_PATH), PATHINFO_EXTENSION));
+                        $vyraActiveIsVideo = in_array($vyraActiveExt, ['mp4', 'webm', 'mov', 'ogg'], true);
+                    @endphp
 
                     <div class="grid lg:grid-cols-2 gap-8 items-start">
-                        <!-- Image Upload & Preview -->
+                        <!-- Background Media Upload & Preview (Image or Video) -->
                         <div class="space-y-4">
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                                Vyra Hero Image (Right Section)
-                            </label>
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                                    Vyra Hero Image &amp; Video Background
+                                </label>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">Full Width</span>
+                            </div>
 
-                            @php $vyraImg = $settings['vyra_hero_image'] ?? ''; @endphp
-
-                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3">
+                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-900 text-white flex flex-col items-center justify-center gap-3">
+                                {{-- Preview when a new file has just been chosen --}}
                                 <template x-if="previewVyra">
-                                    <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                        <img :src="previewVyra" class="w-full h-full object-cover" alt="New Vyra Preview">
-                                        <span class="absolute bottom-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">New Upload Preview</span>
+                                    <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-black flex items-center justify-center">
+                                        <template x-if="previewVyraIsVideo">
+                                            <video :src="previewVyra" class="w-full h-full object-cover" autoplay muted loop playsinline></video>
+                                        </template>
+                                        <template x-if="!previewVyraIsVideo">
+                                            <img :src="previewVyra" class="w-full h-full object-cover" alt="New Vyra Preview">
+                                        </template>
+                                        <span class="absolute bottom-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                            New <span x-text="previewVyraIsVideo ? 'Video' : 'Image'"></span> Selected (Unsaved Preview)
+                                        </span>
                                     </div>
                                 </template>
+
+                                {{-- Live Media when no new file is chosen --}}
                                 <template x-if="!previewVyra">
-                                    <div>
-                                        @if(!empty($vyraImg))
-                                            <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                                <img src="{{ \App\Models\Setting::imageUrl($vyraImg) }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
-                                                <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
+                                    <div class="w-full">
+                                        @if(!empty($vyraActiveUrl))
+                                            <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-black">
+                                                @if($vyraActiveIsVideo)
+                                                    <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/vyra/banner-1.jpg') }}">
+                                                        <source src="{{ $vyraActiveUrl }}" type="video/{{ $vyraActiveExt === 'mov' ? 'quicktime' : ($vyraActiveExt === 'ogg' ? 'ogg' : ($vyraActiveExt === 'webm' ? 'webm' : 'mp4')) }}">
+                                                    </video>
+                                                    <span class="absolute bottom-2 left-2 {{ !empty($vyraCustomMedia) ? 'bg-emerald-600' : 'bg-slate-800' }} text-white text-[10px] font-bold px-2 py-0.5 rounded shadow backdrop-blur-xs">
+                                                        {{ !empty($vyraCustomMedia) ? 'Active Custom Video' : 'Default Video (banner.mp4)' }}
+                                                    </span>
+                                                @else
+                                                    <img src="{{ $vyraActiveUrl }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
+                                                    <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                                        Active Custom Image
+                                                    </span>
+                                                @endif
                                             </div>
                                         @else
-                                            <div class="w-full aspect-[4/5] w-56 bg-[#1A1A1D] rounded-xl flex flex-col items-center justify-center p-6 text-center border border-[#FF3D5A]/30">
-                                                <svg viewBox="0 0 300 360" class="w-24 opacity-60 mb-3">
-                                                    <ellipse cx="150" cy="80" rx="70" ry="55" fill="#FF3D5A" opacity="0.5"/>
-                                                    <path d="M90 95 Q150 140 210 95 L205 130 Q150 170 95 130 Z" fill="#FF3D5A" opacity="0.7"/>
-                                                    <path d="M100 180 Q150 210 200 180 L195 300 Q150 330 105 300 Z" fill="#D4FF3D" opacity="0.25"/>
-                                                </svg>
-                                                <p class="text-xs text-[#F2F0EC]/80 font-bold">Default 3D Shape</p>
-                                                <p class="text-[11px] text-[#F2F0EC]/40 mt-1">Upload a model/product image below to replace this placeholder</p>
+                                            <div class="w-full aspect-[16/9] bg-[#1A1A1D] rounded-xl flex flex-col items-center justify-center p-6 text-center border border-[#FF3D5A]/30">
+                                                <p class="text-xs text-[#F2F0EC]/80 font-bold">No Media Configured</p>
+                                                <p class="text-[11px] text-[#F2F0EC]/40 mt-1">Upload a background image or video below</p>
                                             </div>
                                         @endif
                                     </div>
                                 </template>
 
-                                @if(!empty($vyraImg))
-                                    <div class="flex items-center justify-between w-full pt-2 border-t border-slate-200">
-                                        <span class="text-[11px] text-emerald-600 font-semibold">Custom Image Active</span>
-                                        <label class="inline-flex items-center gap-1.5 text-xs text-rose-600 hover:text-rose-700 font-medium cursor-pointer">
-                                            <input type="checkbox" name="remove_vyra_hero_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded border-slate-300">
-                                            <span>Remove &amp; Restore Default Shape</span>
+                                @if(!empty($vyraCustomMedia))
+                                    <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
+                                        <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span>Custom {{ $vyraActiveIsVideo ? 'Video' : 'Image' }} Running</span>
+                                        </span>
+                                        <label class="inline-flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 font-medium cursor-pointer">
+                                            <input type="checkbox" name="remove_vyra_hero_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded border-slate-700 bg-slate-800">
+                                            <span>Reset to Default Video</span>
                                         </label>
+                                    </div>
+                                @else
+                                    <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
+                                        <span class="text-[11px] text-slate-400 font-mono">public/images/slider/vyra/banner.mp4</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#0E0E10] bg-[#D4FF3D] px-2 py-0.5 rounded-full">Default Active</span>
                                     </div>
                                 @endif
                             </div>
 
                             <div>
-                                <input type="file" name="vyra_hero_image" accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                                       @change="previewVyra = URL.createObjectURL($event.target.files[0])"
+                                <input type="file" name="vyra_hero_image" 
+                                       accept="image/png,image/jpeg,image/webp,image/avif,image/svg+xml,video/mp4,video/webm,video/ogg,video/quicktime"
+                                       @change="if ($event.target.files && $event.target.files[0]) {
+                                           const f = $event.target.files[0];
+                                           previewVyra = URL.createObjectURL(f);
+                                           previewVyraIsVideo = f.type.startsWith('video/') || /\.(mp4|webm|mov|ogg)$/i.test(f.name);
+                                       }"
                                        class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                                <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 4:5 (e.g. 800×1000px). PNG, JPG, or WEBP up to 10MB.</p>
+                                <p class="text-[11px] text-slate-400 mt-1.5">Upload a full-width background video (MP4/WEBM up to 50MB) or photo (JPG/PNG/WEBP/AVIF up to 10MB). Runs full-width in the hero slider.</p>
                             </div>
                         </div>
 
@@ -315,15 +339,32 @@
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs text-slate-600 mb-1">Button Text</label>
+                                    <label class="block text-xs text-slate-600 mb-1">Primary Button Text</label>
                                     <input type="text" name="vyra_hero_btn_text" 
                                            value="{{ $settings['vyra_hero_btn_text'] ?? 'Shop Drop 03' }}" 
                                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-slate-600 mb-1">Button Link URL</label>
+                                    <label class="block text-xs text-slate-600 mb-1">Primary Button Link URL</label>
                                     <input type="text" name="vyra_hero_btn_url" 
                                            value="{{ $settings['vyra_hero_btn_url'] ?? '#products' }}" 
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-indigo-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Explore (Secondary) Button Text</label>
+                                    <input type="text" name="vyra_hero_btn2_text" 
+                                           value="{{ $settings['vyra_hero_btn2_text'] ?? 'Explore' }}" 
+                                           placeholder="Explore"
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1">Explore Button Link URL</label>
+                                    <input type="text" name="vyra_hero_btn2_url" 
+                                           value="{{ $settings['vyra_hero_btn2_url'] ?? route('search') }}" 
+                                           placeholder="/search"
                                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-indigo-500 outline-none">
                                 </div>
                             </div>

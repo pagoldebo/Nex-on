@@ -84,6 +84,15 @@ class ProductImageService
         $ext = strtolower($file->getClientOriginalExtension());
         $mime = $file->getMimeType() ?? '';
         $isSvg = ($ext === 'svg' || str_contains($mime, 'svg'));
+        $isVideo = (str_starts_with($mime, 'video/') || in_array($ext, ['mp4', 'webm', 'mov', 'ogg'], true));
+
+        if ($isVideo) {
+            $baseName = $filename ?: Str::random(40);
+            $safeExt = in_array($ext, ['mp4', 'webm', 'mov', 'ogg'], true) ? $ext : 'mp4';
+            $targetPath = "{$folder}/{$baseName}.{$safeExt}";
+            Storage::disk('public')->putFileAs($folder, $file, "{$baseName}.{$safeExt}");
+            return $targetPath;
+        }
 
         if ($isSvg) {
             $baseName = $filename ?: Str::random(40);

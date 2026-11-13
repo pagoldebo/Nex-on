@@ -179,20 +179,27 @@
         </div>
       @endif
 
-      {{-- Add to bag --}}
+      {{-- Add to bag & Actions --}}
       <div class="space-y-3 pt-2">
         <button type="button" id="pdpAddBtn"
                 class="gold-btn w-full py-4 text-xs font-body font-semibold tracking-widest uppercase disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
                 disabled>
           Select a Size
         </button>
-        <button type="button" id="pdpWishBtn"
-                class="w-full border border-gold/40 text-maroon py-3.5 text-xs font-body font-semibold tracking-widest uppercase hover:border-gold hover:bg-gold/5 transition-colors flex items-center justify-center gap-2">
-          <svg id="pdpWishIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
-          </svg>
-          <span id="pdpWishLabel">Save to Wishlist</span>
-        </button>
+        <div class="flex gap-3">
+          <button type="button" id="pdpWishBtn"
+                  class="flex-1 border border-gold/40 text-maroon py-3.5 text-xs font-body font-semibold tracking-widest uppercase hover:border-gold hover:bg-gold/5 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+            <svg id="pdpWishIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
+            </svg>
+            <span id="pdpWishLabel">Wishlist</span>
+          </button>
+          <button type="button" id="pdpBuyNowBtn"
+                  class="flex-1 bg-maroon text-gold border border-gold hover:bg-gold hover:text-maroon py-3.5 text-xs font-body font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Buy Now</span>
+          </button>
+        </div>
       </div>
 
       {{-- Pincode & Delivery Checker --}}
@@ -837,6 +844,44 @@
 
     // open cart drawer
     if (typeof openCart === 'function') setTimeout(openCart, 200);
+  });
+
+  /* ────── buy now ────── */
+  const buyNowBtn = document.getElementById('pdpBuyNowBtn');
+  buyNowBtn?.addEventListener('click', () => {
+    const color = colors[activeColorIdx];
+    const size  = color?.sizes?.[activeSizeIdx];
+    if (!color || !size) {
+      if (sizePills) {
+        sizePills.classList.add('ring-2', 'ring-gold', 'p-1', 'rounded');
+        setTimeout(() => sizePills.classList.remove('ring-2', 'ring-gold', 'p-1', 'rounded'), 1500);
+        sizePills.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      if (addBtn) {
+        addBtn.classList.add('animate-bounce');
+        setTimeout(() => addBtn.classList.remove('animate-bounce'), 1000);
+      }
+      return;
+    }
+    const addonTotal = getSelectedAddonsTotal();
+    const finalPrice = Number(size.price) + addonTotal;
+    const addonNames = getSelectedAddonNames();
+    const extraDesc  = addonNames.length ? ' (Add-ons: ' + addonNames.join(', ') + ')' : '';
+
+    if (typeof addToCart === 'function') {
+      addToCart({
+        productId : productData.id,
+        variantId : size.variantId,
+        sku       : size.sku,
+        name      : productData.name + extraDesc,
+        colorName : color.name,
+        size      : size.size,
+        price     : finalPrice,
+        image     : color.images?.[0] ?? productData.coverImage,
+        qty       : 1
+      });
+    }
+    window.location.href = "{{ route('checkout') }}";
   });
 
   /* ────── accordion ────── */

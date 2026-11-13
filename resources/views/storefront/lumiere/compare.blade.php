@@ -124,7 +124,7 @@
     <div class="text-center py-24">
       <svg class="w-14 h-14 mx-auto text-pink-100 mb-5" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
       <p class="font-display italic text-2xl text-gray-300 mb-2">Nothing to compare yet</p>
-      <p class="text-sm text-gray-400 mb-6 max-w-xs mx-auto">Use the Compare button on any product page to add it here. You can compare up to 4 pieces at once.</p>
+      <p class="text-sm text-gray-400 mb-6 max-w-xs mx-auto">Select pieces from our collections to evaluate specifications side-by-side.</p>
       <a href="{{ route('home') }}" class="inline-block px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors">Discover Pieces</a>
     </div>
   @endif

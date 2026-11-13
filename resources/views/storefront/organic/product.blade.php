@@ -233,6 +233,13 @@
               <svg class="w-5 h-5" viewBox="0 0 24 24"><use xlink:href="#organic-cart"></use></svg>
               <span>Add to Fresh Basket</span>
             </button>
+            <button type="button" 
+                    id="buyNowPrimaryBtn"
+                    onclick="triggerDirectBuyNow()"
+                    class="bg-stone-900 hover:bg-organic-600 text-white px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-citrus" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Buy Now</span>
+            </button>
           </div>
 
         </div>
@@ -686,6 +693,11 @@
         const currentImg = imgs[currentImageIdx] || productImage;
         addToCart(productId, productName + extraDesc, activeColorName, activeSize, finalPrice, currentImg, activeVariantId, productSku);
       }
+    }
+
+    function triggerDirectBuyNow() {
+      triggerDirectAddToCart();
+      window.location.href = "{{ route('checkout') }}";
     }
 
     document.addEventListener('DOMContentLoaded', () => {

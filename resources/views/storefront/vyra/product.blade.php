@@ -119,10 +119,13 @@
           <i class="fa-regular fa-heart text-sm"></i>
           Wishlist
         </button>
-        <a href="{{ route('compare') }}?ids={{ $product->id }}"
-           class="flex-1 py-3 text-xs font-bold uppercase tracking-widest transition-all border border-[#FF3D5A] text-[#F2F0EC] flex items-center justify-center">
-          Compare
-        </a>
+        <button type="button"
+                id="vyraBuyNowBtn"
+                onclick="handleBuyNow()"
+                class="flex-1 py-3 text-xs font-bold uppercase tracking-widest transition-all bg-[#D4FF3D] hover:bg-[#FF3D5A] text-[#0E0E10] font-black flex items-center justify-center gap-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Buy Now
+        </button>
       </div>
 
       {{-- Pincode Checker --}}
@@ -413,6 +416,25 @@ function handleAdd() {
   const addonNames = getSelectedAddonNames();
   const extraDesc  = addonNames.length ? ' (Add-ons: ' + addonNames.join(', ') + ')' : '';
   addToCart(pd.id, pd.name + extraDesc, c.name, selSize, finalPrice, c.images[0] || pd.coverImage);
+}
+
+function handleBuyNow() {
+  if (!selSize) {
+    const sizePills = document.getElementById('sizePills');
+    if (sizePills) {
+      sizePills.classList.add('ring-2', 'ring-[#FF3D5A]');
+      setTimeout(() => sizePills.classList.remove('ring-2', 'ring-[#FF3D5A]'), 1500);
+      sizePills.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const addBtn = document.getElementById('addBtn');
+    if (addBtn) {
+      addBtn.classList.add('animate-bounce');
+      setTimeout(() => addBtn.classList.remove('animate-bounce'), 1000);
+    }
+    return;
+  }
+  handleAdd();
+  window.location.href = "{{ route('checkout') }}";
 }
 
 function toggleWishlist(id) {

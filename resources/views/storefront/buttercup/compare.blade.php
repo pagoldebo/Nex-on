@@ -61,7 +61,7 @@
   @else
     <div class="text-center py-20 opacity-40 text-[#4A3B3A]">
       <p class="font-display text-2xl mb-2">Select at least 2 products</p>
-      <p class="font-body text-sm mb-6">Use the Compare button on product pages.</p>
+      <p class="font-body text-sm mb-6">Explore our curated collections and select products.</p>
       <a href="{{ route('home') }}" class="inline-block px-6 py-3 text-xs font-bold uppercase tracking-widest bg-[#D89AA0] text-[#FFFAF5] hover:bg-[#B97680] rounded-full transition-colors">Browse Products</a>
     </div>
   @endif

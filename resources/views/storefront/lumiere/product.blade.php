@@ -174,9 +174,12 @@
           <i id="pdWishIcon" class="fa-regular fa-heart text-sm transition-transform duration-200"></i>
           <span id="pdWishLabel">Wishlist</span>
         </button>
-        <button onclick="pdAddToCompare()"
-                class="flex-1 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest border border-gray-200 text-gray-700 hover:border-pink-400 transition-colors">
-          Compare
+        <button type="button"
+                id="lumiereBuyNowBtn"
+                onclick="pdBuyNow()"
+                class="flex-1 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-pink-600 hover:bg-[#405549] text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Buy Now
         </button>
       </div>
 
@@ -636,6 +639,25 @@ function pdAddToBag() {
     const addonNames = getSelectedAddonNames();
     const extraDesc  = addonNames.length ? ' (Add-ons: ' + addonNames.join(', ') + ')' : '';
     addToCart(pd.id, pd.name + extraDesc, c.name, pdSize, finalPrice, (c.images && c.images[0]) || pd.coverImage);
+}
+
+function pdBuyNow() {
+    if (!pdSize) {
+        const sizeWrapper = document.getElementById('pdSizes');
+        if (sizeWrapper) {
+            sizeWrapper.classList.add('ring-2', 'ring-pink-400', 'rounded-xl');
+            setTimeout(() => sizeWrapper.classList.remove('ring-2', 'ring-pink-400', 'rounded-xl'), 1500);
+            sizeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        const addBtn = document.getElementById('pdAddBtn');
+        if (addBtn) {
+            addBtn.classList.add('animate-bounce');
+            setTimeout(() => addBtn.classList.remove('animate-bounce'), 1000);
+        }
+        return;
+    }
+    pdAddToBag();
+    window.location.href = "{{ route('checkout') }}";
 }
 
 // ── Wishlist (localStorage, same key the wishlist page reads) ──

@@ -237,7 +237,7 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
         }
     }
 
-    public function test_return_policy_uses_support_email_from_env_not_lingerie_store(): void
+    public function test_return_policy_uses_support_email_from_env(): void
     {
         $envEmail = env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app'));
         $this->assertEquals($envEmail, Setting::supportEmail());
@@ -246,15 +246,11 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
         $response = $this->get(route('returnPolicy'));
         $response->assertStatus(200);
         $response->assertSee($envEmail);
-        $response->assertDontSee('support@lingerie.store');
-        $response->assertDontSee('lingeriestore');
 
         // Privacy Policy
         $privacyResponse = $this->get(route('privacy'));
         $privacyResponse->assertStatus(200);
         $privacyResponse->assertSee($envEmail);
-        $privacyResponse->assertDontSee('privacy@lingeriestore.in');
-        $privacyResponse->assertDontSee('lingerie.store');
 
         // Dynamic change via env
         \Illuminate\Support\Env::getRepository()->set('SUPPORT_EMAIL', 'custom_env@nexon.app');

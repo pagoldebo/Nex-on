@@ -12,8 +12,8 @@ This is a build guide, not a copy-paste app — it gives you the exact schema, m
 ## 1. Stack & Setup
 
 ```bash
-composer create-project laravel/laravel lingerie-store
-cd lingerie-store
+composer create-project laravel/laravel nexon-store
+cd nexon-store
 composer require laravel/breeze --dev   # for admin auth scaffolding
 php artisan breeze:install blade
 npm install && npm run build
@@ -25,13 +25,13 @@ npm install && npm run build
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=lingerie_store
+DB_DATABASE=nexon
 DB_USERNAME=root
 DB_PASSWORD=your_password
 ```
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE lingerie_store CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p -e "CREATE DATABASE nexon CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
 ---

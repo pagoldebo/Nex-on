@@ -254,6 +254,69 @@ class HeroBannerTest extends TestCase
         Storage::disk('public')->assertMissing($path);
     }
 
+    public function test_lumiere_renders_full_width_hero_banner()
+    {
+        Setting::set('lumiere_hero_image', 'banners/lumiere-fullwidth.jpg');
+        Setting::set('lumiere_hero_badge', 'Festive Silk Edit');
+        Setting::set('lumiere_hero_title', "Silk That\nFeels Like Light");
+        Setting::set('lumiere_hero_subtitle', 'Everyday elegance and handcrafted silk.');
+
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'lumiere')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $response = $this->get(route('home'));
+        $response->assertStatus(200);
+
+        // Verify full width banner image rendered
+        $response->assertSee(asset('images/banners/lumiere-fullwidth.jpg'));
+        $response->assertSee('object-cover');
+        $response->assertSee('Festive Silk Edit');
+        $response->assertSee('Silk That');
+        $response->assertSee('Feels Like Light');
+        $response->assertSee('Shop the Edit');
+    }
+
+    public function test_admin_can_upload_and_remove_lumiere_full_width_hero_image()
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->create('lumiere-hero-banner.jpg', 500, 'image/jpeg');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'lumiere_hero_image'    => $file,
+            'lumiere_hero_badge'    => 'New Silk Drop',
+            'lumiere_hero_title'    => 'Pure Radiance',
+            'lumiere_hero_subtitle' => 'Handcrafted pure mulberry silk.',
+        ]);
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('success');
+
+        $savedPath = Setting::get('lumiere_hero_image');
+        $this->assertNotEmpty($savedPath);
+        Storage::disk('public')->assertExists($savedPath);
+
+        // Verify on storefront
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'lumiere')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $storefront = $this->get(route('home'));
+        $storefront->assertStatus(200);
+        $storefront->assertSee(asset('images/' . $savedPath));
+        $storefront->assertSee('New Silk Drop');
+        $storefront->assertSee('Pure Radiance');
+
+        // Now remove the image
+        $removeResponse = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'remove_lumiere_hero_image' => '1',
+        ]);
+        $removeResponse->assertRedirect(route('admin.settings.index'));
+        $this->assertEmpty(Setting::get('lumiere_hero_image'));
+        Storage::disk('public')->assertMissing($savedPath);
+    }
+
     public function test_all_themes_render_matching_sections()
     {
         $cat = \App\Models\Category::create(['name' => 'Intimates', 'slug' => 'intimates']);

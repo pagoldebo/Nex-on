@@ -27,37 +27,66 @@
   #curatedPicks .scroll-item, #bsGrid .scroll-item { flex: initial; width: 100%; }
 </style>
 
-{{-- ===== 1. HERO ===== --}}
-<section class="relative bg-[#FFE6A5] overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-10 items-center min-h-[85vh] py-16">
-    <div class="reveal">
-      <p class="text-pink-600 text-[10px] font-black uppercase tracking-widest mb-4">The Festive Edit</p>
-      <h1 class="font-display italic text-5xl md:text-7xl text-gray-900 leading-[1.05] mb-6">
-        Silk that<br><span class="text-pink-600">feels like light.</span>
+{{-- ===== 1. HERO (Full Width Banner) ===== --}}
+@php
+  $lumiereHeroRaw = \App\Models\Setting::get('lumiere_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
+  $lumiereHeroImg = $lumiereHeroRaw ? \App\Models\Setting::imageUrl($lumiereHeroRaw) : null;
+  $lumiereBadge   = \App\Models\Setting::get('lumiere_hero_badge', 'The Festive Edit');
+  $lumiereTitle   = \App\Models\Setting::get('lumiere_hero_title', "Silk that\nfeels like light.");
+  $lumiereSub     = \App\Models\Setting::get('lumiere_hero_subtitle', 'Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.');
+@endphp
+
+<section class="relative bg-[#FFE6A5] overflow-hidden min-h-[580px] sm:min-h-[660px] lg:min-h-[760px] flex items-center select-none w-full">
+  
+  {{-- Full Width Hero Banner Image / Background --}}
+  @if($lumiereHeroImg)
+    <div class="absolute inset-0 w-full h-full overflow-hidden">
+      <img src="{{ $lumiereHeroImg }}" alt="Lumière Hero Banner" class="w-full h-full object-cover object-center">
+    </div>
+  @else
+    {{-- Fallback: Haute Couture Silk Artwork & Sunlight Canvas across Full Width --}}
+    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-[#FFE6A5] via-[#FFF0F3] to-[#FFD7BE] flex items-center justify-end pr-10 lg:pr-32 opacity-40 pointer-events-none">
+      <svg viewBox="0 0 400 480" class="w-80 h-96 lg:w-[460px] lg:h-[540px]">
+        <ellipse cx="200" cy="110" rx="95" ry="75" fill="#DB2777" opacity="0.45"/>
+        <path d="M120 130 Q200 190 280 130 L275 180 Q200 235 125 180 Z" fill="#DB2777" opacity="0.65"/>
+        <path d="M135 250 Q200 290 265 250 L260 410 Q200 450 140 410 Z" fill="#DB2777" opacity="0.3"/>
+      </svg>
+    </div>
+  @endif
+
+  {{-- Silk Gradient Scrim / Overlay for Crystal-Clear Text Contrast --}}
+  <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-[#FFFAF5]/95 via-[#FFFAF5]/85 to-[#FFFAF5]/40 md:to-transparent"></div>
+  <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-[#FFFAF5]/60 via-transparent to-transparent"></div>
+
+  {{-- Hero Content (Badge, Editorial Title, Subtitle & Buttons) --}}
+  <div class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 py-16 sm:py-24 w-full">
+    <div class="max-w-xl reveal">
+      @if($lumiereBadge)
+        <p class="text-pink-600 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2 drop-shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-pink-600 inline-block animate-pulse"></span>
+          <span>{{ $lumiereBadge }}</span>
+        </p>
+      @endif
+
+      <h1 class="font-display italic text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-gray-900 leading-[1.08] mb-6 drop-shadow-xs">
+        {!! nl2br(e($lumiereTitle)) !!}
       </h1>
-      <p class="text-gray-700 max-w-md mb-8 leading-relaxed">
-        Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.
+
+      <p class="text-gray-800 text-sm sm:text-base mb-8 leading-relaxed font-normal max-w-lg drop-shadow-2xs">
+        {{ $lumiereSub }}
       </p>
-      <div class="flex flex-wrap gap-4">
-        <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-colors shadow-sm">Shop the Edit</a>
-        <a href="{{ route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-[#405549]/30 text-gray-800 hover:border-[#405549] transition-colors">Explore All</a>
+
+      <div class="flex flex-wrap gap-4 items-center">
+        <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          Shop the Edit
+        </a>
+        <a href="{{ route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border-2 border-[#405549] text-[#405549] hover:bg-[#405549] hover:text-white transition-all shadow-sm">
+          Explore All
+        </a>
       </div>
     </div>
-    <div class="reveal rounded-[40px] overflow-hidden aspect-[4/5] bg-white/40 flex items-center justify-center border border-pink-100 shadow-md">
-      @php
-        $lumiereHeroImg = \App\Models\Setting::get('lumiere_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
-      @endphp
-      @if($lumiereHeroImg)
-        <img src="{{ \App\Models\Setting::imageUrl($lumiereHeroImg) }}" alt="Hero Banner" class="w-full h-full object-cover">
-      @else
-        <svg viewBox="0 0 300 360" class="w-3/5 opacity-60">
-          <ellipse cx="150" cy="80" rx="70" ry="55" fill="#DB2777" opacity="0.45"/>
-          <path d="M90 95 Q150 140 210 95 L205 130 Q150 170 95 130 Z" fill="#DB2777" opacity="0.65"/>
-          <path d="M100 180 Q150 210 200 180 L195 300 Q150 330 105 300 Z" fill="#DB2777" opacity="0.3"/>
-        </svg>
-      @endif
-    </div>
   </div>
+
 </section>
 
 {{-- Scrolling Announcement Band --}}

@@ -760,33 +760,44 @@
                             <span class="font-bold">Lumière Hero Banner Section</span>
                             <span class="font-mono text-[10px]">("Silk that feels like light")</span>
                         </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-pink-700 bg-white/80 px-2.5 py-0.5 rounded-full border border-pink-200">Full Width</span>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-8 items-start">
                         <div class="space-y-4">
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Lumière Hero Image</label>
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Lumière Hero Banner Image</label>
+                                <span class="text-[10px] text-slate-400 font-mono">Full-width (1920×800px)</span>
+                            </div>
                             @php $lumImg = $settings['lumiere_hero_image'] ?? ''; @endphp
                             <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3">
                                 <template x-if="previewLumiere">
-                                    <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-[32px] overflow-hidden shadow-md">
+                                    <div class="relative w-full aspect-[16/7] sm:aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-slate-200">
                                         <img :src="previewLumiere" class="w-full h-full object-cover">
+                                        <span class="absolute bottom-2 left-2 bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                            New Full-Width Banner (Unsaved)
+                                        </span>
                                     </div>
                                 </template>
                                 <template x-if="!previewLumiere">
-                                    <div>
+                                    <div class="w-full">
                                         @if(!empty($lumImg))
-                                            <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-[32px] overflow-hidden shadow-md">
-                                                <img src="{{ \App\Models\Setting::imageUrl($lumImg) }}" class="w-full h-full object-cover">
+                                            <div class="relative w-full aspect-[16/7] sm:aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-slate-200">
+                                                <img src="{{ \App\Models\Setting::imageUrl($lumImg) }}" class="w-full h-full object-cover" alt="Active Lumiere Banner">
+                                                <span class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                                                    Full-Width Active Banner
+                                                </span>
                                             </div>
                                         @else
-                                            <div class="w-full aspect-[4/5] w-56 bg-white/60 rounded-[32px] flex flex-col items-center justify-center p-6 text-center">
-                                                <p class="text-xs text-gray-800 font-bold">Default Silk Graphic</p>
+                                            <div class="w-full aspect-[16/7] sm:aspect-[21/9] bg-gradient-to-r from-[#FFE6A5] via-[#FFF0F3] to-[#FFD7BE] rounded-2xl flex flex-col items-center justify-center p-6 text-center border border-pink-200/60 shadow-xs">
+                                                <p class="text-xs text-pink-700 font-bold uppercase tracking-wider">Default Haute Couture Silk Canvas</p>
+                                                <p class="text-[11px] text-slate-500 mt-1">Upload a 1920×800px full-width image to replace the default background</p>
                                             </div>
                                         @endif
                                     </div>
                                 </template>
                                 @if(!empty($lumImg))
                                     <div class="flex items-center justify-between w-full pt-2 border-t border-slate-200">
-                                        <span class="text-[11px] text-emerald-600 font-semibold">Active</span>
+                                        <span class="text-[11px] text-emerald-600 font-semibold">Active Banner</span>
                                         <label class="inline-flex items-center gap-1.5 text-xs text-rose-600 cursor-pointer">
                                             <input type="checkbox" name="remove_lumiere_hero_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded">
                                             <span>Remove Image</span>

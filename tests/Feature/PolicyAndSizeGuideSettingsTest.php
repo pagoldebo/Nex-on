@@ -239,17 +239,33 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
 
     public function test_return_policy_uses_support_email_from_env_not_lingerie_store(): void
     {
-        // 1. Even if the DB has the legacy placeholder 'support@lingerie.store'
-        Setting::set('support_email', 'support@lingerie.store');
-
         $envEmail = env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app'));
         $this->assertEquals($envEmail, Setting::supportEmail());
 
+        // Return Policy
         $response = $this->get(route('returnPolicy'));
         $response->assertStatus(200);
-
-        // Assert it renders the .env email and not support@lingerie.store
         $response->assertSee($envEmail);
         $response->assertDontSee('support@lingerie.store');
+        $response->assertDontSee('lingeriestore');
+
+        // Privacy Policy
+        $privacyResponse = $this->get(route('privacy'));
+        $privacyResponse->assertStatus(200);
+        $privacyResponse->assertSee($envEmail);
+        $privacyResponse->assertDontSee('privacy@lingeriestore.in');
+        $privacyResponse->assertDontSee('lingerie.store');
+
+        // Dynamic change via env
+        \Illuminate\Support\Env::getRepository()->set('SUPPORT_EMAIL', 'custom_env@nexon.app');
+        $this->assertEquals('custom_env@nexon.app', Setting::supportEmail());
+        $this->assertEquals('custom_env@nexon.app', Setting::get('support_email'));
+
+        $dynResponse = $this->get(route('returnPolicy'));
+        $dynResponse->assertStatus(200);
+        $dynResponse->assertSee('custom_env@nexon.app');
+
+        // Reset env
+        \Illuminate\Support\Env::getRepository()->set('SUPPORT_EMAIL', $envEmail);
     }
 }

@@ -34,16 +34,16 @@ class Setting extends Model
      */
     public static function get(string $key, mixed $default = null): mixed
     {
+        if ($key === 'support_email' || $key === 'organic_support_email') {
+            return static::supportEmail();
+        }
+
         $ttl = app()->environment('local') ? 10 : 3600;
         try {
             return Cache::remember("setting_{$key}", $ttl, function () use ($key, $default) {
                 try {
                     $record = static::where('key', $key)->first();
-                    $val = $record !== null && $record->value !== null ? $record->value : $default;
-                    if ($key === 'support_email' && ($val === null || in_array(strtolower(trim((string)$val)), ['support@lingerie.store', 'returns@lingeriestore.in', 'concierge@lingeriestore.in'], true))) {
-                        return env('SUPPORT_EMAIL') ?: (config('mail.from.address') ?: (env('MAIL_FROM_ADDRESS') ?: ($default ?: 'support@nexon.app')));
-                    }
-                    return $val;
+                    return $record !== null && $record->value !== null ? $record->value : $default;
                 } catch (\Throwable $e) {
                     return $default;
                 }
@@ -63,25 +63,14 @@ class Setting extends Model
     }
 
     /**
-     * Dynamically resolve Support Email from .env SUPPORT_EMAIL / MAIL_FROM_ADDRESS, or Settings Page
+     * Dynamically resolve Support Email directly from .env file (SUPPORT_EMAIL / MAIL_FROM_ADDRESS).
+     * Any change in the .env file automatically updates everywhere in real-time.
      */
     public static function supportEmail(): string
     {
-        $email = static::get('support_email') 
-            ?: static::get('store_email') 
-            ?: static::get('mail_from_address');
-
-        if ($email && !in_array(strtolower(trim($email)), [
-            'support@lingerie.store',
-            'returns@lingeriestore.in',
-            'concierge@lingeriestore.in',
-        ], true)) {
-            return $email;
-        }
-
         return env('SUPPORT_EMAIL') 
-            ?: (config('mail.from.address') 
-            ?: (env('MAIL_FROM_ADDRESS') ?: 'support@nexon.app'));
+            ?: (env('MAIL_FROM_ADDRESS') 
+            ?: (config('mail.from.address') ?: 'support@nexon.app'));
     }
 
     /**

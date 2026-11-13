@@ -52,7 +52,7 @@
                 <div class="space-y-3 pt-4 border-t border-slate-100">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900">5. Contact Our Data Protection Officer</h3>
                     <p>
-                        If you have any questions or wish to request full deletion of your customer profile, contact our Privacy Concierge at <a href="mailto:privacy@lingeriestore.in" class="text-indigo-600 underline font-semibold">privacy@lingeriestore.in</a>.
+                        If you have any questions or wish to request full deletion of your customer profile, contact our Privacy Concierge at <a href="mailto:{{ \App\Models\Setting::supportEmail() }}" class="text-indigo-600 underline font-semibold">{{ \App\Models\Setting::supportEmail() }}</a>.
                     </p>
                 </div>
             </div>

@@ -1740,10 +1740,10 @@
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Customer Care Email</label>
                             <input type="email" name="organic_support_email" 
-                                   value="{{ $settings['organic_support_email'] ?? $settings['support_email'] ?? 'support@nexonorganic.in' }}" 
+                                   value="{{ \App\Models\Setting::supportEmail() }}" 
                                    class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-emerald-600 outline-none text-slate-800"
-                                   placeholder="support@nexonorganic.in">
-                            <p class="text-[11px] text-slate-500 mt-1.5">Displayed on the contact page and footer farm dispatch hub in Organic theme.</p>
+                                   placeholder="{{ \App\Models\Setting::supportEmail() }}">
+                            <p class="text-[11px] text-slate-500 mt-1.5">Linked directly to .env file (SUPPORT_EMAIL / MAIL_FROM_ADDRESS).</p>
                         </div>
                     </div>
                 </div>
@@ -3319,9 +3319,10 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Support Email</label>
                     <input type="email" name="support_email" 
-                           value="{{ ($settings['support_email'] ?? '') === 'support@lingerie.store' ? \App\Models\Setting::supportEmail() : ($settings['support_email'] ?? \App\Models\Setting::supportEmail()) }}" 
+                           value="{{ \App\Models\Setting::supportEmail() }}" 
                            placeholder="{{ \App\Models\Setting::supportEmail() }}"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1.5">Linked directly to .env file (SUPPORT_EMAIL / MAIL_FROM_ADDRESS). Updating .env updates everywhere immediately.</p>
                 </div>
             </div>
 

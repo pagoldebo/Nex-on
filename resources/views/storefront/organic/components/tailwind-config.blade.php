@@ -108,5 +108,8 @@ tailwind.config = {
     border-color: #699E4B !important;
     font-weight: 700 !important;
   }
+  /* Hide scrollbars for thumbnail strips while allowing smooth touch/wheel scrolling */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 

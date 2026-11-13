@@ -26,12 +26,8 @@
 @php
   $vyraHeroCustom = \App\Models\Setting::get('vyra_hero_image') ?: \App\Models\Setting::get('vyra_hero_video');
   $vyraMediaUrl = \App\Models\Setting::imageUrl($vyraHeroCustom);
-  if (!$vyraMediaUrl && file_exists(public_path('images/slider/banner.mp4'))) {
-      $vyraMediaUrl = asset('images/slider/banner.mp4');
-  }
   $mediaExt = strtolower(pathinfo(parse_url($vyraMediaUrl ?? '', PHP_URL_PATH), PATHINFO_EXTENSION));
   $isVyraVideo = in_array($mediaExt, ['mp4', 'webm', 'mov', 'ogg'], true);
-  $vyraPosterSrc = asset('images/slider/banner-1.jpg');
 
   $vyraSlides = [
     [
@@ -110,15 +106,14 @@
          aria-roledescription="carousel"
          aria-label="Vyra Top Hero Slider">
 
-  {{-- FULL BACKGROUND MEDIA: Video or Image (Uploaded by Admin or default banner.mp4) --}}
-  @if($isVyraVideo)
+  {{-- FULL BACKGROUND MEDIA: Video or Image (Uploaded by Admin via Settings) --}}
+  @if($isVyraVideo && $vyraMediaUrl)
     <video class="hero-video absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0 opacity-100"
            autoplay
            muted
            loop
            playsinline
-           preload="auto"
-           poster="{{ $vyraPosterSrc }}">
+           preload="auto">
       <source src="{{ $vyraMediaUrl }}" type="video/{{ $mediaExt === 'mov' ? 'quicktime' : ($mediaExt === 'ogg' ? 'ogg' : ($mediaExt === 'webm' ? 'webm' : 'mp4')) }}">
       Your browser does not support the video tag.
     </video>

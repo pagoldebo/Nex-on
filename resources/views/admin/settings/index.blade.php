@@ -221,10 +221,6 @@
                     @php
                         $vyraCustomMedia = $settings['vyra_hero_image'] ?? ($settings['vyra_hero_video'] ?? '');
                         $vyraActiveUrl = \App\Models\Setting::imageUrl($vyraCustomMedia);
-                        $vyraDefaultVideoUrl = file_exists(public_path('images/slider/banner.mp4')) ? asset('images/slider/banner.mp4') : null;
-                        if (!$vyraActiveUrl && $vyraDefaultVideoUrl) {
-                            $vyraActiveUrl = $vyraDefaultVideoUrl;
-                        }
                         $vyraActiveExt = strtolower(pathinfo(parse_url($vyraActiveUrl ?? '', PHP_URL_PATH), PATHINFO_EXTENSION));
                         $vyraActiveIsVideo = in_array($vyraActiveExt, ['mp4', 'webm', 'mov', 'ogg'], true);
                     @endphp
@@ -261,11 +257,11 @@
                                         @if(!empty($vyraActiveUrl))
                                             <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-black">
                                                 @if($vyraActiveIsVideo)
-                                                    <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="{{ asset('images/slider/banner-1.jpg') }}">
+                                                    <video class="w-full h-full object-cover" autoplay muted loop playsinline>
                                                         <source src="{{ $vyraActiveUrl }}" type="video/{{ $vyraActiveExt === 'mov' ? 'quicktime' : ($vyraActiveExt === 'ogg' ? 'ogg' : ($vyraActiveExt === 'webm' ? 'webm' : 'mp4')) }}">
                                                     </video>
-                                                    <span class="absolute bottom-2 left-2 {{ !empty($vyraCustomMedia) ? 'bg-emerald-600' : 'bg-slate-800' }} text-white text-[10px] font-bold px-2 py-0.5 rounded shadow backdrop-blur-xs">
-                                                        {{ !empty($vyraCustomMedia) ? 'Active Custom Video' : 'Default Video (banner.mp4)' }}
+                                                    <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow backdrop-blur-xs">
+                                                        Active Custom Video
                                                     </span>
                                                 @else
                                                     <img src="{{ $vyraActiveUrl }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
@@ -287,17 +283,17 @@
                                     <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
                                         <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
                                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                            <span>Custom {{ $vyraActiveIsVideo ? 'Video' : 'Image' }} Running</span>
+                                            <span>Custom {{ $vyraActiveIsVideo ? 'Video' : 'Image' }} Active</span>
                                         </span>
                                         <label class="inline-flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 font-medium cursor-pointer">
                                             <input type="checkbox" name="remove_vyra_hero_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded border-slate-700 bg-slate-800">
-                                            <span>Reset to Default Video</span>
+                                            <span>Remove Media</span>
                                         </label>
                                     </div>
                                 @else
                                     <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
-                                        <span class="text-[11px] text-slate-400 font-mono">public/images/slider/banner.mp4</span>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#0E0E10] bg-[#D4FF3D] px-2 py-0.5 rounded-full">Default Active</span>
+                                        <span class="text-[11px] text-slate-400">Default Dark Aesthetic Canvas</span>
+                                        <span class="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">No Media</span>
                                     </div>
                                 @endif
                             </div>
@@ -573,11 +569,9 @@
                                                         <img src="{{ \App\Models\Setting::imageUrl($slideImg) }}" class="w-full h-full object-cover">
                                                     </div>
                                                 @else
-                                                    <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/30 bg-cover bg-center"
-                                                         style="background-image: url('{{ asset("images/slider/buttercup/slide-{$s}.jpg") }}');">
-                                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center p-4">
-                                                            <span class="text-xs text-white font-bold bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs">Default Slide {{ $s }} Image</span>
-                                                        </div>
+                                                    <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/30 bg-[#FBE7E4] flex flex-col items-center justify-center p-6 text-center">
+                                                        <span class="text-xs text-[#B97680] font-bold">Default Buttercup Canvas (Slide {{ $s }})</span>
+                                                        <p class="text-[11px] text-[#4A3B3A]/60 mt-1">Upload a full width banner image below to customize this slide</p>
                                                     </div>
                                                 @endif
                                             </div>

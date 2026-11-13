@@ -89,6 +89,8 @@ class HeroBannerTest extends TestCase
 
     public function test_vyra_theme_renders_top_slider_with_banner_video()
     {
+        Setting::set('vyra_hero_image', 'slider/custom-banner.mp4');
+
         Template::query()->update(['is_active' => false]);
         Template::where('key', 'vyra')->update(['is_active' => true]);
         Template::clearActiveCache();
@@ -96,8 +98,8 @@ class HeroBannerTest extends TestCase
         $storefront = $this->get(route('home'));
         $storefront->assertStatus(200);
 
-        // Verify video element and public/images/slider/banner.mp4 source
-        $storefront->assertSee(asset('images/slider/banner.mp4'));
+        // Verify video element and custom uploaded video source
+        $storefront->assertSee(asset('images/slider/custom-banner.mp4'));
         $storefront->assertSee('hero-video');
         $storefront->assertSee('autoplay');
         $storefront->assertSee('muted');
@@ -383,13 +385,6 @@ class HeroBannerTest extends TestCase
         $response->assertSee('totalSlides: 5');
         $response->assertSee('intervalMs: 3000');
         $response->assertSee('startAutoplay()');
-
-        // Verify all 5 full-background slides are present
-        $response->assertSee(asset('images/slider/buttercup/slide-1.jpg'));
-        $response->assertSee(asset('images/slider/buttercup/slide-2.jpg'));
-        $response->assertSee(asset('images/slider/buttercup/slide-3.jpg'));
-        $response->assertSee(asset('images/slider/buttercup/slide-4.jpg'));
-        $response->assertSee(asset('images/slider/buttercup/slide-5.jpg'));
 
         // Verify slide kickers and titles
         $response->assertSee('New Season Edit');

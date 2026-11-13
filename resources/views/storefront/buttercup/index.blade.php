@@ -26,7 +26,7 @@
 @php
   $heroSlides = [
     [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_1_image') ?: \App\Models\Setting::get('buttercup_hero_image'), asset('images/slider/buttercup/slide-1.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_1_image') ?: \App\Models\Setting::get('buttercup_hero_image')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_1_badge', \App\Models\Setting::get('buttercup_hero_badge', 'New Season Edit')),
       'title'     => \App\Models\Setting::get('buttercup_slide_1_title', \App\Models\Setting::get('buttercup_hero_title', "Comfort that\nFeels Like Home")),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_1_subtitle', \App\Models\Setting::get('buttercup_hero_subtitle', 'Buttery-soft everyday lingerie, made for real bodies and real days — because comfort should never be a compromise.')),
@@ -36,7 +36,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_1_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_2_image'), asset('images/slider/buttercup/slide-2.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_2_image')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_2_badge', 'Cloud-Soft Intimates'),
       'title'     => \App\Models\Setting::get('buttercup_slide_2_title', "Second-Skin Ease,\nAll Day Long"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_2_subtitle', 'Breathable modal and organic cotton with zero pinch. Gentle, weightless support made to move with you.'),
@@ -46,7 +46,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_2_btn2_url', route('featured.products')),
     ],
     [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_3_image'), asset('images/slider/buttercup/slide-3.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_3_image')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_3_badge', 'Pure Indulgence'),
       'title'     => \App\Models\Setting::get('buttercup_slide_3_title', "Soft as a Whisper,\nCrafted for You"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_3_subtitle', 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.'),
@@ -56,7 +56,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_3_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_4_image'), asset('images/slider/buttercup/slide-4.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_4_image')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_4_badge', 'Wire-Free Freedom'),
       'title'     => \App\Models\Setting::get('buttercup_slide_4_title', "Zero Pinching,\n100% Pure Comfort"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_4_subtitle', 'Say goodbye to painful underwires forever. Our contour bands adapt harmoniously to your natural curves.'),
@@ -66,7 +66,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_4_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_5_image'), asset('images/slider/buttercup/slide-5.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_5_image')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_5_badge', 'Lounge & Sleep'),
       'title'     => \App\Models\Setting::get('buttercup_slide_5_title', "Dreamy Loungewear\nfor Cozy Evenings"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_5_subtitle', 'From quiet morning coffee to tranquil midnight slumber — wrap yourself in the soothing bliss of buttery loungewear.'),
@@ -119,7 +119,11 @@
   @foreach($heroSlides as $index => $slide)
     <div class="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out transform"
          :class="currentSlide === {{ $index }} ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 pointer-events-none z-0'"
-         style="background-image: url('{{ $slide['image'] }}');"
+         @if(!empty($slide['image']))
+           style="background-image: url('{{ $slide['image'] }}');"
+         @else
+           style="background-image: radial-gradient(circle at 70% 30%, rgba(216,154,160,0.2) 0%, rgba(251,231,228,0.95) 70%);"
+         @endif
          role="group"
          aria-roledescription="slide"
          aria-label="Slide {{ $index + 1 }} of {{ count($heroSlides) }}"

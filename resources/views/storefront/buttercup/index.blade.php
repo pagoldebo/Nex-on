@@ -96,10 +96,6 @@
     ];
   }
 @endphp
-      'btn2_url'  => \App\Models\Setting::get('buttercup_slide_5_btn2_url', route('featured.products')),
-    ],
-  ];
-@endphp
 
 <section class="relative bg-[#FBE7E4] overflow-hidden min-h-[580px] sm:min-h-[640px] lg:min-h-[720px] flex items-center select-none"
          x-data="{

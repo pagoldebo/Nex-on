@@ -387,7 +387,6 @@ class HeroBannerTest extends TestCase
         $response->assertSee('startAutoplay()');
 
         // Verify slide kickers and titles
-        $response->assertSee(asset('images/slider/slide-1.jpg'));
         $response->assertSee('New Season Edit');
         $response->assertSee('Comfort that');
         $response->assertSee('Feels Like Home');

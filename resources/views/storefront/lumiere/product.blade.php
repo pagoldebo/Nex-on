@@ -36,14 +36,81 @@
 
   <div class="grid lg:grid-cols-2 gap-10 lg:gap-16">
 
-    {{-- Gallery: thumbnails on the left (desktop) / below (mobile), rebuilt per colour --}}
-    <div class="flex flex-col-reverse lg:flex-row gap-4">
-      <div id="pdThumbs" class="pd-thumbs flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[620px] lg:w-20 flex-shrink-0"></div>
-      <div class="flex-1 aspect-[3/4] rounded-[32px] overflow-hidden bg-pink-50 relative" style="aspect-ratio: 3/4;">
-        <img id="pdMainImg" src="{{ $product->cover_image }}" alt="{{ $product->name }}" class="w-full h-full object-cover transition-opacity duration-300">
+    {{-- Gallery: Full Auto-Slider + Clean Uncropped Thumbnails Strip --}}
+    @php
+      $firstColor = $product->colors->first();
+      $galleryImages = collect();
+      if ($firstColor) {
+        $firstColorCover = $firstColor->cover_image;
+        if ($firstColorCover && $firstColorCover !== asset('images/placeholder.jpg')) {
+          $galleryImages->push($firstColorCover);
+        }
+        foreach ($firstColor->images as $cImg) {
+          if (!$galleryImages->contains($cImg->url)) {
+            $galleryImages->push($cImg->url);
+          }
+        }
+      }
+      if ($product->cover_image && !$galleryImages->contains($product->cover_image) && $product->cover_image !== asset('images/placeholder.jpg')) {
+        $galleryImages->prepend($product->cover_image);
+      }
+      if ($galleryImages->isEmpty()) {
+        $galleryImages->push(asset('images/placeholder.jpg'));
+      }
+    @endphp
+    <div id="lumiereGalleryWrap" class="pdp-gallery-container flex flex-col">
+      {{-- Main Hero Image Slider Container --}}
+      <div class="aspect-[3/4] rounded-[32px] overflow-hidden mb-3 relative group select-none shadow-sm bg-pink-50/50" style="aspect-ratio: 3/4;">
         @if ($product->badge)
-          <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-[9px] font-black text-pink-600 px-3 py-1.5 rounded-full uppercase tracking-widest">{{ $product->badge }}</span>
+          <span class="absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-md text-[9px] font-black text-pink-600 px-3 py-1.5 rounded-full uppercase tracking-widest shadow-xs pointer-events-none">
+            {{ $product->badge }}
+          </span>
         @endif
+
+        {{-- Slide Counter Badge --}}
+        <div id="lumiereSlideBadge" class="absolute bottom-4 right-4 z-20 bg-gray-900/75 backdrop-blur-md text-white text-[11px] font-mono font-semibold px-3 py-1 rounded-full border border-white/20 shadow-xs pointer-events-none" style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}">
+          1 / {{ $galleryImages->count() }}
+        </div>
+
+        {{-- Previous Slide Arrow --}}
+        <button type="button" 
+                id="lumierePrevBtn"
+                onclick="lumierePrevSlide(true)"
+                class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-pink-600 text-gray-800 hover:text-white border border-pink-200/40 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}"
+                aria-label="Previous image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        {{-- Next Slide Arrow --}}
+        <button type="button" 
+                id="lumiereNextBtn"
+                onclick="lumiereNextSlide(true)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-pink-600 text-gray-800 hover:text-white border border-pink-200/40 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}"
+                aria-label="Next image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        {{-- Main Display Image --}}
+        <img id="pdMainImg" 
+             src="{{ $galleryImages->first() }}" 
+             alt="{{ $product->name }}" 
+             class="w-full h-full object-cover transition-opacity duration-300">
+      </div>
+
+      {{-- Thumbnail Strip (All Images for Active Color / Product in horizontal clean strip, uncropped) --}}
+      <div id="pdThumbs" class="pd-thumbs flex gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-hide" style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}">
+        @foreach ($galleryImages as $i => $imgUrl)
+          <button type="button"
+                  onclick="lumiereGoToSlide({{ $i }}, true)"
+                  class="lumiere-thumb flex-shrink-0 w-16 sm:w-20 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-pointer {{ $i === 0 ? 'border-pink-500 ring-2 ring-pink-400/40 shadow-sm opacity-100 scale-105' : 'border-pink-200/60 opacity-60 hover:opacity-100 hover:border-pink-400' }}"
+                  style="aspect-ratio: 3/4;"
+                  data-idx="{{ $i }}"
+                  title="View image {{ $i + 1 }}">
+            <img src="{{ $imgUrl }}" alt="{{ $product->name }} view {{ $i + 1 }}" class="w-full h-full object-cover pointer-events-none">
+          </button>
+        @endforeach
       </div>
     </div>
 
@@ -326,17 +393,164 @@
 <script>
 const pd = @json($product->toCardArray());
 let pdColorIdx = 0, pdSize = null;
+let currentImageIdx = 0;
+let autoSlideTimer = null;
+const AUTO_SLIDE_DELAY = 3500; // 3.5 seconds auto-slide
+let galleryInViewport = true;
+
+function getActiveImages() {
+    const c = pd.colors && pd.colors[pdColorIdx];
+    let list = [];
+    if (c && c.images && c.images.length) {
+        list = [...c.images];
+    }
+    if (pd.coverImage && !list.includes(pd.coverImage) && !pd.coverImage.includes('placeholder.jpg')) {
+        list.unshift(pd.coverImage);
+    }
+    if (!list.length) {
+        list = [pd.coverImage || '{{ asset('images/placeholder.jpg') }}'];
+    }
+    return list;
+}
+
+function pdRenderThumbs() {
+    const imgs = getActiveImages();
+    const container = document.getElementById('pdThumbs');
+    if (!container) return;
+
+    if (imgs.length <= 1) {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'flex';
+
+    container.innerHTML = imgs.map((src, i) => {
+        const isActive = i === currentImageIdx;
+        return `
+            <button type="button" onclick="lumiereGoToSlide(${i}, true)"
+                    class="lumiere-thumb flex-shrink-0 w-16 sm:w-20 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
+                        isActive
+                            ? 'border-pink-500 ring-2 ring-pink-400/40 shadow-sm opacity-100 scale-105'
+                            : 'border-pink-200/60 opacity-60 hover:opacity-100 hover:border-pink-400'
+                    }"
+                    style="aspect-ratio: 3/4;"
+                    data-idx="${i}"
+                    title="View image ${i + 1}">
+                <img src="${src}" class="w-full h-full object-cover pointer-events-none" alt="">
+            </button>
+        `;
+    }).join('');
+}
+
+function lumiereGoToSlide(idx, userInitiated = false) {
+    const imgs = getActiveImages();
+    if (!imgs.length) return;
+
+    if (idx < 0) idx = imgs.length - 1;
+    if (idx >= imgs.length) idx = 0;
+    currentImageIdx = idx;
+
+    const targetSrc = imgs[currentImageIdx];
+    const mainImg = document.getElementById('pdMainImg');
+    if (mainImg) {
+        if (mainImg.src !== targetSrc) {
+            mainImg.style.opacity = '0';
+            setTimeout(() => {
+                mainImg.src = targetSrc;
+                mainImg.style.opacity = '1';
+            }, 140);
+        } else {
+            mainImg.style.opacity = '1';
+        }
+    }
+
+    // Update thumbnails active state & scroll active thumb into view horizontally
+    const thumbWrap = document.getElementById('pdThumbs');
+    if (thumbWrap) {
+        const thumbs = thumbWrap.querySelectorAll('.lumiere-thumb');
+        thumbs.forEach((b, i) => {
+            const isActive = i === currentImageIdx;
+            b.classList.toggle('border-pink-500', isActive);
+            b.classList.toggle('ring-2', isActive);
+            b.classList.toggle('ring-pink-400/40', isActive);
+            b.classList.toggle('shadow-sm', isActive);
+            b.classList.toggle('opacity-100', isActive);
+            b.classList.toggle('scale-105', isActive);
+
+            b.classList.toggle('border-pink-200/60', !isActive);
+            b.classList.toggle('opacity-60', !isActive);
+
+            if (isActive) {
+                const targetLeft = b.offsetLeft - (thumbWrap.clientWidth / 2) + (b.clientWidth / 2);
+                thumbWrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+            }
+        });
+    }
+
+    // Update slide counter badge
+    const badge = document.getElementById('lumiereSlideBadge');
+    if (badge) {
+        badge.textContent = `${currentImageIdx + 1} / ${imgs.length}`;
+        badge.style.display = imgs.length > 1 ? 'block' : 'none';
+    }
+
+    // Update arrow visibility
+    const prevBtn = document.getElementById('lumierePrevBtn');
+    const nextBtn = document.getElementById('lumiereNextBtn');
+    if (prevBtn) prevBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+
+    if (userInitiated) {
+        restartAutoSlide();
+    }
+}
+
+function lumiereNextSlide(userInitiated = false) {
+    lumiereGoToSlide(currentImageIdx + 1, userInitiated);
+}
+
+function lumierePrevSlide(userInitiated = false) {
+    lumiereGoToSlide(currentImageIdx - 1, userInitiated);
+}
+
+function startAutoSlide() {
+    stopAutoSlide();
+    const imgs = getActiveImages();
+    if (imgs.length <= 1) return;
+    if (!galleryInViewport) return;
+
+    autoSlideTimer = setInterval(() => {
+        lumiereNextSlide(false);
+    }, AUTO_SLIDE_DELAY);
+}
+
+function stopAutoSlide() {
+    if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+    }
+}
+
+function restartAutoSlide() {
+    stopAutoSlide();
+    if (galleryInViewport) {
+        startAutoSlide();
+    }
+}
 
 function pdSelectColor(idx) {
-    pdColorIdx = idx; pdSize = null;
+    pdColorIdx = idx; 
+    pdSize = null;
+    currentImageIdx = 0;
     const c = pd.colors[idx];
     document.getElementById('pdColorName').textContent = c.name;
     document.querySelectorAll('.pd-swatch').forEach((b, i) => {
         b.style.borderColor = i === idx ? '#DB2777' : 'transparent';
         b.style.transform = i === idx ? 'scale(1.15)' : 'scale(1)';
     });
-    pdRenderThumbs(c);
-    pdSetMainImage((c.images && c.images[0]) || pd.coverImage);
+    pdRenderThumbs();
+    lumiereGoToSlide(0, false);
+    startAutoSlide();
 
     document.getElementById('pdSizes').innerHTML = c.sizes.map(s => `
         <button type="button" onclick="pdSelectSize('${s.size}')" data-size="${s.size}" ${s.inStock ? '' : 'disabled'}
@@ -348,27 +562,6 @@ function pdSelectColor(idx) {
     document.getElementById('pdSizeName').textContent = '—';
     document.getElementById('pdStockWarning').classList.add('hidden');
     pdUpdateBtn();
-}
-
-function pdRenderThumbs(color) {
-    const imgs = (color.images && color.images.length) ? color.images : [pd.coverImage];
-    document.getElementById('pdThumbs').innerHTML = imgs.map((url, i) => `
-        <button type="button" onclick="pdSetMainImage('${url}')"
-                class="flex-shrink-0 w-16 aspect-[3/4] lg:w-20 rounded-2xl overflow-hidden border-2 ${i === 0 ? 'border-pink-400' : 'border-transparent'} hover:border-pink-300 transition-colors"
-                style="aspect-ratio: 3/4;">
-            <img src="${url}" class="w-full h-full object-cover" alt="">
-        </button>`).join('');
-}
-
-function pdSetMainImage(url) {
-    const img = document.getElementById('pdMainImg');
-    img.style.opacity = 0;
-    setTimeout(() => { img.src = url; img.style.opacity = 1; }, 150);
-    document.querySelectorAll('#pdThumbs button').forEach(b => {
-        const on = b.querySelector('img').getAttribute('src') === url;
-        b.classList.toggle('border-pink-400', on);
-        b.classList.toggle('border-transparent', !on);
-    });
 }
 
 let currentBasePrice = Number(pd.startingPrice || 0);
@@ -561,6 +754,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 style="background:${c.hex || '#ccc'}"></button>`).join('');
     if (pd.colors.length) pdSelectColor(0);
     pdRenderWish();
+
+    // Pause on hover
+    const galleryWrap = document.getElementById('lumiereGalleryWrap');
+    if (galleryWrap) {
+        galleryWrap.addEventListener('mouseenter', stopAutoSlide);
+        galleryWrap.addEventListener('mouseleave', () => {
+            if (galleryInViewport) startAutoSlide();
+        });
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    galleryInViewport = entry.isIntersecting;
+                    if (!galleryInViewport) {
+                        stopAutoSlide();
+                    } else {
+                        startAutoSlide();
+                    }
+                });
+            }, { threshold: 0.2 });
+            observer.observe(galleryWrap);
+        }
+    }
+
+    // Pause on tab/window hide
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAutoSlide();
+        } else if (galleryInViewport) {
+            startAutoSlide();
+        }
+    });
 });
 </script>
 @endpush

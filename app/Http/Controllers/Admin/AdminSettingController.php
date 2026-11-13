@@ -60,6 +60,11 @@ class AdminSettingController extends Controller
             'buttercup_slide_5_image',
             'lumiere_hero_image',
             'saaya_hero_image',
+            'saaya_slide_1_image',
+            'saaya_slide_2_image',
+            'saaya_slide_3_image',
+            'saaya_slide_4_image',
+            'saaya_slide_5_image',
             'saaya_story_image',
             'vyra_story_image',
             'buttercup_story_image',
@@ -83,6 +88,11 @@ class AdminSettingController extends Controller
             'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_slide_1_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_slide_2_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_slide_3_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_slide_4_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'saaya_slide_5_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
             'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
@@ -134,6 +144,12 @@ class AdminSettingController extends Controller
                     Setting::set($targetKey, '');
                     if ($targetKey === 'vyra_hero_image') {
                         Setting::set('vyra_hero_video', '');
+                    }
+                    if ($targetKey === 'saaya_hero_image') {
+                        Setting::set('saaya_slide_1_image', '');
+                    }
+                    if ($targetKey === 'saaya_slide_1_image') {
+                        Setting::set('saaya_hero_image', '');
                     }
                 }
             }
@@ -197,9 +213,19 @@ class AdminSettingController extends Controller
                             @unlink($publicOldFile);
                         }
                     }
-                    $targetFolder = str_starts_with($fileKey, 'vyra_hero') ? 'slider' : 'banners';
+                    $isSlider = str_starts_with($fileKey, 'vyra_hero')
+                        || str_starts_with($fileKey, 'saaya_slide')
+                        || str_starts_with($fileKey, 'buttercup_slide')
+                        || $fileKey === 'saaya_hero_image';
+                    $targetFolder = $isSlider ? 'slider' : 'banners';
                     $storedPath = ProductImageService::storeUpload($uploadedFile, $targetFolder);
                     Setting::set($fileKey, $storedPath);
+                    if ($fileKey === 'saaya_slide_1_image') {
+                        Setting::set('saaya_hero_image', $storedPath);
+                    }
+                    if ($fileKey === 'saaya_hero_image') {
+                        Setting::set('saaya_slide_1_image', $storedPath);
+                    }
                 }
             }
         }

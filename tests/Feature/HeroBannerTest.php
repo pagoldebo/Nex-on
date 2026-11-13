@@ -141,6 +141,66 @@ class HeroBannerTest extends TestCase
         $storefront->assertSee('https://example.com/custom-vyra-explore');
     }
 
+    public function test_saaya_theme_renders_full_width_multi_slide_auto_slider_and_no_shop_men()
+    {
+        \App\Models\Category::create([
+            'name' => 'Men',
+            'slug' => 'men',
+            'is_active' => true,
+        ]);
+
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'saaya')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $storefront = $this->get(route('home'));
+        $storefront->assertStatus(200);
+
+        // Verify full width slider structure & auto-play attributes
+        $storefront->assertSee('Saaya Hero Slider');
+        $storefront->assertSee('startAutoplay()');
+        $storefront->assertSee('totalSlides: 5', false);
+        $storefront->assertSee('Crafted for Her');
+        $storefront->assertSee('Explore Collection');
+
+        // Confirm "Shop Men" was removed
+        $storefront->assertDontSee('Shop Men');
+    }
+
+    public function test_admin_can_upload_and_configure_saaya_slide_with_custom_link()
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->create('saaya-slide-2.jpg', 300, 'image/jpeg');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'saaya_slide_2_image'    => $file,
+            'saaya_slide_2_badge'    => 'Bespoke Trousseau',
+            'saaya_slide_2_title'    => "Gold & Royal\nSilk",
+            'saaya_slide_2_subtitle' => 'Handcrafted pure zari elegance.',
+            'saaya_slide_2_btn_text' => 'Shop Royal Silk',
+            'saaya_slide_2_btn_url'  => 'https://example.com/saaya-custom-link',
+        ]);
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('success');
+
+        $savedPath = Setting::get('saaya_slide_2_image');
+        $this->assertNotEmpty($savedPath);
+        Storage::disk('public')->assertExists($savedPath);
+
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'saaya')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $storefront = $this->get(route('home'));
+        $storefront->assertStatus(200);
+        $storefront->assertSee(asset('images/' . $savedPath));
+        $storefront->assertSee('Bespoke Trousseau');
+        $storefront->assertSee('Shop Royal Silk');
+        $storefront->assertSee('https://example.com/saaya-custom-link');
+    }
+
     public function test_admin_can_upload_and_render_saaya_story_image()
     {
         Storage::fake('public');

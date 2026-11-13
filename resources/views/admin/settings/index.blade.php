@@ -152,6 +152,12 @@
                  previewButtercupSlide4: null,
                  previewButtercupSlide5: null,
                  activeButtercupSlideTab: 1,
+                 activeSaayaSlideTab: 1,
+                 previewSaayaSlide1: null,
+                 previewSaayaSlide2: null,
+                 previewSaayaSlide3: null,
+                 previewSaayaSlide4: null,
+                 previewSaayaSlide5: null,
                  previewLumiere: null,
                  previewSaaya: null,
                  previewSaayaStory: null,
@@ -903,82 +909,186 @@
 
             <!-- SAAYA THEME TAB (HERO + OUR STORY REF SECTION) -->
             <div x-show="activeTab === 'saaya'" class="space-y-8" x-cloak>
-                <!-- Section 1: Hero Banner -->
+                <!-- Section 1: Hero Banner Slider -->
                 <div class="space-y-6">
                     <div class="p-3 bg-[#3D0C11] text-[#F9F7F2] rounded-xl flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#C9A24B]"></span>
-                            <span class="font-bold text-[#C9A24B]">Saaya Hero Banner Section</span>
-                            <span class="font-mono text-[10px] text-ivory/70">("Draped in Gold &amp; Grace")</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#C9A24B] animate-pulse"></span>
+                            <span class="font-bold text-[#C9A24B]">Saaya Hero Full Width Slider Section</span>
+                            <span class="font-mono text-[10px] bg-black/40 text-[#C9A24B] font-semibold px-2 py-0.5 rounded-full">5 Full Width Slides • 4s Auto-Scroll</span>
                         </div>
+                        <span class="text-[11px] text-[#F9F7F2]/70 hidden sm:inline">Active Theme: Saaya</span>
                     </div>
-                    <div class="grid lg:grid-cols-2 gap-8 items-start">
-                        <!-- Hero Image Upload -->
-                        <div class="space-y-4">
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Saaya Hero Image (Right Foil Frame)</label>
-                            @php $saayaImg = $settings['saaya_hero_image'] ?? ''; @endphp
-                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3">
-                                <template x-if="previewSaaya">
-                                    <div class="relative w-full aspect-[3/4] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                        <img :src="previewSaaya" class="w-full h-full object-cover">
-                                        <span class="absolute bottom-2 left-2 bg-[#C9A24B] text-[#3D0C11] text-[10px] font-bold px-2 py-0.5 rounded shadow">New Preview</span>
-                                    </div>
-                                </template>
-                                <template x-if="!previewSaaya">
-                                    <div>
-                                        @if(!empty($saayaImg))
-                                            <div class="relative w-full aspect-[3/4] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                                <img src="{{ \App\Models\Setting::imageUrl($saayaImg) }}" class="w-full h-full object-cover">
-                                                <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
+
+                    {{-- Slide Selector Pills (Slide 1 to 5) --}}
+                    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
+                        <span class="text-xs font-semibold text-slate-500 mr-2">Configure Slide:</span>
+                        @for($s = 1; $s <= 5; $s++)
+                            <button type="button" 
+                                    @click="activeSaayaSlideTab = {{ $s }}" 
+                                    :class="activeSaayaSlideTab === {{ $s }} ? 'bg-[#C9A24B] text-[#3D0C11] shadow-xs font-bold' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                                    class="px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
+                                <span>Slide {{ $s }}</span>
+                                @if(!empty($settings["saaya_slide_{$s}_image"]) || ($s === 1 && !empty($settings['saaya_hero_image'])))
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                @endif
+                            </button>
+                        @endfor
+                    </div>
+
+                    @php
+                        $saayaDefaultSlides = [
+                            1 => [
+                                'badge' => 'Crafted for Her',
+                                'title' => "Draped in\nGold & Grace",
+                                'desc'  => 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.',
+                                'btn'   => 'Explore Collection',
+                                'url'   => route('search'),
+                            ],
+                            2 => [
+                                'badge' => 'Royal Trousseau Edit',
+                                'title' => "Zari Silk &\nVelvet Intimates",
+                                'desc'  => 'Intricate gold wire embroidery and pure mulberry silk, tailored for sacred celebrations and timeless grandeur.',
+                                'btn'   => 'Shop Bridal Silk',
+                                'url'   => route('search'),
+                            ],
+                            3 => [
+                                'badge' => 'Artisanal Heritage',
+                                'title' => "The Benarasi\nArchive",
+                                'desc'  => 'Handwoven motifs passed through generations of master ateliers. Where heritage craft meets modern form.',
+                                'btn'   => 'Discover The Archive',
+                                'url'   => route('search'),
+                            ],
+                            4 => [
+                                'badge' => 'Festive Elegance',
+                                'title' => "Crimson Whisper\nCapsule",
+                                'desc'  => 'Weightless tulle drenched in ceremonial crimson, edged with delicate antique gota patti work.',
+                                'btn'   => 'Explore Capsule',
+                                'url'   => route('search'),
+                            ],
+                            5 => [
+                                'badge' => 'Bespoke Craft',
+                                'title' => "Pure Heirloom\nComfort",
+                                'desc'  => 'Soft uncrushable silk satin crafted to drape seamlessly under royal lehengas and festive silhouettes.',
+                                'btn'   => 'Shop Collection',
+                                'url'   => route('search'),
+                            ],
+                        ];
+                    @endphp
+
+                    @for($s = 1; $s <= 5; $s++)
+                        @php
+                            $slideDef = $saayaDefaultSlides[$s];
+                            $slideImg = $settings["saaya_slide_{$s}_image"] ?? ($s === 1 ? ($settings['saaya_hero_image'] ?? '') : '');
+                            $previewVar = "previewSaayaSlide{$s}";
+                            $removeVar = "remove_saaya_slide_{$s}_image";
+                            $badgeVal = $settings["saaya_slide_{$s}_badge"] ?? ($s === 1 ? ($settings['saaya_hero_badge'] ?? $slideDef['badge']) : $slideDef['badge']);
+                            $titleVal = $settings["saaya_slide_{$s}_title"] ?? ($s === 1 ? ($settings['saaya_hero_title'] ?? $slideDef['title']) : $slideDef['title']);
+                            $descVal  = $settings["saaya_slide_{$s}_subtitle"] ?? ($s === 1 ? ($settings['saaya_hero_subtitle'] ?? $slideDef['desc']) : $slideDef['desc']);
+                            $btnVal   = $settings["saaya_slide_{$s}_btn_text"] ?? $slideDef['btn'];
+                            $urlVal   = $settings["saaya_slide_{$s}_btn_url"] ?? $slideDef['url'];
+                        @endphp
+                        <div x-show="activeSaayaSlideTab === {{ $s }}" class="space-y-6">
+                            <div class="grid lg:grid-cols-2 gap-8 items-start">
+                                {{-- Slide Image --}}
+                                <div class="space-y-4">
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                                        Slide {{ $s }} Full Width Image (Saaya Hero Image)
+                                    </label>
+                                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-900 flex flex-col items-center justify-center gap-3">
+                                        <template x-if="{{ $previewVar }}">
+                                            <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-slate-700">
+                                                <img :src="{{ $previewVar }}" class="w-full h-full object-cover">
+                                                <span class="absolute bottom-2 left-2 bg-[#C9A24B] text-[#3D0C11] text-[10px] font-bold px-2 py-0.5 rounded shadow">New Upload Preview</span>
                                             </div>
-                                        @else
-                                            <div class="w-full aspect-[3/4] w-56 bg-[#3D0C11] rounded-xl flex flex-col items-center justify-center p-6 text-center border border-[#C9A24B]/30">
-                                                <svg class="w-20 h-24 text-[#C9A24B]/40 mb-2" fill="currentColor" viewBox="0 0 100 130">
-                                                    <ellipse cx="50" cy="30" rx="18" ry="22"/>
-                                                    <path d="M20 55 Q35 45 50 48 Q65 45 80 55 L85 115 Q65 125 50 122 Q35 125 15 115 Z"/>
-                                                </svg>
-                                                <p class="text-xs text-[#C9A24B] font-bold">Default Foil Silhouette</p>
-                                                <p class="text-[11px] text-[#F9F7F2]/60 mt-1">Upload a model/product image to replace this placeholder</p>
+                                        </template>
+                                        <template x-if="!{{ $previewVar }}">
+                                            <div>
+                                                @if(!empty($slideImg))
+                                                    <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-slate-700">
+                                                        <img src="{{ \App\Models\Setting::imageUrl($slideImg) }}" class="w-full h-full object-cover">
+                                                        <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
+                                                    </div>
+                                                @else
+                                                    <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#C9A24B]/30 bg-[#3D0C11] flex flex-col items-center justify-center p-6 text-center">
+                                                        <svg class="w-16 h-20 text-[#C9A24B]/40 mb-2" fill="currentColor" viewBox="0 0 100 130">
+                                                            <ellipse cx="50" cy="30" rx="18" ry="22"/>
+                                                            <path d="M20 55 Q35 45 50 48 Q65 45 80 55 L85 115 Q65 125 50 122 Q35 125 15 115 Z"/>
+                                                        </svg>
+                                                        <p class="text-xs text-[#C9A24B] font-bold">Default Royal Canvas (Slide {{ $s }})</p>
+                                                        <p class="text-[11px] text-[#F9F7F2]/60 mt-1">Upload a full width banner image below to customize this slide</p>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </template>
+                                        @if(!empty($slideImg))
+                                            <div class="flex items-center justify-between w-full pt-2 border-t border-slate-800">
+                                                <span class="text-[11px] text-emerald-400 font-semibold">Custom Image Active</span>
+                                                <label class="inline-flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 cursor-pointer">
+                                                    <input type="checkbox" name="{{ $removeVar }}" value="1" class="w-3.5 h-3.5 text-rose-600 rounded border-slate-700 bg-slate-800">
+                                                    <span>Remove &amp; Reset to Default</span>
+                                                </label>
                                             </div>
                                         @endif
                                     </div>
-                                </template>
-                                @if(!empty($saayaImg))
-                                    <div class="flex items-center justify-between w-full pt-2 border-t border-slate-200">
-                                        <span class="text-[11px] text-emerald-600 font-semibold">Active</span>
-                                        <label class="inline-flex items-center gap-1.5 text-xs text-rose-600 cursor-pointer">
-                                            <input type="checkbox" name="remove_saaya_hero_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded">
-                                            <span>Remove Image</span>
-                                        </label>
-                                    </div>
-                                @endif
-                            </div>
-                            <input type="file" name="saaya_hero_image" accept="image/*"
-                                   @change="previewSaaya = URL.createObjectURL($event.target.files[0])"
-                                   class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#3D0C11] file:text-[#C9A24B] border border-slate-200 rounded-xl cursor-pointer bg-white">
-                        </div>
+                                    <input type="file" name="saaya_slide_{{ $s }}_image" accept="image/*"
+                                           @change="{{ $previewVar }} = URL.createObjectURL($event.target.files[0])"
+                                           class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#3D0C11] file:text-[#C9A24B] border border-slate-200 rounded-xl cursor-pointer bg-white transition">
+                                    <p class="text-[11px] text-slate-400 mt-1">Recommended ratio: 16:9 (e.g. 1920×1080px). JPG, PNG, WEBP or AVIF up to 10MB.</p>
+                                </div>
 
-                        <!-- Hero Text Settings -->
-                        <div class="space-y-4">
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Saaya Hero Copy</label>
-                            <div>
-                                <label class="block text-xs text-slate-600 mb-1">Tagline / Badge</label>
-                                <input type="text" name="saaya_hero_badge" 
-                                       value="{{ $settings['saaya_hero_badge'] ?? 'Crafted for Her' }}" 
-                                       class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-600 mb-1">Main Headline</label>
-                                <textarea name="saaya_hero_title" rows="2" 
-                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-bold focus:border-amber-600 outline-none">{{ $settings['saaya_hero_title'] ?? "Draped in\nGold & Grace" }}</textarea>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-600 mb-1">Hero Subtitle</label>
-                                <textarea name="saaya_hero_subtitle" rows="3" 
-                                          class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-600 outline-none">{{ $settings['saaya_hero_subtitle'] ?? 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.' }}</textarea>
+                                {{-- Slide Copy & CTA --}}
+                                <div class="space-y-4">
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                                        Slide {{ $s }} Writeup &amp; Custom Link
+                                    </label>
+
+                                    <div>
+                                        <label class="block text-xs text-slate-600 mb-1">Tagline / Badge</label>
+                                        <input type="text" name="saaya_slide_{{ $s }}_badge" 
+                                               value="{{ $badgeVal }}" 
+                                               class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-[#C9A24B] outline-none">
+                                        @if($s === 1)
+                                            <input type="hidden" name="saaya_hero_badge" value="{{ $badgeVal }}">
+                                        @endif
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs text-slate-600 mb-1">Main Headline</label>
+                                        <textarea name="saaya_slide_{{ $s }}_title" rows="2" 
+                                                  class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-bold focus:border-[#C9A24B] outline-none">{{ $titleVal }}</textarea>
+                                        @if($s === 1)
+                                            <input type="hidden" name="saaya_hero_title" value="{{ $titleVal }}">
+                                        @endif
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs text-slate-600 mb-1">Hero Subtitle</label>
+                                        <textarea name="saaya_slide_{{ $s }}_subtitle" rows="3" 
+                                                  class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-[#C9A24B] outline-none">{{ $descVal }}</textarea>
+                                        @if($s === 1)
+                                            <input type="hidden" name="saaya_hero_subtitle" value="{{ $descVal }}">
+                                        @endif
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs text-slate-600 mb-1">Button Text</label>
+                                            <input type="text" name="saaya_slide_{{ $s }}_btn_text" 
+                                                   value="{{ $btnVal }}" 
+                                                   class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-[#C9A24B] outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-slate-600 mb-1">Button Custom Link URL</label>
+                                            <input type="text" name="saaya_slide_{{ $s }}_btn_url" 
+                                                   value="{{ $urlVal }}" 
+                                                   class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-[#C9A24B] outline-none">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endfor
                 </div>
 
                 <!-- Section 2: Saaya Curated Featured Picks Section -->

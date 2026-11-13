@@ -23,62 +23,203 @@
 <x-storefront-layout :theme="$theme" title="Home">
 
 {{-- ═══════════════════════════════════════════════
-     HERO  —  maroon bg, foil-frame right, reveal left
+     HERO  —  Full Width Multiple Image Auto Slider
 ═══════════════════════════════════════════════ --}}
-<section class="relative bg-maroon overflow-hidden min-h-[88vh] flex items-center">
+@php
+  $saayaSlides = [];
+  $saayaDefaultSlides = [
+    1 => [
+      'badge' => 'Crafted for Her',
+      'title' => "Draped in\nGold & Grace",
+      'desc'  => 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.',
+      'btn'   => 'Explore Collection',
+      'url'   => route('search'),
+    ],
+    2 => [
+      'badge' => 'Royal Trousseau Edit',
+      'title' => "Zari Silk &\nVelvet Intimates",
+      'desc'  => 'Intricate gold wire embroidery and pure mulberry silk, tailored for sacred celebrations and timeless grandeur.',
+      'btn'   => 'Shop Bridal Silk',
+      'url'   => route('search'),
+    ],
+    3 => [
+      'badge' => 'Artisanal Heritage',
+      'title' => "The Benarasi\nArchive",
+      'desc'  => 'Handwoven motifs passed through generations of master ateliers. Where heritage craft meets modern form.',
+      'btn'   => 'Discover The Archive',
+      'url'   => route('search'),
+    ],
+    4 => [
+      'badge' => 'Festive Elegance',
+      'title' => "Crimson Whisper\nCapsule",
+      'desc'  => 'Weightless tulle drenched in ceremonial crimson, edged with delicate antique gota patti work.',
+      'btn'   => 'Explore Capsule',
+      'url'   => route('search'),
+    ],
+    5 => [
+      'badge' => 'Bespoke Craft',
+      'title' => "Pure Heirloom\nComfort",
+      'desc'  => 'Soft uncrushable silk satin crafted to drape seamlessly under royal lehengas and festive silhouettes.',
+      'btn'   => 'Shop Collection',
+      'url'   => route('search'),
+    ],
+  ];
 
-  {{-- Gold dot pattern overlay --}}
-  <div class="absolute inset-0 pointer-events-none opacity-[.07]"
+  for ($s = 1; $s <= 5; $s++) {
+    $def = $saayaDefaultSlides[$s];
+    $customImg = \App\Models\Setting::get("saaya_slide_{$s}_image");
+    if ($s === 1 && empty($customImg)) {
+      $customImg = \App\Models\Setting::get('saaya_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
+    }
+
+    $saayaSlides[] = [
+      'image'    => $customImg ? \App\Models\Setting::imageUrl($customImg) : null,
+      'badge'    => \App\Models\Setting::get("saaya_slide_{$s}_badge", $s === 1 ? \App\Models\Setting::get('saaya_hero_badge', $def['badge']) : $def['badge']),
+      'title'    => \App\Models\Setting::get("saaya_slide_{$s}_title", $s === 1 ? \App\Models\Setting::get('saaya_hero_title', $def['title']) : $def['title']),
+      'subtitle' => \App\Models\Setting::get("saaya_slide_{$s}_subtitle", $s === 1 ? \App\Models\Setting::get('saaya_hero_subtitle', $def['desc']) : $def['desc']),
+      'btn_text' => \App\Models\Setting::get("saaya_slide_{$s}_btn_text", $def['btn']),
+      'btn_url'  => \App\Models\Setting::get("saaya_slide_{$s}_btn_url", $def['url']),
+    ];
+  }
+@endphp
+
+<section class="relative bg-maroon overflow-hidden min-h-[580px] sm:min-h-[660px] lg:min-h-[760px] flex items-center select-none"
+         x-data="{
+           currentSlide: 0,
+           totalSlides: {{ count($saayaSlides) }},
+           timer: null,
+           intervalMs: 4000,
+           startAutoplay() {
+             this.stopAutoplay();
+             this.timer = setInterval(() => {
+               this.nextSlide();
+             }, this.intervalMs);
+           },
+           stopAutoplay() {
+             if (this.timer) {
+               clearInterval(this.timer);
+               this.timer = null;
+             }
+           },
+           nextSlide() {
+             this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+           },
+           prevSlide() {
+             this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+           },
+           goToSlide(index) {
+             this.currentSlide = index;
+             this.startAutoplay();
+           }
+         }"
+         x-init="startAutoplay()"
+         @mouseenter="stopAutoplay()"
+         @mouseleave="startAutoplay()"
+         @keydown.arrow-right.window="nextSlide(); startAutoplay()"
+         @keydown.arrow-left.window="prevSlide(); startAutoplay()"
+         aria-roledescription="carousel"
+         aria-label="Saaya Hero Slider">
+
+  {{-- 5 FULL BACKGROUND IMAGE / TEXTURE LAYERS --}}
+  @foreach($saayaSlides as $index => $slide)
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out transform"
+         :class="currentSlide === {{ $index }} ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 pointer-events-none z-0'"
+         @if($slide['image'])
+           style="background-image: url('{{ $slide['image'] }}');"
+         @else
+           style="background-image: radial-gradient(circle at 75% 40%, rgba(201,162,75,0.18) 0%, rgba(61,12,17,0.98) 70%);"
+         @endif
+         role="group"
+         aria-roledescription="slide"
+         aria-label="Slide {{ $index + 1 }} of {{ count($saayaSlides) }}"
+         :aria-hidden="currentSlide !== {{ $index }}">
+      @if(!$slide['image'])
+        {{-- Luxury default gold watermark pattern for slides without custom image --}}
+        <div class="absolute inset-0 flex items-center justify-end pr-12 lg:pr-24 opacity-20 pointer-events-none">
+          <svg class="w-72 h-88 lg:w-96 lg:h-[480px] text-gold" fill="currentColor" viewBox="0 0 100 130">
+            <ellipse cx="50" cy="30" rx="18" ry="22"/>
+            <path d="M20 55 Q35 45 50 48 Q65 45 80 55 L85 115 Q65 125 50 122 Q35 125 15 115 Z"/>
+          </svg>
+        </div>
+      @endif
+    </div>
+  @endforeach
+
+  {{-- REGAL GOLD PATTERN & MAROON VIGNETTE OVERLAY (ENSURES CRISP TEXT READABILITY) --}}
+  <div class="absolute inset-0 z-20 pointer-events-none opacity-[.08]"
        style="background-image:radial-gradient(circle,#C9A24B 1px,transparent 1px);background-size:28px 28px;"></div>
+  <div class="absolute inset-0 z-20 pointer-events-none bg-gradient-to-r from-maroon/95 via-maroon/75 to-maroon/40 lg:to-transparent"></div>
+  <div class="absolute inset-0 z-20 pointer-events-none bg-radial-gradient from-transparent via-transparent to-black/30"></div>
 
-  <div class="relative max-w-7xl mx-auto px-6 lg:px-12 py-20 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+  {{-- SLIDER CONTENT (HEADLINE, WRITEUP & CUSTOM LINK) --}}
+  <div class="relative z-30 max-w-7xl mx-auto px-6 lg:px-12 py-20 w-full">
+    <div class="max-w-xl">
+      @foreach($saayaSlides as $index => $slide)
+        <div x-show="currentSlide === {{ $index }}"
+             x-transition:enter="transition ease-out duration-700"
+             x-transition:enter-start="opacity-0 translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-300 absolute"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2">
+          
+          <p class="font-display italic text-gold text-xl lg:text-2xl mb-4 flex items-center gap-2 drop-shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-gold inline-block animate-pulse"></span>
+            <span>{{ $slide['badge'] }}</span>
+          </p>
 
-    {{-- Left: text --}}
-    <div class="reveal order-2 lg:order-1 text-center lg:text-left">
-      <p class="font-display italic text-gold text-xl lg:text-2xl mb-4">{{ \App\Models\Setting::get('saaya_hero_badge', 'Crafted for Her') }}</p>
-      <h1 class="font-display text-5xl lg:text-7xl text-ivory leading-[1.08] mb-6">
-        {!! nl2br(e(\App\Models\Setting::get('saaya_hero_title', "Draped in\nGold & Grace"))) !!}
-      </h1>
-      <p class="font-body text-ivory/70 text-base lg:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 mb-10">
-        {{ \App\Models\Setting::get('saaya_hero_subtitle', 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.') }}
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-        <a href="{{ route('search') }}" class="gold-btn py-4 px-10 text-xs font-body font-semibold tracking-widest uppercase">
-          Explore Collection
-        </a>
-        @if($categories->count())
-          <a href="{{ route('category.show', $categories->first()->slug) }}"
-             class="underline-grow font-body text-ivory/70 hover:text-gold text-sm py-4 px-2 transition-colors">
-            Shop {{ $categories->first()->name }}
-          </a>
-        @endif
-      </div>
-    </div>
+          <h1 class="font-display text-5xl lg:text-7xl text-ivory leading-[1.08] mb-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
+            {!! nl2br(e($slide['title'])) !!}
+          </h1>
 
-    {{-- Right: foil-frame illustration --}}
-    <div class="reveal order-1 lg:order-2 flex justify-center lg:justify-end">
-      <div class="foil-frame w-72 h-96 lg:w-96 lg:h-[520px] relative overflow-hidden">
-        <svg class="frame-line" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke"/>
-        </svg>
-        {{-- Hero image placeholder or custom uploaded hero image --}}
-        @php
-          $saayaHeroImg = \App\Models\Setting::get('saaya_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
-        @endphp
-        @if($saayaHeroImg)
-          <img src="{{ \App\Models\Setting::imageUrl($saayaHeroImg) }}" alt="Hero Banner" class="w-full h-full object-cover">
-        @else
-          <div class="w-full h-full bg-gradient-to-b from-blush/20 to-maroon-dark/60 flex items-end justify-center pb-8">
-            <svg class="w-32 h-40 text-gold/20" fill="currentColor" viewBox="0 0 100 130">
-              <ellipse cx="50" cy="30" rx="18" ry="22"/>
-              <path d="M20 55 Q35 45 50 48 Q65 45 80 55 L85 115 Q65 125 50 122 Q35 125 15 115 Z"/>
-            </svg>
+          <p class="font-body text-ivory/85 text-base lg:text-lg leading-relaxed max-w-md mb-10 drop-shadow-sm">
+            {{ $slide['subtitle'] }}
+          </p>
+
+          <div class="flex flex-wrap gap-4 items-center">
+            <a href="{{ $slide['btn_url'] }}" 
+               class="gold-btn py-4 px-10 text-xs font-body font-semibold tracking-widest uppercase shadow-lg transition-transform hover:scale-105 active:scale-95 inline-flex items-center gap-2">
+              <span>{{ $slide['btn_text'] }}</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
           </div>
-        @endif
-      </div>
-    </div>
 
+        </div>
+      @endforeach
+    </div>
   </div>
+
+  {{-- BOTTOM SLIDER NAVIGATION PILLS & COUNTER (Antique Gold) --}}
+  <div class="absolute bottom-6 sm:bottom-8 left-6 sm:left-12 z-40 flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-gold/30 shadow-md">
+    @foreach($saayaSlides as $index => $slide)
+      <button type="button"
+              @click="goToSlide({{ $index }})"
+              class="h-2.5 rounded-full transition-all duration-500 cursor-pointer focus:outline-none"
+              :class="currentSlide === {{ $index }} ? 'w-8 bg-gold shadow-sm' : 'w-2.5 bg-ivory/30 hover:bg-gold/60'"
+              aria-label="Go to slide {{ $index + 1 }}">
+      </button>
+    @endforeach
+    <span class="ml-2 font-mono text-[11px] font-semibold text-gold select-none">
+      <span x-text="currentSlide + 1"></span> / {{ count($saayaSlides) }}
+    </span>
+  </div>
+
+  {{-- NAVIGATION ARROWS (PREV / NEXT) --}}
+  <div class="absolute bottom-6 sm:bottom-8 right-6 sm:right-12 z-40 flex items-center gap-2.5">
+    <button type="button"
+            @click="prevSlide(); startAutoplay()"
+            class="w-10 h-10 rounded-full bg-black/40 hover:bg-gold text-gold hover:text-maroon border border-gold/40 shadow-sm backdrop-blur-xs flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
+            aria-label="Previous slide">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <button type="button"
+            @click="nextSlide(); startAutoplay()"
+            class="w-10 h-10 rounded-full bg-black/40 hover:bg-gold text-gold hover:text-maroon border border-gold/40 shadow-sm backdrop-blur-xs flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
+            aria-label="Next slide">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
 </section>
 
 {{-- Scrolling Announcement Band --}}

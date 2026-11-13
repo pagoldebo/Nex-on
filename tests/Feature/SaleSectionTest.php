@@ -78,4 +78,21 @@ class SaleSectionTest extends TestCase
             $response->assertSee('data-filter="bralettes"', false);
         }
     }
+
+    public function test_lumiere_sale_card_renders_quick_view_triggers(): void
+    {
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'lumiere')->update(['is_active' => true]);
+        \Illuminate\Support\Facades\Cache::forget('active_template');
+
+        $response = $this->get(route('home'));
+        $response->assertStatus(200);
+
+        // Verify Quick View modal is included on the page
+        $response->assertSee('id="quickViewModal"', false);
+
+        // Verify sale card has quick-view trigger and quick-view button
+        $response->assertSee('openQuickView(', false);
+        $response->assertSee('Quick View', false);
+    }
 }

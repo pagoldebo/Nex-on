@@ -48,7 +48,7 @@
         $lumiereHeroImg = \App\Models\Setting::get('lumiere_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
       @endphp
       @if($lumiereHeroImg)
-        <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumiereHeroImg), '/')) }}" alt="Hero Banner" class="w-full h-full object-cover">
+        <img src="{{ \App\Models\Setting::imageUrl($lumiereHeroImg) }}" alt="Hero Banner" class="w-full h-full object-cover">
       @else
         <svg viewBox="0 0 300 360" class="w-3/5 opacity-60">
           <ellipse cx="150" cy="80" rx="70" ry="55" fill="#DB2777" opacity="0.45"/>
@@ -331,7 +331,7 @@
           $lumiereStoryImg = \App\Models\Setting::get('lumiere_story_image');
         @endphp
         @if($lumiereStoryImg)
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumiereStoryImg), '/')) }}" alt="Our Story" class="w-full h-full object-cover">
+          <img src="{{ \App\Models\Setting::imageUrl($lumiereStoryImg) }}" alt="Our Story" class="w-full h-full object-cover">
         @else
           <div class="w-full h-full bg-gradient-to-b from-[#FFF0F3] to-white flex flex-col items-center justify-center p-8 text-center border border-pink-100">
             <svg viewBox="0 0 100 120" class="w-24 h-28 text-pink-400 opacity-60 mb-3" fill="currentColor">

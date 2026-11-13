@@ -38,7 +38,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
                 <div class="rounded-3xl overflow-hidden shadow-lg border border-slate-200/60 aspect-4/5 bg-slate-100">
                     @if($storyImg)
-                        <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $storyImg), '/')) }}" alt="Atelier Craftsmanship" class="w-full h-full object-cover">
+                        <img src="{{ \App\Models\Setting::imageUrl($storyImg) }}" alt="Atelier Craftsmanship" class="w-full h-full object-cover">
                     @else
                         <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80" 
                              alt="Atelier Craftsmanship" class="w-full h-full object-cover">

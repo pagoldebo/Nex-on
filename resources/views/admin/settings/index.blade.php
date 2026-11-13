@@ -58,7 +58,7 @@
                     @if(!empty($settings['site_logo']))
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3 relative group">
                             <div class="p-4 bg-white rounded-lg border border-slate-200/70 shadow-xs flex items-center justify-center min-h-[90px] w-full">
-                                <img id="currentLogoPreview" src="{{ asset('images/' . ltrim(str_replace('storage/', '', $settings['site_logo']), '/')) }}" alt="Store Logo" class="max-h-16 max-w-full object-contain">
+                                <img id="currentLogoPreview" src="{{ \App\Models\Setting::imageUrl($settings['site_logo']) }}" alt="Store Logo" class="max-h-16 max-w-full object-contain">
                             </div>
                             <div class="flex items-center justify-between w-full pt-1">
                                 <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -249,7 +249,7 @@
                                     <div>
                                         @if(!empty($vyraImg))
                                             <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraImg), '/')) }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
+                                                <img src="{{ \App\Models\Setting::imageUrl($vyraImg) }}" class="w-full h-full object-cover" alt="Current Vyra Hero">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
@@ -523,7 +523,7 @@
                                             <div>
                                                 @if(!empty($slideImg))
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-slate-300">
-                                                        <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $slideImg), '/')) }}" class="w-full h-full object-cover">
+                                                        <img src="{{ \App\Models\Setting::imageUrl($slideImg) }}" class="w-full h-full object-cover">
                                                     </div>
                                                 @else
                                                     <div class="relative w-full aspect-[16/9] max-w-md rounded-xl overflow-hidden shadow-md border border-[#D89AA0]/30 bg-cover bg-center"
@@ -726,7 +726,7 @@
                                     <div>
                                         @if(!empty($lumImg))
                                             <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-[32px] overflow-hidden shadow-md">
-                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumImg), '/')) }}" class="w-full h-full object-cover">
+                                                <img src="{{ \App\Models\Setting::imageUrl($lumImg) }}" class="w-full h-full object-cover">
                                             </div>
                                         @else
                                             <div class="w-full aspect-[4/5] w-56 bg-white/60 rounded-[32px] flex flex-col items-center justify-center p-6 text-center">
@@ -887,7 +887,7 @@
                                     <div>
                                         @if(!empty($saayaImg))
                                             <div class="relative w-full aspect-[3/4] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaImg), '/')) }}" class="w-full h-full object-cover">
+                                                <img src="{{ \App\Models\Setting::imageUrl($saayaImg) }}" class="w-full h-full object-cover">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
@@ -1061,13 +1061,13 @@
                                     <div>
                                         @if(!empty($organicImg))
                                             <div class="relative w-full aspect-video max-w-[340px] rounded-xl overflow-hidden shadow-md">
-                                                <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicImg), '/')) }}" class="w-full h-full object-cover">
+                                                <img src="{{ \App\Models\Setting::imageUrl($organicImg) }}" class="w-full h-full object-cover">
                                                 <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                             </div>
                                         @else
                                             <div class="w-full aspect-video w-64 bg-emerald-900 rounded-xl flex flex-col items-center justify-center p-6 text-center border border-emerald-500/30 text-white">
-                                                <p class="text-xs font-bold text-emerald-300">Default Fresh Harvest Banner</p>
-                                                <p class="text-[11px] text-white/60 mt-1">Upload an image to override banner-1.jpg</p>
+                                                <p class="text-xs font-bold text-emerald-300">Default Organic Gradient</p>
+                                                <p class="text-[11px] text-white/60 mt-1">Upload a farm harvest image or photo</p>
                                             </div>
                                         @endif
                                     </div>
@@ -1232,8 +1232,7 @@
                                 <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image (Optional)</label>
                                 @php
                                     $ad1Raw = $settings['organic_ad1_image'] ?? '';
-                                    $ad1Clean = $ad1Raw ? ltrim(str_replace('storage/', '', $ad1Raw), '/') : '';
-                                    $ad1Src = $ad1Clean ? (str_starts_with($ad1Clean, 'http') ? $ad1Clean : (str_starts_with($ad1Clean, 'images/') ? asset($ad1Clean) : asset('images/' . $ad1Clean))) : null;
+                                    $ad1Src = \App\Models\Setting::imageUrl($ad1Raw);
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd1">
@@ -1309,8 +1308,7 @@
                                 <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
                                 @php
                                     $ad2Raw = $settings['organic_ad2_image'] ?? '';
-                                    $ad2Clean = $ad2Raw ? ltrim(str_replace('storage/', '', $ad2Raw), '/') : '';
-                                    $ad2Src = $ad2Clean ? (str_starts_with($ad2Clean, 'http') ? $ad2Clean : (str_starts_with($ad2Clean, 'images/') ? asset($ad2Clean) : asset('images/' . $ad2Clean))) : null;
+                                    $ad2Src = \App\Models\Setting::imageUrl($ad2Raw);
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd2">
@@ -1386,8 +1384,7 @@
                                 <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
                                 @php
                                     $ad3Raw = $settings['organic_ad3_image'] ?? '';
-                                    $ad3Clean = $ad3Raw ? ltrim(str_replace('storage/', '', $ad3Raw), '/') : '';
-                                    $ad3Src = $ad3Clean ? (str_starts_with($ad3Clean, 'http') ? $ad3Clean : (str_starts_with($ad3Clean, 'images/') ? asset($ad3Clean) : asset('images/' . $ad3Clean))) : null;
+                                    $ad3Src = \App\Models\Setting::imageUrl($ad3Raw);
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd3">
@@ -1574,7 +1571,7 @@
                                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-3">
                                     @if(!empty($genericImg))
                                         <div class="relative w-full aspect-[4/5] max-w-[260px] rounded-xl overflow-hidden shadow-md">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $genericImg), '/')) }}" class="w-full h-full object-cover">
+                                            <img src="{{ \App\Models\Setting::imageUrl($genericImg) }}" class="w-full h-full object-cover">
                                         </div>
                                         <div class="flex items-center justify-between w-full pt-2 border-t border-slate-200">
                                             <span class="text-[11px] text-emerald-600 font-semibold">Active</span>
@@ -1819,7 +1816,7 @@
                                 <div>
                                     @if(!empty($vyraStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-xl overflow-hidden shadow-md border-2 border-[#FF3D5A]">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Vyra Story">
+                                            <img src="{{ \App\Models\Setting::imageUrl($vyraStoryImg) }}" class="w-full h-full object-cover" alt="Current Vyra Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -1972,7 +1969,7 @@
                                 <div>
                                     @if(!empty($bcStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-[24px] overflow-hidden shadow-md border-2 border-[#D89AA0]">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $bcStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Buttercup Story">
+                                            <img src="{{ \App\Models\Setting::imageUrl($bcStoryImg) }}" class="w-full h-full object-cover" alt="Current Buttercup Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -2131,7 +2128,7 @@
                                 <div>
                                     @if(!empty($saayaStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-xl overflow-hidden shadow-md border-2 border-[#C9A24B]">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Saaya Story">
+                                            <img src="{{ \App\Models\Setting::imageUrl($saayaStoryImg) }}" class="w-full h-full object-cover" alt="Current Saaya Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -2290,7 +2287,7 @@
                                 <div>
                                     @if(!empty($lumStoryImg))
                                         <div class="relative w-full aspect-[3/4] max-w-[240px] rounded-[32px] overflow-hidden shadow-md border-2 border-pink-300">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumStoryImg), '/')) }}" class="w-full h-full object-cover" alt="Current Lumiere Story">
+                                            <img src="{{ \App\Models\Setting::imageUrl($lumStoryImg) }}" class="w-full h-full object-cover" alt="Current Lumiere Story">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
@@ -2453,14 +2450,14 @@
                                 <div>
                                     @if(!empty($organicStory))
                                         <div class="relative w-full aspect-[4/3] max-w-[320px] rounded-xl overflow-hidden shadow-md">
-                                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicStory), '/')) }}" class="w-full h-full object-cover">
+                                            <img src="{{ \App\Models\Setting::imageUrl($organicStory) }}" class="w-full h-full object-cover">
                                             <span class="absolute bottom-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">Active Live Image</span>
                                         </div>
                                     @else
                                         <div class="w-full aspect-[4/3] w-64 bg-slate-100 rounded-xl flex flex-col items-center justify-center p-6 text-center border border-slate-200">
                                             <span class="text-2xl mb-1">🌱</span>
                                             <p class="text-xs text-slate-600 font-bold">Default Farming Fields Graphic</p>
-                                            <p class="text-[10px] text-slate-400 mt-1">Upload a real farm picture to replace sample-image.jpg</p>
+                                            <p class="text-[10px] text-slate-400 mt-1">Upload a real farm picture or harvest photo</p>
                                         </div>
                                     @endif
                                 </div>

@@ -125,7 +125,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
    ```
 
 6. **Direct Media Assets (No Symlink Needed)**:
-   Media assets (`banners/`, `branding/`, `categories/`, `products/`, `slider/`, `themes/`) are stored directly inside `public/images/`. No symbolic link (`php artisan storage:link`) is needed.
+   Media assets (`banners/`, `branding/`, `categories/`, `products/`, `slider/`) are stored directly inside `public/images/`. No symbolic link (`php artisan storage:link`) is needed.
 
 7. **Start Development Server** (if not using Apache/XAMPP):
    ```bash

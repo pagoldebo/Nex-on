@@ -54,7 +54,7 @@
             $lumStoryImg = \App\Models\Setting::get('lumiere_story_image');
           @endphp
           @if($lumStoryImg)
-            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $lumStoryImg), '/')) }}" alt="About Lumière" class="w-full h-full object-cover">
+            <img src="{{ \App\Models\Setting::imageUrl($lumStoryImg) }}" alt="About Lumière" class="w-full h-full object-cover">
           @else
             <div class="w-full h-full bg-gradient-to-b from-[#FFF0F3] to-white flex flex-col items-center justify-center p-8 text-center border border-pink-100">
               <svg viewBox="0 0 100 120" class="w-24 h-28 text-pink-400 opacity-60 mb-3" fill="currentColor">

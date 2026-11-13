@@ -25,10 +25,10 @@
   {{-- 1. HERO BANNER SECTION --}}
   @php
     $organicHeroCustom = \App\Models\Setting::get('organic_hero_image');
-    $organicHeroBg = $organicHeroCustom ? asset('images/' . ltrim(str_replace('storage/', '', $organicHeroCustom), '/')) : asset('images/themes/organic/banner-1.jpg');
+    $organicHeroBg = \App\Models\Setting::imageUrl($organicHeroCustom);
   @endphp
   <section class="relative bg-cover bg-center overflow-hidden py-16 sm:py-24 lg:py-32" 
-           style="background-image: linear-gradient(to right, rgba(249, 248, 243, 0.95) 0%, rgba(249, 248, 243, 0.85) 50%, rgba(249, 248, 243, 0.3) 100%), url('{{ $organicHeroBg }}');">
+           style="{{ $organicHeroBg ? "background-image: linear-gradient(to right, rgba(249, 248, 243, 0.95) 0%, rgba(249, 248, 243, 0.85) 50%, rgba(249, 248, 243, 0.3) 100%), url('{$organicHeroBg}');" : "background: linear-gradient(135deg, #f9f8f3 0%, #edf4e8 100%);" }}">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl reveal">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-organic-100 text-organic-700 border border-organic-300 mb-4">
@@ -191,18 +191,20 @@
          class="flex items-start gap-3 sm:gap-4 lg:gap-5 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
          style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
       @forelse($categories as $cat)
-        @php
-          $fallbackIndex = (($loop->index % 8) + 1);
-          $catImg = $cat->image_url ?: asset("images/themes/organic/category-thumb-{$fallbackIndex}.jpg");
-        @endphp
         <a href="{{ route('category.show', $cat->slug) }}" 
            class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
            style="scroll-snap-align: start; scroll-snap-stop: normal;">
-          <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-stone-100 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
-            <img src="{{ $catImg }}" 
-                 alt="{{ $cat->name }}" 
-                 class="w-full h-full object-cover rounded-full" 
-                 loading="lazy">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-organic-50 border border-organic-200/80 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
+            @if($cat->image_url)
+              <img src="{{ $cat->image_url }}" 
+                   alt="{{ $cat->name }}" 
+                   class="w-full h-full object-cover rounded-full" 
+                   loading="lazy">
+            @else
+              <span class="text-xl sm:text-2xl font-black text-organic-700 font-display">
+                {{ strtoupper(substr($cat->name, 0, 1)) }}
+              </span>
+            @endif
           </div>
           <h3 class="text-xs sm:text-sm font-normal sm:font-medium text-stone-800 group-hover:text-organic-600 transition leading-snug px-1 line-clamp-2 max-w-[125px]">
             {{ $cat->name }}
@@ -211,25 +213,22 @@
       @empty
         @php
           $defaultCategories = [
-            ['name' => 'Breads & Sweets', 'thumb' => 'category-thumb-2.jpg'],
-            ['name' => 'Fruits & Veges', 'thumb' => 'category-thumb-3.jpg'],
-            ['name' => 'Beverages', 'thumb' => 'category-thumb-4.jpg'],
-            ['name' => 'Meat Products', 'thumb' => 'category-thumb-5.jpg'],
-            ['name' => 'Breads', 'thumb' => 'category-thumb-6.jpg'],
-            ['name' => 'Fruits & Veges', 'thumb' => 'category-thumb-7.jpg'],
-            ['name' => 'Breads & Sweets', 'thumb' => 'category-thumb-8.jpg'],
-            ['name' => 'Fruits & Veges', 'thumb' => 'category-thumb-1.jpg'],
+            ['name' => 'Cold-Pressed Oils', 'icon' => '🫒'],
+            ['name' => 'Raw Honey', 'icon' => '🍯'],
+            ['name' => 'A2 Desi Ghee', 'icon' => '🧈'],
+            ['name' => 'Organic Pulses', 'icon' => '🌾'],
+            ['name' => 'Whole Spices', 'icon' => '🌶️'],
+            ['name' => 'Ancient Grains', 'icon' => '🌱'],
+            ['name' => 'Herbal Teas', 'icon' => '🍵'],
+            ['name' => 'Dry Fruits', 'icon' => '🥜'],
           ];
         @endphp
         @foreach($defaultCategories as $defCat)
           <a href="{{ route('home') }}#products" 
              class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
              style="scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-stone-100 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
-              <img src="{{ asset('images/themes/organic/' . $defCat['thumb']) }}" 
-                   alt="{{ $defCat['name'] }}" 
-                   class="w-full h-full object-cover rounded-full" 
-                   loading="lazy">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-organic-50 border border-organic-200/80 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
+              <span class="text-2xl sm:text-3xl">{{ $defCat['icon'] }}</span>
             </div>
             <h3 class="text-xs sm:text-sm font-normal sm:font-medium text-stone-800 group-hover:text-organic-600 transition leading-snug px-1 line-clamp-2 max-w-[125px]">
               {{ $defCat['name'] }}
@@ -272,16 +271,9 @@
 
   {{-- 5. TRIPLE PROMOTIONAL AD BANNERS --}}
   @php
-    $resolveBannerUrl = function(?string $path): ?string {
-        if (!$path) return null;
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
-        $clean = ltrim(str_replace('storage/', '', $path), '/');
-        return str_starts_with($clean, 'images/') ? asset($clean) : asset('images/' . $clean);
-    };
-
-    $ad1Url = $resolveBannerUrl(\App\Models\Setting::get('organic_ad1_image'));
-    $ad2Url = $resolveBannerUrl(\App\Models\Setting::get('organic_ad2_image'));
-    $ad3Url = $resolveBannerUrl(\App\Models\Setting::get('organic_ad3_image'));
+    $ad1Url = \App\Models\Setting::imageUrl(\App\Models\Setting::get('organic_ad1_image'));
+    $ad2Url = \App\Models\Setting::imageUrl(\App\Models\Setting::get('organic_ad2_image'));
+    $ad3Url = \App\Models\Setting::imageUrl(\App\Models\Setting::get('organic_ad3_image'));
   @endphp
   <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -427,11 +419,15 @@
           <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/3]">
             @php
               $organicStoryImg = \App\Models\Setting::get('organic_story_image');
+              $storyUrl = \App\Models\Setting::imageUrl($organicStoryImg);
             @endphp
-            @if($organicStoryImg)
-              <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $organicStoryImg), '/')) }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
+            @if($storyUrl)
+              <img src="{{ $storyUrl }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
             @else
-              <img src="{{ asset('images/themes/organic/sample-image.jpg') }}" alt="Sustainable organic farm fields" class="w-full h-full object-cover">
+              <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-organic-100 to-organic-200 text-organic-700 p-6 text-center">
+                <span class="text-4xl mb-2">🌱</span>
+                <p class="font-bold text-sm">Sustainable Organic Farming</p>
+              </div>
             @endif
           </div>
           <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-stone-200 hidden sm:flex items-center gap-4">

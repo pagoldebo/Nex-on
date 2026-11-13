@@ -26,8 +26,8 @@
 @php
   $vyraHeroImg   = \App\Models\Setting::get('vyra_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
   $vyraHeroVideo = \App\Models\Setting::get('vyra_hero_video');
-  $vyraVideoSrc  = $vyraHeroVideo ? asset('images/' . ltrim(str_replace('storage/', '', $vyraHeroVideo), '/')) : asset('images/slider/vyra/banner.mp4');
-  $vyraPosterSrc = $vyraHeroImg ? asset('images/' . ltrim(str_replace('storage/', '', $vyraHeroImg), '/')) : asset('images/slider/vyra/banner-1.jpg');
+  $vyraVideoSrc  = \App\Models\Setting::imageUrl($vyraHeroVideo, asset('images/slider/vyra/banner.mp4'));
+  $vyraPosterSrc = \App\Models\Setting::imageUrl($vyraHeroImg, asset('images/slider/vyra/banner-1.jpg'));
 
   $vyraSlides = [
     [
@@ -175,7 +175,7 @@
     @if($vyraHeroImg)
       <div class="lg:col-span-4 hidden lg:flex justify-end">
         <div class="overflow-hidden aspect-[4/5] w-72 rounded-2xl border border-[#FF3D5A]/30 shadow-2xl bg-black/60 backdrop-blur-sm p-1.5 group">
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraHeroImg), '/')) }}" alt="{{ $vyraSlides[0]['title'] }}" class="w-full h-full object-cover rounded-xl transition duration-500 group-hover:scale-105">
+          <img src="{{ \App\Models\Setting::imageUrl($vyraHeroImg) }}" alt="{{ $vyraSlides[0]['title'] }}" class="w-full h-full object-cover rounded-xl transition duration-500 group-hover:scale-105">
         </div>
       </div>
     @endif
@@ -514,7 +514,7 @@
           $vyraStoryImg = \App\Models\Setting::get('vyra_story_image');
         @endphp
         @if($vyraStoryImg)
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $vyraStoryImg), '/')) }}" alt="Our Story" class="w-full h-full object-cover">
+          <img src="{{ \App\Models\Setting::imageUrl($vyraStoryImg) }}" alt="Our Story" class="w-full h-full object-cover">
         @else
           <div class="w-full h-full bg-gradient-to-b from-[#1A1A1D] to-[#0E0E10] flex flex-col items-center justify-center p-8 text-center border border-[#FF3D5A]/20">
             <svg viewBox="0 0 100 120" class="w-24 h-28 text-[#FF3D5A]/30 mb-3" fill="currentColor">

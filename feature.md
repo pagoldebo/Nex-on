@@ -364,7 +364,7 @@ All 28 modules from Phase 4 have been fully built, unit/feature tested, and inte
 - **Status:** ✅ 100% Completed & Verified ([`ProductImageUploadNamingTest.php`](file:///c:/xampp/htdocs/public/Nexon/tests/Feature/ProductImageUploadNamingTest.php), [`CategoryImageTest.php`](file:///c:/xampp/htdocs/public/Nexon/tests/Feature/CategoryImageTest.php), [`HeroBannerTest.php`](file:///c:/xampp/htdocs/public/Nexon/tests/Feature/HeroBannerTest.php), [`StoreLogoSettingsTest.php`](file:///c:/xampp/htdocs/public/Nexon/tests/Feature/StoreLogoSettingsTest.php))
 - **Architecture Location:** `app/Services/ProductImageService.php`, `config/filesystems.php`, `public/images/`
 - **Key Deliverables:**
-  - **Direct Media Storage:** All media assets (`products/`, `categories/`, `banners/`, `branding/`, `slider/`, `themes/`) stored directly inside `public/images/`. Zero dependency on symlinks (`php artisan storage:link` eliminated).
+  - **Direct Media Storage:** All media assets (`products/`, `categories/`, `banners/`, `branding/`, `slider/`) stored directly inside `public/images/`. Zero dependency on symlinks (`php artisan storage:link` eliminated).
   - **Automatic AVIF Conversion:** Uploads convert into next-generation `.avif` format using PHP 8.5 native `imageavif()` (quality 75, speed 6) with full alpha channel transparency.
   - **Client-Side Optimization:** Browser canvas converter (`public/js/webp-converter.js`) feature-detects AVIF support to compress images client-side before upload.
   - **Strict Store Logo Retention:** Branding logo uploaded via Admin Settings is strictly saved as `branding/logo.png` (or `branding/logo.svg` for SVGs) without hashing or conversion.

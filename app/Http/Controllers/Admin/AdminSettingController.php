@@ -119,7 +119,10 @@ class AdminSettingController extends Controller
                 if (in_array($targetKey, $allowedImageKeys, true)) {
                     $oldImg = Setting::get($targetKey);
                     if ($oldImg) {
-                        $clean = ltrim(str_replace('storage/', '', $oldImg), '/');
+                        $clean = ltrim($oldImg, '/');
+                        if (str_starts_with($clean, 'images/')) {
+                            $clean = substr($clean, 7);
+                        }
                         if (Storage::disk('public')->exists($clean)) {
                             Storage::disk('public')->delete($clean);
                         }
@@ -179,7 +182,10 @@ class AdminSettingController extends Controller
                     }
                 } else {
                     if ($oldImg) {
-                        $cleanOld = ltrim(str_replace('storage/', '', $oldImg), '/');
+                        $cleanOld = ltrim($oldImg, '/');
+                        if (str_starts_with($cleanOld, 'images/')) {
+                            $cleanOld = substr($cleanOld, 7);
+                        }
                         if (Storage::disk('public')->exists($cleanOld)) {
                             Storage::disk('public')->delete($cleanOld);
                         }

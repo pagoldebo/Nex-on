@@ -26,11 +26,7 @@
 @php
   $heroSlides = [
     [
-      'image'     => \App\Models\Setting::get('buttercup_slide_1_image') 
-                     ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_slide_1_image')), '/')) 
-                     : (\App\Models\Setting::get('buttercup_hero_image') 
-                         ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_hero_image')), '/')) 
-                         : asset('images/slider/buttercup/slide-1.jpg')),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_1_image') ?: \App\Models\Setting::get('buttercup_hero_image'), asset('images/slider/buttercup/slide-1.jpg')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_1_badge', \App\Models\Setting::get('buttercup_hero_badge', 'New Season Edit')),
       'title'     => \App\Models\Setting::get('buttercup_slide_1_title', \App\Models\Setting::get('buttercup_hero_title', "Comfort that\nFeels Like Home")),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_1_subtitle', \App\Models\Setting::get('buttercup_hero_subtitle', 'Buttery-soft everyday lingerie, made for real bodies and real days — because comfort should never be a compromise.')),
@@ -40,9 +36,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_1_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::get('buttercup_slide_2_image') 
-                     ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_slide_2_image')), '/')) 
-                     : asset('images/slider/buttercup/slide-2.jpg'),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_2_image'), asset('images/slider/buttercup/slide-2.jpg')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_2_badge', 'Cloud-Soft Intimates'),
       'title'     => \App\Models\Setting::get('buttercup_slide_2_title', "Second-Skin Ease,\nAll Day Long"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_2_subtitle', 'Breathable modal and organic cotton with zero pinch. Gentle, weightless support made to move with you.'),
@@ -52,9 +46,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_2_btn2_url', route('featured.products')),
     ],
     [
-      'image'     => \App\Models\Setting::get('buttercup_slide_3_image') 
-                     ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_slide_3_image')), '/')) 
-                     : asset('images/slider/buttercup/slide-3.jpg'),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_3_image'), asset('images/slider/buttercup/slide-3.jpg')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_3_badge', 'Pure Indulgence'),
       'title'     => \App\Models\Setting::get('buttercup_slide_3_title', "Soft as a Whisper,\nCrafted for You"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_3_subtitle', 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.'),
@@ -64,9 +56,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_3_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::get('buttercup_slide_4_image') 
-                     ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_slide_4_image')), '/')) 
-                     : asset('images/slider/buttercup/slide-4.jpg'),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_4_image'), asset('images/slider/buttercup/slide-4.jpg')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_4_badge', 'Wire-Free Freedom'),
       'title'     => \App\Models\Setting::get('buttercup_slide_4_title', "Zero Pinching,\n100% Pure Comfort"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_4_subtitle', 'Say goodbye to painful underwires forever. Our contour bands adapt harmoniously to your natural curves.'),
@@ -76,9 +66,7 @@
       'btn2_url'  => \App\Models\Setting::get('buttercup_slide_4_btn2_url', route('search')),
     ],
     [
-      'image'     => \App\Models\Setting::get('buttercup_slide_5_image') 
-                     ? asset('images/' . ltrim(str_replace('storage/', '', \App\Models\Setting::get('buttercup_slide_5_image')), '/')) 
-                     : asset('images/slider/buttercup/slide-5.jpg'),
+      'image'     => \App\Models\Setting::imageUrl(\App\Models\Setting::get('buttercup_slide_5_image'), asset('images/slider/buttercup/slide-5.jpg')),
       'kicker'    => \App\Models\Setting::get('buttercup_slide_5_badge', 'Lounge & Sleep'),
       'title'     => \App\Models\Setting::get('buttercup_slide_5_title', "Dreamy Loungewear\nfor Cozy Evenings"),
       'subtitle'  => \App\Models\Setting::get('buttercup_slide_5_subtitle', 'From quiet morning coffee to tranquil midnight slumber — wrap yourself in the soothing bliss of buttery loungewear.'),
@@ -498,7 +486,7 @@
           $bcStoryImg = \App\Models\Setting::get('buttercup_story_image');
         @endphp
         @if($bcStoryImg)
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $bcStoryImg), '/')) }}" alt="Our Story" class="w-full h-full object-cover">
+          <img src="{{ \App\Models\Setting::imageUrl($bcStoryImg) }}" alt="Our Story" class="w-full h-full object-cover">
         @else
           <div class="w-full h-full bg-gradient-to-b from-[#FBE7E4] to-[#FFFAF5] flex flex-col items-center justify-center p-8 text-center border border-[#D89AA0]/20">
             <svg viewBox="0 0 100 120" class="w-24 h-28 text-[#D89AA0]/40 mb-3" fill="currentColor">

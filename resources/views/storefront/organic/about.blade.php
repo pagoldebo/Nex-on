@@ -95,9 +95,12 @@
       <div class="reveal">
         <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/3] bg-stone-100">
           @if($storyImg)
-            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $storyImg), '/')) }}" alt="{{ $storyTitle }}" class="w-full h-full object-cover">
+            <img src="{{ \App\Models\Setting::imageUrl($storyImg) }}" alt="{{ $storyTitle }}" class="w-full h-full object-cover">
           @else
-            <img src="{{ asset('images/themes/organic/sample-image-2.jpg') }}" alt="Organic Indian farmers in fields" class="w-full h-full object-cover">
+            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-organic-100 to-organic-200 text-organic-700 p-6 text-center">
+              <span class="text-4xl mb-2">🌱</span>
+              <p class="font-bold text-sm">{{ $storyTitle }}</p>
+            </div>
           @endif
         </div>
       </div>

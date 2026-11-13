@@ -66,7 +66,7 @@
           $saayaHeroImg = \App\Models\Setting::get('saaya_hero_image') ?: \App\Models\Setting::get('hero_banner_image');
         @endphp
         @if($saayaHeroImg)
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaHeroImg), '/')) }}" alt="Hero Banner" class="w-full h-full object-cover">
+          <img src="{{ \App\Models\Setting::imageUrl($saayaHeroImg) }}" alt="Hero Banner" class="w-full h-full object-cover">
         @else
           <div class="w-full h-full bg-gradient-to-b from-blush/20 to-maroon-dark/60 flex items-end justify-center pb-8">
             <svg class="w-32 h-40 text-gold/20" fill="currentColor" viewBox="0 0 100 130">
@@ -393,7 +393,7 @@
           $saayaStoryImg = \App\Models\Setting::get('saaya_story_image');
         @endphp
         @if($saayaStoryImg)
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $saayaStoryImg), '/')) }}" alt="Our Story" class="w-full h-full object-cover">
+          <img src="{{ \App\Models\Setting::imageUrl($saayaStoryImg) }}" alt="Our Story" class="w-full h-full object-cover">
         @else
           <div class="w-full h-full bg-gradient-to-b from-blush/30 to-maroon/20 flex items-center justify-center">
             <svg class="w-24 h-32 text-maroon/20" fill="currentColor" viewBox="0 0 80 110">

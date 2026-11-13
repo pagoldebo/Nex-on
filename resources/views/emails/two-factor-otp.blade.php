@@ -63,7 +63,7 @@
                 <td align="center" style="padding-bottom: 24px;">
                     <a href="{{ config('app.url') }}" target="_blank">
                         @if(!empty($resolvedLogo))
-                            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $resolvedLogo), '/')) }}" 
+                            <img src="{{ \App\Models\Setting::imageUrl($resolvedLogo) }}" 
                                  alt="{{ $resolvedAppName }}" 
                                  style="max-height: 44px; max-width: 200px; display: block; margin: 0 auto; object-fit: contain;">
                         @else

@@ -54,7 +54,7 @@
             $bcStoryImg = \App\Models\Setting::get('buttercup_story_image');
           @endphp
           @if($bcStoryImg)
-            <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $bcStoryImg), '/')) }}" alt="About Buttercup" class="w-full h-full object-cover">
+            <img src="{{ \App\Models\Setting::imageUrl($bcStoryImg) }}" alt="About Buttercup" class="w-full h-full object-cover">
           @else
             <div class="w-full h-full bg-gradient-to-b from-[#FBE7E4] to-[#FFFAF5] flex flex-col items-center justify-center p-8 text-center border border-[#D89AA0]/20">
               <svg viewBox="0 0 100 120" class="w-24 h-28 text-[#D89AA0]/40 mb-3" fill="currentColor">

@@ -38,9 +38,6 @@ class ProductColor extends Model
             }
 
             $path = ltrim($coverPath, '/');
-            if (str_starts_with($path, 'storage/')) {
-                $path = substr($path, 8);
-            }
             if (str_starts_with($path, 'images/')) {
                 return asset($path);
             }

@@ -85,7 +85,7 @@
     <div class="space-y-4">
       <div class="flex items-center gap-2">
         @if(!empty($siteLogo))
-          <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-8 md:h-10 w-auto max-w-[180px] object-contain">
+          <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-8 md:h-10 w-auto max-w-[180px] object-contain">
         @else
           <div class="w-8 h-8 rounded-lg bg-organic-500 text-white flex items-center justify-center">
             <svg class="w-5 h-5" viewBox="0 0 24 24"><use xlink:href="#organic-leaf"></use></svg>

@@ -26,7 +26,7 @@
 
             <a href="{{ route('home') }}" class="select-none flex items-center py-1">
                 @if(!empty($siteLogo))
-                    <img src="{{ asset('images/' . ltrim(str_replace('storage/', '', $siteLogo), '/')) }}" alt="{{ $storeName }}" class="h-10 md:h-12 w-auto max-w-[200px] object-contain">
+                    <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-10 md:h-12 w-auto max-w-[200px] object-contain">
                 @else
                     <span class="font-display text-2xl text-[#F2F0EC]">
                         VY<span class="text-[#FF3D5A]">RA</span>

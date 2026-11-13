@@ -132,6 +132,29 @@ class Setting extends Model
     }
 
     /**
+     * Resolve a public image URL for any path stored in settings or catalog.
+     * Supports external URLs, paths prefixed with 'images/', and direct subdirectories
+     * (e.g. 'banners/...', 'products/...', 'branding/...', 'categories/...', 'slider/...').
+     */
+    public static function imageUrl(?string $path, ?string $fallback = null): ?string
+    {
+        if (empty($path)) {
+            return $fallback;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
+            return $path;
+        }
+
+        $clean = ltrim($path, '/');
+        if (str_starts_with($clean, 'images/')) {
+            return asset($clean);
+        }
+
+        return asset('images/' . $clean);
+    }
+
+    /**
      * Get theme image URL with fallback to default asset or placeholder.
      */
     public static function themeImage(string $themeKey, string $section, ?string $fallback = null): ?string
@@ -140,21 +163,7 @@ class Setting extends Model
              ?: static::get("{$themeKey}_{$section}") 
              ?: ($section === 'hero_image' ? static::get('hero_banner_image') : null);
 
-        if (!empty($path)) {
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
-                return $path;
-            }
-            $clean = ltrim($path, '/');
-            if (str_starts_with($clean, 'storage/')) {
-                $clean = substr($clean, 8);
-            }
-            if (str_starts_with($clean, 'images/')) {
-                return asset($clean);
-            }
-            return asset('images/' . $clean);
-        }
-
-        return $fallback;
+        return static::imageUrl($path, $fallback);
     }
 
     /**
@@ -165,17 +174,7 @@ class Setting extends Model
         $path = static::get('site_logo');
 
         if (!empty($path)) {
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
-                return $path;
-            }
-            $clean = ltrim($path, '/');
-            if (str_starts_with($clean, 'storage/')) {
-                $clean = substr($clean, 8);
-            }
-            if (str_starts_with($clean, 'images/')) {
-                return asset($clean);
-            }
-            return asset('images/' . $clean);
+            return static::imageUrl($path, $fallback);
         }
 
         if (file_exists(public_path('images/branding/logo.png'))) {

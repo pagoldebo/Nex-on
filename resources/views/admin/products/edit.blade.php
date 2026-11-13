@@ -203,7 +203,7 @@
                             @php
                                 $rawCover = $color->getRawOriginal('cover_image');
                                 $currentCoverUrl = $rawCover 
-                                    ? (\Illuminate\Support\Str::startsWith($rawCover, ['http://', 'https://']) ? $rawCover : asset('images/' . ltrim(str_replace('storage/', '', $rawCover), '/')))
+                                    ? (\Illuminate\Support\Str::startsWith($rawCover, ['http://', 'https://']) ? $rawCover : asset('images/' . ltrim($rawCover, '/')))
                                     : ($color->images->first() ? $color->images->first()->url : null);
                             @endphp
                             <div class="cover-preview-wrapper relative w-24 h-28 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">

@@ -21,9 +21,6 @@ class Category extends Model
         }
 
         $path = ltrim($this->image, '/');
-        if (str_starts_with($path, 'storage/')) {
-            $path = substr($path, 8);
-        }
         if (str_starts_with($path, 'images/')) {
             return asset($path);
         }

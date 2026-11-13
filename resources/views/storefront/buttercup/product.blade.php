@@ -27,20 +27,80 @@
 
   <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
 
-    {{-- Image gallery --}}
-    <div>
-      <div class="aspect-[3/4] rounded-[28px] overflow-hidden mb-3" style="background:#D89AA011; aspect-ratio: 3/4;">
-        <img id="mainImg" src="{{ $product->cover_image }}" alt="{{ $product->name }}" class="w-full h-full object-cover transition-all duration-500">
+    {{-- Image gallery (Full Auto-Slider + Dynamic Thumbnails) --}}
+    @php
+      $firstColor = $product->colors->first();
+      $galleryImages = collect();
+      if ($firstColor) {
+        $firstColorCover = $firstColor->cover_image;
+        if ($firstColorCover && $firstColorCover !== asset('images/placeholder.jpg')) {
+          $galleryImages->push($firstColorCover);
+        }
+        foreach ($firstColor->images as $cImg) {
+          if (!$galleryImages->contains($cImg->url)) {
+            $galleryImages->push($cImg->url);
+          }
+        }
+      }
+      if ($product->cover_image && !$galleryImages->contains($product->cover_image) && $product->cover_image !== asset('images/placeholder.jpg')) {
+        $galleryImages->prepend($product->cover_image);
+      }
+      if ($galleryImages->isEmpty()) {
+        $galleryImages->push(asset('images/placeholder.jpg'));
+      }
+    @endphp
+    <div id="buttercupGalleryWrap" class="pdp-gallery-container flex flex-col">
+      {{-- Main Hero Image Slider Container --}}
+      <div class="aspect-[3/4] rounded-[28px] overflow-hidden mb-3 relative group select-none shadow-sm bg-[#FBE7E4]/50" style="aspect-ratio: 3/4;">
+        @if($product->badge)
+          <span class="absolute top-4 left-4 z-20 bg-[#A8B89A] text-[#FFFAF5] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-xs pointer-events-none">
+            {{ $product->badge }}
+          </span>
+        @endif
+
+        {{-- Slide Counter Badge --}}
+        <div id="buttercupSlideBadge" class="absolute bottom-4 right-4 z-20 bg-[#4A3B3A]/75 backdrop-blur-md text-[#FFFAF5] text-[11px] font-mono font-semibold px-3 py-1 rounded-full border border-white/20 shadow-xs pointer-events-none" style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}">
+          1 / {{ $galleryImages->count() }}
+        </div>
+
+        {{-- Previous Slide Arrow --}}
+        <button type="button" 
+                id="buttercupPrevBtn"
+                onclick="prevSlide(true)"
+                class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-[#D89AA0] text-[#4A3B3A] hover:text-[#FFFAF5] border border-[#D89AA0]/30 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}"
+                aria-label="Previous image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        {{-- Next Slide Arrow --}}
+        <button type="button" 
+                id="buttercupNextBtn"
+                onclick="nextSlide(true)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-[#D89AA0] text-[#4A3B3A] hover:text-[#FFFAF5] border border-[#D89AA0]/30 shadow-md flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer focus:outline-none"
+                style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}"
+                aria-label="Next image">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        {{-- Main Display Image --}}
+        <img id="mainImg" 
+             src="{{ $galleryImages->first() }}" 
+             alt="{{ $product->name }}" 
+             class="w-full h-full object-cover transition-opacity duration-300">
       </div>
-      <div class="flex gap-2 overflow-x-auto pb-1">
-        @foreach ($product->colors as $color)
-          @foreach ($color->images->take(4) as $img)
-            <button onclick="document.getElementById('mainImg').src='{{ $img->url }}'"
-                    class="flex-shrink-0 w-16 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all hover:opacity-100 opacity-60"
-                    style="border-color:#D89AA044; aspect-ratio: 3/4;">
-              <img src="{{ $img->url }}" class="w-full h-full object-cover">
-            </button>
-          @endforeach
+
+      {{-- Thumbnail Strip (All Images for Active Color / Product) --}}
+      <div id="buttercupThumbnails" class="flex gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-hide" style="{{ $galleryImages->count() <= 1 ? 'display:none;' : '' }}">
+        @foreach ($galleryImages as $i => $imgUrl)
+          <button type="button"
+                  onclick="goToSlide({{ $i }}, true)"
+                  class="buttercup-thumb flex-shrink-0 w-16 sm:w-20 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-pointer {{ $i === 0 ? 'border-[#D89AA0] ring-2 ring-[#D89AA0]/40 shadow-sm opacity-100 scale-105' : 'border-[#D89AA0]/30 opacity-60 hover:opacity-100 hover:border-[#D89AA0]' }}"
+                  style="aspect-ratio: 3/4;"
+                  data-idx="{{ $i }}"
+                  title="View image {{ $i + 1 }}">
+            <img src="{{ $imgUrl }}" alt="{{ $product->name }} view {{ $i + 1 }}" class="w-full h-full object-cover pointer-events-none">
+          </button>
         @endforeach
       </div>
     </div>
@@ -324,16 +384,164 @@
 <script>
 const pd = @json($product->toCardArray());
 let selColor = 0, selSize = null;
+let currentImageIdx = 0;
+let autoSlideTimer = null;
+const AUTO_SLIDE_DELAY = 3500; // 3.5 seconds auto-slide
+let galleryInViewport = true;
+
+function getActiveImages() {
+  const c = pd.colors && pd.colors[selColor];
+  let list = [];
+  if (c && c.images && c.images.length) {
+    list = [...c.images];
+  }
+  if (pd.coverImage && !list.includes(pd.coverImage) && !pd.coverImage.includes('placeholder.jpg')) {
+    list.unshift(pd.coverImage);
+  }
+  if (!list.length) {
+    list = [pd.coverImage || '{{ asset('images/placeholder.jpg') }}'];
+  }
+  return list;
+}
+
+function renderThumbnails() {
+  const imgs = getActiveImages();
+  const container = document.getElementById('buttercupThumbnails');
+  if (!container) return;
+
+  if (imgs.length <= 1) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'flex';
+
+  container.innerHTML = imgs.map((src, i) => {
+    const isActive = i === currentImageIdx;
+    return `
+      <button type="button"
+              onclick="goToSlide(${i}, true)"
+              class="buttercup-thumb flex-shrink-0 w-16 sm:w-20 aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
+                isActive 
+                  ? 'border-[#D89AA0] ring-2 ring-[#D89AA0]/40 shadow-sm opacity-100 scale-105' 
+                  : 'border-[#D89AA0]/30 opacity-60 hover:opacity-100 hover:border-[#D89AA0]'
+              }"
+              style="aspect-ratio: 3/4;"
+              data-idx="${i}"
+              title="View image ${i + 1}">
+        <img src="${src}" alt="${pd.name} view ${i + 1}" class="w-full h-full object-cover pointer-events-none">
+      </button>
+    `;
+  }).join('');
+}
+
+function goToSlide(idx, userInitiated = false) {
+  const imgs = getActiveImages();
+  if (!imgs.length) return;
+
+  if (idx < 0) idx = imgs.length - 1;
+  if (idx >= imgs.length) idx = 0;
+  currentImageIdx = idx;
+
+  const targetSrc = imgs[currentImageIdx];
+  const mainImg = document.getElementById('mainImg');
+  if (mainImg) {
+    if (mainImg.src !== targetSrc) {
+      mainImg.style.opacity = '0';
+      setTimeout(() => {
+        mainImg.src = targetSrc;
+        mainImg.style.opacity = '1';
+      }, 140);
+    } else {
+      mainImg.style.opacity = '1';
+    }
+  }
+
+  // Update active thumbnail border/ring/scale
+  const thumbWrap = document.getElementById('buttercupThumbnails');
+  if (thumbWrap) {
+    const thumbs = thumbWrap.querySelectorAll('.buttercup-thumb');
+    thumbs.forEach((b, i) => {
+      const isActive = i === currentImageIdx;
+      b.classList.toggle('border-[#D89AA0]', isActive);
+      b.classList.toggle('ring-2', isActive);
+      b.classList.toggle('ring-[#D89AA0]/40', isActive);
+      b.classList.toggle('shadow-sm', isActive);
+      b.classList.toggle('opacity-100', isActive);
+      b.classList.toggle('scale-105', isActive);
+
+      b.classList.toggle('border-[#D89AA0]/30', !isActive);
+      b.classList.toggle('opacity-60', !isActive);
+
+      if (isActive) {
+        const targetLeft = b.offsetLeft - (thumbWrap.clientWidth / 2) + (b.clientWidth / 2);
+        thumbWrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Update slide counter badge
+  const badge = document.getElementById('buttercupSlideBadge');
+  if (badge) {
+    badge.textContent = `${currentImageIdx + 1} / ${imgs.length}`;
+    badge.style.display = imgs.length > 1 ? 'block' : 'none';
+  }
+
+  // Update arrow buttons visibility
+  const prevBtn = document.getElementById('buttercupPrevBtn');
+  const nextBtn = document.getElementById('buttercupNextBtn');
+  if (prevBtn) prevBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+  if (nextBtn) nextBtn.style.display = imgs.length > 1 ? 'flex' : 'none';
+
+  if (userInitiated) {
+    restartAutoSlide();
+  }
+}
+
+function nextSlide(userInitiated = false) {
+  goToSlide(currentImageIdx + 1, userInitiated);
+}
+
+function prevSlide(userInitiated = false) {
+  goToSlide(currentImageIdx - 1, userInitiated);
+}
+
+function startAutoSlide() {
+  stopAutoSlide();
+  const imgs = getActiveImages();
+  if (imgs.length <= 1) return;
+  if (!galleryInViewport) return;
+
+  autoSlideTimer = setInterval(() => {
+    nextSlide(false);
+  }, AUTO_SLIDE_DELAY);
+}
+
+function stopAutoSlide() {
+  if (autoSlideTimer) {
+    clearInterval(autoSlideTimer);
+    autoSlideTimer = null;
+  }
+}
+
+function restartAutoSlide() {
+  stopAutoSlide();
+  if (galleryInViewport) {
+    startAutoSlide();
+  }
+}
 
 function selectColor(idx, name) {
-  selColor = idx; selSize = null;
+  selColor = idx; 
+  selSize = null;
+  currentImageIdx = 0;
   document.getElementById('selectedColorName').textContent = name;
   document.querySelectorAll('#colorSwatches button').forEach((b,i) => {
     b.style.borderColor = i===idx ? pd.colors[i].hex : 'transparent';
     b.style.transform = i===idx ? 'scale(1.15)' : 'scale(1)';
   });
-  const c = pd.colors[idx];
-  if (c.images.length) document.getElementById('mainImg').src = c.images[0];
+  renderThumbnails();
+  goToSlide(0, false);
+  startAutoSlide();
   renderSizes(idx);
   updateBtn();
 }
@@ -500,7 +708,41 @@ async function submitButtercupReview(form) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => selectColor(0, pd.colors[0]?.name || ''));
+document.addEventListener('DOMContentLoaded', () => {
+  selectColor(0, pd.colors[0]?.name || '');
+
+  // Pause on hover
+  const galleryWrap = document.getElementById('buttercupGalleryWrap');
+  if (galleryWrap) {
+    galleryWrap.addEventListener('mouseenter', stopAutoSlide);
+    galleryWrap.addEventListener('mouseleave', () => {
+      if (galleryInViewport) startAutoSlide();
+    });
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          galleryInViewport = entry.isIntersecting;
+          if (!galleryInViewport) {
+            stopAutoSlide();
+          } else {
+            startAutoSlide();
+          }
+        });
+      }, { threshold: 0.2 });
+      observer.observe(galleryWrap);
+    }
+  }
+
+  // Pause on tab/window hide
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopAutoSlide();
+    } else if (galleryInViewport) {
+      startAutoSlide();
+    }
+  });
+});
 </script>
 @endpush
 

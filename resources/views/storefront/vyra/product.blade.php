@@ -33,7 +33,14 @@
       </div>
       <div class="flex gap-2 overflow-x-auto pb-1">
         @foreach ($product->colors as $color)
-          @foreach ($color->images->take(4) as $img)
+          @if($color->cover_image && $color->cover_image !== asset('images/placeholder.jpg'))
+            <button onclick="document.getElementById('mainImg').src='{{ $color->cover_image }}'"
+                    class="flex-shrink-0 w-16 aspect-[3/4] overflow-hidden border-2 transition-all hover:opacity-100 opacity-60"
+                    style="border-color:#FF3D5A44; aspect-ratio: 3/4;">
+              <img src="{{ $color->cover_image }}" class="w-full h-full object-cover">
+            </button>
+          @endif
+          @foreach ($color->images as $img)
             <button onclick="document.getElementById('mainImg').src='{{ $img->url }}'"
                     class="flex-shrink-0 w-16 aspect-[3/4] overflow-hidden border-2 transition-all hover:opacity-100 opacity-60"
                     style="border-color:#FF3D5A44; aspect-ratio: 3/4;">

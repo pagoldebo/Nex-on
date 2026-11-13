@@ -3319,7 +3319,8 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Support Email</label>
                     <input type="email" name="support_email" 
-                           value="{{ $settings['support_email'] ?? 'support@lingerie.store' }}" 
+                           value="{{ ($settings['support_email'] ?? '') === 'support@lingerie.store' ? \App\Models\Setting::supportEmail() : ($settings['support_email'] ?? \App\Models\Setting::supportEmail()) }}" 
+                           placeholder="{{ \App\Models\Setting::supportEmail() }}"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
                 </div>
             </div>

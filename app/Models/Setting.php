@@ -39,7 +39,11 @@ class Setting extends Model
             return Cache::remember("setting_{$key}", $ttl, function () use ($key, $default) {
                 try {
                     $record = static::where('key', $key)->first();
-                    return $record !== null && $record->value !== null ? $record->value : $default;
+                    $val = $record !== null && $record->value !== null ? $record->value : $default;
+                    if ($key === 'support_email' && ($val === null || in_array(strtolower(trim((string)$val)), ['support@lingerie.store', 'returns@lingeriestore.in', 'concierge@lingeriestore.in'], true))) {
+                        return env('SUPPORT_EMAIL') ?: (config('mail.from.address') ?: (env('MAIL_FROM_ADDRESS') ?: ($default ?: 'support@nexon.app')));
+                    }
+                    return $val;
                 } catch (\Throwable $e) {
                     return $default;
                 }
@@ -59,14 +63,25 @@ class Setting extends Model
     }
 
     /**
-     * Dynamically resolve Support Email from Database, Settings Page, or .env SUPPORT_EMAIL / MAIL_FROM_ADDRESS
+     * Dynamically resolve Support Email from .env SUPPORT_EMAIL / MAIL_FROM_ADDRESS, or Settings Page
      */
     public static function supportEmail(): string
     {
-        return static::get('support_email') 
+        $email = static::get('support_email') 
             ?: static::get('store_email') 
-            ?: static::get('mail_from_address') 
-            ?: (env('SUPPORT_EMAIL') ?: (config('mail.from.address') ?: 'support@nexon.app'));
+            ?: static::get('mail_from_address');
+
+        if ($email && !in_array(strtolower(trim($email)), [
+            'support@lingerie.store',
+            'returns@lingeriestore.in',
+            'concierge@lingeriestore.in',
+        ], true)) {
+            return $email;
+        }
+
+        return env('SUPPORT_EMAIL') 
+            ?: (config('mail.from.address') 
+            ?: (env('MAIL_FROM_ADDRESS') ?: 'support@nexon.app'));
     }
 
     /**

@@ -406,7 +406,7 @@ class StorefrontController extends Controller
                   ->subject('Order Confirmed: #' . $order->reference . ' — Saaya');
             });
 
-            $adminEmail = Setting::get('support_email', 'support@saaya.in');
+            $adminEmail = Setting::supportEmail();
             Mail::send('emails.new-order-admin', ['order' => $order], function ($m) use ($adminEmail, $order) {
                 $m->to($adminEmail)
                   ->subject('New Order Placed: #' . $order->reference . ' (₹' . number_format($order->total, 2) . ')');

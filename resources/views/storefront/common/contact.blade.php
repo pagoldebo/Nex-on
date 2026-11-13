@@ -39,7 +39,7 @@
                                 </div>
                                 <div>
                                     <div class="font-bold text-slate-800">Email Inquiries</div>
-                                    @php $supEmail = \App\Models\Setting::get('support_email', 'concierge@lingeriestore.in'); @endphp
+                                    @php $supEmail = \App\Models\Setting::supportEmail(); @endphp
                                     <a href="mailto:{{ $supEmail }}" class="text-slate-500 hover:text-rose-600 transition">{{ $supEmail }}</a>
                                 </div>
                             </div>

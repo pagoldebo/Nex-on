@@ -125,6 +125,6 @@ return [
     |
     */
 
-    'admin_email' => env('ADMIN_EMAIL', 'info@nexon.com'),
+    'admin_email' => env('ADMIN_EMAIL', 'admin@nexon.com'),
 
 ];

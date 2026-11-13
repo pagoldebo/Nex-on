@@ -69,7 +69,7 @@
                         </p>
                     @else
                         <p>
-                            Contact our concierge at <a href="mailto:{{ \App\Models\Setting::get('support_email', 'returns@lingeriestore.in') }}" class="text-indigo-600 font-semibold underline">{{ \App\Models\Setting::get('support_email', 'returns@lingeriestore.in') }}</a> or visit our <a href="{{ route('contact') }}" class="text-indigo-600 font-semibold underline">Contact Page</a> within 7 days of package delivery. 
+                            Contact our concierge at <a href="mailto:{{ \App\Models\Setting::supportEmail() }}" class="text-indigo-600 font-semibold underline">{{ \App\Models\Setting::supportEmail() }}</a> or visit our <a href="{{ route('contact') }}" class="text-indigo-600 font-semibold underline">Contact Page</a> within 7 days of package delivery. 
                             Provide your Order ID and photo of the item with tags. Our team will schedule an address reverse pickup within 48 hours.
                         </p>
                     @endif

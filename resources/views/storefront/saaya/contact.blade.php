@@ -68,7 +68,7 @@
               </div>
               <div>
                 <div class="font-bold text-ivory">Email Inquiries</div>
-                @php $supportEmail = \App\Models\Setting::get('support_email', 'concierge@saaya.in'); @endphp
+                @php $supportEmail = \App\Models\Setting::supportEmail(); @endphp
                 <a href="mailto:{{ $supportEmail }}" class="text-ivory/70 hover:text-gold transition">{{ $supportEmail }}</a>
               </div>
             </div>

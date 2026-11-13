@@ -236,4 +236,20 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
             $pdpResp->assertSee('Universal 30-Day Guarantee: Complimentary doorstep reverse pickup on all unworn items.');
         }
     }
+
+    public function test_return_policy_uses_support_email_from_env_not_lingerie_store(): void
+    {
+        // 1. Even if the DB has the legacy placeholder 'support@lingerie.store'
+        Setting::set('support_email', 'support@lingerie.store');
+
+        $envEmail = env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app'));
+        $this->assertEquals($envEmail, Setting::supportEmail());
+
+        $response = $this->get(route('returnPolicy'));
+        $response->assertStatus(200);
+
+        // Assert it renders the .env email and not support@lingerie.store
+        $response->assertSee($envEmail);
+        $response->assertDontSee('support@lingerie.store');
+    }
 }

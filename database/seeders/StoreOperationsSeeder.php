@@ -20,7 +20,7 @@ class StoreOperationsSeeder extends Seeder
             'gstin'                   => '27AABCS1429B1ZB',
             'support_phone'           => '+91 98765 43210',
             'support_whatsapp'        => '+91 98765 43210',
-            'support_email'           => 'support@lingerie.store',
+            'support_email'           => env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app')),
             'store_address'           => '101 Fashion Boulevard, Bandra West, Mumbai, Maharashtra 400050',
             'enable_cod'              => '1',
             'maintenance_mode'        => '0',

@@ -101,7 +101,7 @@
 
         <!-- Footer -->
         <div style="background: #faf5ee; padding: 20px; text-align: center; border-top: 1px solid #ebd9c8; font-size: 11px; color: #8c7373;">
-            <p style="margin: 0;">Discreet Delivery Guaranteed. If you have any inquiries, contact our VIP concierge at <a href="mailto:{{ \App\Models\Setting::get('support_email', 'support@nexon.app') }}" style="color: #4A0E17; text-decoration: none; font-weight: bold;">{{ \App\Models\Setting::get('support_email', 'support@nexon.app') }}</a></p>
+            <p style="margin: 0;">Discreet Delivery Guaranteed. If you have any inquiries, contact our VIP concierge at <a href="mailto:{{ \App\Models\Setting::supportEmail() }}" style="color: #4A0E17; text-decoration: none; font-weight: bold;">{{ \App\Models\Setting::supportEmail() }}</a></p>
         </div>
     </div>
 </body>

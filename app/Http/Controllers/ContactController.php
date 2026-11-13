@@ -45,7 +45,7 @@ class ContactController extends Controller
             'message' => 'required|string|max:3000',
         ]);
 
-        $recipientEmail = Setting::get('support_email', 'support@saaya.in');
+        $recipientEmail = Setting::supportEmail();
 
         try {
             Mail::send('emails.contact-inquiry', ['data' => $validated], function ($m) use ($validated, $recipientEmail) {

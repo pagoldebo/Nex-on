@@ -1229,32 +1229,43 @@
                             
                             {{-- Background Image Upload --}}
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image (Optional)</label>
                                 @php
-                                    $ad1Custom = $settings['organic_ad1_image'] ?? '';
-                                    $ad1Src = $ad1Custom ? (str_starts_with($ad1Custom, 'http') ? $ad1Custom : asset($ad1Custom)) : asset('images/themes/organic/banner-ad-1.jpg');
+                                    $ad1Raw = $settings['organic_ad1_image'] ?? '';
+                                    $ad1Clean = $ad1Raw ? ltrim(str_replace('storage/', '', $ad1Raw), '/') : '';
+                                    $ad1Src = $ad1Clean ? (str_starts_with($ad1Clean, 'http') ? $ad1Clean : (str_starts_with($ad1Clean, 'images/') ? asset($ad1Clean) : asset('images/' . $ad1Clean))) : null;
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd1">
                                         <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
                                             <img :src="previewOrganicAd1" class="w-full h-full object-cover">
-                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Upload Preview</span>
                                         </div>
                                     </template>
                                     <template x-if="!previewOrganicAd1">
-                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
-                                            <img src="{{ $ad1Src }}" class="w-full h-full object-cover" alt="Banner 1 Background">
-                                            <span class="absolute bottom-1 left-1 {{ $ad1Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                                                {{ $ad1Custom ? 'Custom Image' : 'Default Image' }}
-                                            </span>
+                                        <div>
+                                            @if($ad1Src)
+                                                <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                                    <img src="{{ $ad1Src }}" class="w-full h-full object-cover" alt="Banner 1 Background">
+                                                    <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                        Active Image
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="w-full aspect-[2/1] rounded-lg border-2 border-dashed border-slate-200 bg-slate-100 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+                                                    <svg class="w-6 h-6 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    <span class="text-[10px] font-medium text-slate-500">No Image Set</span>
+                                                    <span class="text-[9px] text-slate-400">Uses solid gradient background</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     </template>
-                                    @if(!empty($ad1Custom))
+                                    @if(!empty($ad1Src))
                                         <div class="flex items-center justify-between pt-1">
                                             <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
-                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
-                                                <input type="checkbox" name="remove_organic_ad1_image" value="1" class="w-3 h-3 text-rose-600 rounded">
-                                                <span>Reset to Default</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer hover:text-rose-700">
+                                                <input type="checkbox" name="remove_organic_ad1_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded">
+                                                <span>Remove Image</span>
                                             </label>
                                         </div>
                                     @endif
@@ -1297,30 +1308,41 @@
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
                                 @php
-                                    $ad2Custom = $settings['organic_ad2_image'] ?? '';
-                                    $ad2Src = $ad2Custom ? (str_starts_with($ad2Custom, 'http') ? $ad2Custom : asset($ad2Custom)) : asset('images/themes/organic/banner-ad-2.jpg');
+                                    $ad2Raw = $settings['organic_ad2_image'] ?? '';
+                                    $ad2Clean = $ad2Raw ? ltrim(str_replace('storage/', '', $ad2Raw), '/') : '';
+                                    $ad2Src = $ad2Clean ? (str_starts_with($ad2Clean, 'http') ? $ad2Clean : (str_starts_with($ad2Clean, 'images/') ? asset($ad2Clean) : asset('images/' . $ad2Clean))) : null;
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd2">
                                         <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
                                             <img :src="previewOrganicAd2" class="w-full h-full object-cover">
-                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Upload Preview</span>
                                         </div>
                                     </template>
                                     <template x-if="!previewOrganicAd2">
-                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
-                                            <img src="{{ $ad2Src }}" class="w-full h-full object-cover" alt="Banner 2 Background">
-                                            <span class="absolute bottom-1 left-1 {{ $ad2Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                                                {{ $ad2Custom ? 'Custom Image' : 'Default Image' }}
-                                            </span>
+                                        <div>
+                                            @if($ad2Src)
+                                                <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                                    <img src="{{ $ad2Src }}" class="w-full h-full object-cover" alt="Banner 2 Background">
+                                                    <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                        Active Image
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="w-full aspect-[2/1] rounded-lg border-2 border-dashed border-slate-200 bg-slate-100 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+                                                    <svg class="w-6 h-6 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    <span class="text-[10px] font-medium text-slate-500">No Image Set</span>
+                                                    <span class="text-[9px] text-slate-400">Uses solid gradient background</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     </template>
-                                    @if(!empty($ad2Custom))
+                                    @if(!empty($ad2Src))
                                         <div class="flex items-center justify-between pt-1">
                                             <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
-                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
-                                                <input type="checkbox" name="remove_organic_ad2_image" value="1" class="w-3 h-3 text-rose-600 rounded">
-                                                <span>Reset to Default</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer hover:text-rose-700">
+                                                <input type="checkbox" name="remove_organic_ad2_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded">
+                                                <span>Remove Image</span>
                                             </label>
                                         </div>
                                     @endif
@@ -1363,30 +1385,41 @@
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-700 mb-1">Background Image</label>
                                 @php
-                                    $ad3Custom = $settings['organic_ad3_image'] ?? '';
-                                    $ad3Src = $ad3Custom ? (str_starts_with($ad3Custom, 'http') ? $ad3Custom : asset($ad3Custom)) : asset('images/themes/organic/banner-ad-3.jpg');
+                                    $ad3Raw = $settings['organic_ad3_image'] ?? '';
+                                    $ad3Clean = $ad3Raw ? ltrim(str_replace('storage/', '', $ad3Raw), '/') : '';
+                                    $ad3Src = $ad3Clean ? (str_starts_with($ad3Clean, 'http') ? $ad3Clean : (str_starts_with($ad3Clean, 'images/') ? asset($ad3Clean) : asset('images/' . $ad3Clean))) : null;
                                 @endphp
                                 <div class="p-2.5 rounded-lg border border-slate-200 bg-white space-y-2">
                                     <template x-if="previewOrganicAd3">
                                         <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200">
                                             <img :src="previewOrganicAd3" class="w-full h-full object-cover">
-                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Preview</span>
+                                            <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Upload Preview</span>
                                         </div>
                                     </template>
                                     <template x-if="!previewOrganicAd3">
-                                        <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
-                                            <img src="{{ $ad3Src }}" class="w-full h-full object-cover" alt="Banner 3 Background">
-                                            <span class="absolute bottom-1 left-1 {{ $ad3Custom ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-white' }} text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                                                {{ $ad3Custom ? 'Custom Image' : 'Default Image' }}
-                                            </span>
+                                        <div>
+                                            @if($ad3Src)
+                                                <div class="relative w-full aspect-[2/1] rounded-lg overflow-hidden shadow-xs border border-slate-200 bg-slate-100">
+                                                    <img src="{{ $ad3Src }}" class="w-full h-full object-cover" alt="Banner 3 Background">
+                                                    <span class="absolute bottom-1 left-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                                        Active Image
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="w-full aspect-[2/1] rounded-lg border-2 border-dashed border-slate-200 bg-slate-100 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+                                                    <svg class="w-6 h-6 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    <span class="text-[10px] font-medium text-slate-500">No Image Set</span>
+                                                    <span class="text-[9px] text-slate-400">Uses solid gradient background</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     </template>
-                                    @if(!empty($ad3Custom))
+                                    @if(!empty($ad3Src))
                                         <div class="flex items-center justify-between pt-1">
                                             <span class="text-[10px] text-emerald-600 font-semibold">Active</span>
-                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer">
-                                                <input type="checkbox" name="remove_organic_ad3_image" value="1" class="w-3 h-3 text-rose-600 rounded">
-                                                <span>Reset to Default</span>
+                                            <label class="inline-flex items-center gap-1 text-[11px] text-rose-600 cursor-pointer hover:text-rose-700">
+                                                <input type="checkbox" name="remove_organic_ad3_image" value="1" class="w-3.5 h-3.5 text-rose-600 rounded">
+                                                <span>Remove Image</span>
                                             </label>
                                         </div>
                                     @endif

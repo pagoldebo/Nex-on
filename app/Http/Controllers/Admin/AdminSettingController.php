@@ -118,8 +118,15 @@ class AdminSettingController extends Controller
                 }
                 if (in_array($targetKey, $allowedImageKeys, true)) {
                     $oldImg = Setting::get($targetKey);
-                    if ($oldImg && Storage::disk('public')->exists($oldImg)) {
-                        Storage::disk('public')->delete($oldImg);
+                    if ($oldImg) {
+                        $clean = ltrim(str_replace('storage/', '', $oldImg), '/');
+                        if (Storage::disk('public')->exists($clean)) {
+                            Storage::disk('public')->delete($clean);
+                        }
+                        $publicFile = public_path('images/' . $clean);
+                        if (file_exists($publicFile) && !is_dir($publicFile)) {
+                            @unlink($publicFile);
+                        }
                     }
                     Setting::set($targetKey, '');
                 }
@@ -171,8 +178,15 @@ class AdminSettingController extends Controller
                         Setting::set('site_logo', 'branding/logo.png');
                     }
                 } else {
-                    if ($oldImg && Storage::disk('public')->exists($oldImg)) {
-                        Storage::disk('public')->delete($oldImg);
+                    if ($oldImg) {
+                        $cleanOld = ltrim(str_replace('storage/', '', $oldImg), '/');
+                        if (Storage::disk('public')->exists($cleanOld)) {
+                            Storage::disk('public')->delete($cleanOld);
+                        }
+                        $publicOldFile = public_path('images/' . $cleanOld);
+                        if (file_exists($publicOldFile) && !is_dir($publicOldFile)) {
+                            @unlink($publicOldFile);
+                        }
                     }
                     $storedPath = ProductImageService::storeUpload($uploadedFile, 'banners');
                     Setting::set($fileKey, $storedPath);

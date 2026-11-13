@@ -65,7 +65,7 @@
       </p>
 
       @if($product->description)
-        <div class="font-body text-sm leading-relaxed opacity-75 text-[#F2F0EC] product-rich-text">{!! $product->description !!}</div>
+        <div class="font-body text-sm leading-relaxed text-[#F2F0EC] product-rich-text">{!! $product->description !!}</div>
       @endif
 
       <div>
@@ -175,7 +175,7 @@
           <span class="w-1 h-5 rounded-full bg-gradient-to-b from-[#D4FF3D] to-[#FF3D5A] inline-block shrink-0"></span>
           <h3 class="font-body text-base md:text-lg font-bold text-[#D4FF3D] uppercase tracking-wider">Product Highlights</h3>
         </div>
-        <div class="font-body text-sm md:text-base leading-relaxed opacity-85 text-[#F2F0EC] product-rich-text">{!! $product->long_description !!}</div>
+        <div class="font-body text-sm md:text-base leading-relaxed text-[#F2F0EC] product-rich-text">{!! $product->long_description !!}</div>
       </div>
     @endif
 

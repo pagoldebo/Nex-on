@@ -76,4 +76,20 @@ class LumiereProductGalleryTest extends TestCase
         $response->assertSee('pdRenderThumbs()', false);
         $response->assertSee('lumiereGoToSlide(', false);
     }
+
+    public function test_lumiere_quick_view_modal_renders_html_description_container_and_inner_html_script()
+    {
+        Template::create(['key' => 'lumiere', 'name' => 'Lumière', 'is_active' => true]);
+        Template::clearActiveCache();
+
+        $response = $this->get(route('home'));
+        $response->assertStatus(200);
+
+        // Verify Quick View modal uses a div container with product-rich-text
+        $response->assertSee('<div id="qvDescription" class="text-xs text-gray-500 leading-relaxed mt-1.5 line-clamp-2 product-rich-text [&_p]:inline [&_p]:m-0"></div>', false);
+
+        // Verify Quick View modal uses innerHTML to render rich formatting instead of textContent
+        $response->assertSee('descEl.innerHTML = product.description || product.shortDescription || \'\';', false);
+        $response->assertDontSee('descEl.textContent = product.description', false);
+    }
 }

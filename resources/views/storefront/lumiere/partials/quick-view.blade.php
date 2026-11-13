@@ -26,7 +26,7 @@
                 <div>
                     <p id="qvCategory" class="text-[10px] uppercase tracking-widest font-bold text-pink-500 mb-1"></p>
                     <h3 id="qvName" class="font-display italic text-2xl text-gray-900"></h3>
-                    <p id="qvDescription" class="text-xs text-gray-500 leading-relaxed mt-1.5 line-clamp-2"></p>
+                    <div id="qvDescription" class="text-xs text-gray-500 leading-relaxed mt-1.5 line-clamp-2 product-rich-text [&_p]:inline [&_p]:m-0"></div>
                 </div>
                 <p id="qvPrice" class="text-2xl font-bold text-pink-600">
                     <span id="qvPriceCurrent"></span>
@@ -64,7 +64,7 @@ function openQuickView(product) {
     document.getElementById('qvName').textContent = product.name;
     document.getElementById('qvCategory').textContent = product.category || '';
     const descEl = document.getElementById('qvDescription');
-    if (descEl) descEl.textContent = product.description || product.shortDescription || '';
+    if (descEl) descEl.innerHTML = product.description || product.shortDescription || '';
     const viewDetailsEl = document.getElementById('qvViewDetails');
     if (viewDetailsEl) viewDetailsEl.href = '{{ url('/products') }}/' + encodeURIComponent(product.slug);
     document.getElementById('colorOptions').innerHTML = product.colors.map((c, i) => `

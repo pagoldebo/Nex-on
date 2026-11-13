@@ -317,6 +317,36 @@ class HeroBannerTest extends TestCase
         Storage::disk('public')->assertMissing($savedPath);
     }
 
+    public function test_lumiere_hero_buttons_custom_names_and_links()
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'lumiere_hero_badge'     => 'Bridal Couture',
+            'lumiere_hero_title'     => 'Elegance in Silk',
+            'lumiere_hero_subtitle'  => 'Made with passion.',
+            'lumiere_hero_btn_text'  => 'View Wedding Edit',
+            'lumiere_hero_btn_url'   => '/collections/bridal',
+            'lumiere_hero_btn2_text' => 'Discover Atelier',
+            'lumiere_hero_btn2_url'  => '/about-us',
+        ]);
+        $response->assertRedirect(route('admin.settings.index'));
+
+        $this->assertEquals('View Wedding Edit', Setting::get('lumiere_hero_btn_text'));
+        $this->assertEquals('/collections/bridal', Setting::get('lumiere_hero_btn_url'));
+        $this->assertEquals('Discover Atelier', Setting::get('lumiere_hero_btn2_text'));
+        $this->assertEquals('/about-us', Setting::get('lumiere_hero_btn2_url'));
+
+        Template::query()->update(['is_active' => false]);
+        Template::where('key', 'lumiere')->update(['is_active' => true]);
+        Template::clearActiveCache();
+
+        $storefront = $this->get(route('home'));
+        $storefront->assertStatus(200);
+        $storefront->assertSee('View Wedding Edit');
+        $storefront->assertSee('href="/collections/bridal"', false);
+        $storefront->assertSee('Discover Atelier');
+        $storefront->assertSee('href="/about-us"', false);
+    }
+
     public function test_all_themes_render_matching_sections()
     {
         $cat = \App\Models\Category::create(['name' => 'Intimates', 'slug' => 'intimates']);

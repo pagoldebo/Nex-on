@@ -834,6 +834,40 @@
                                 <textarea name="lumiere_hero_subtitle" rows="3" 
                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">{{ $settings['lumiere_hero_subtitle'] ?? 'Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.' }}</textarea>
                             </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1 font-medium">Primary Button Name</label>
+                                    <input type="text" name="lumiere_hero_btn_text" 
+                                           value="{{ $settings['lumiere_hero_btn_text'] ?? 'Shop the Edit' }}" 
+                                           placeholder="Shop the Edit"
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1 font-medium">Primary Button Link</label>
+                                    <input type="text" name="lumiere_hero_btn_url" 
+                                           value="{{ $settings['lumiere_hero_btn_url'] ?? '#curatedPicks' }}" 
+                                           placeholder="#curatedPicks or /collections/sale"
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-pink-400 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1 font-medium">Secondary Button Name</label>
+                                    <input type="text" name="lumiere_hero_btn2_text" 
+                                           value="{{ $settings['lumiere_hero_btn2_text'] ?? 'Explore All' }}" 
+                                           placeholder="Explore All"
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:border-pink-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 mb-1 font-medium">Secondary Button Link</label>
+                                    <input type="text" name="lumiere_hero_btn2_url" 
+                                           value="{{ $settings['lumiere_hero_btn2_url'] ?? route('search') }}" 
+                                           placeholder="/search"
+                                           class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-pink-400 outline-none">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

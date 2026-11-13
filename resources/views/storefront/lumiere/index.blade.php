@@ -34,6 +34,10 @@
   $lumiereBadge   = \App\Models\Setting::get('lumiere_hero_badge', 'The Festive Edit');
   $lumiereTitle   = \App\Models\Setting::get('lumiere_hero_title', "Silk that\nfeels like light.");
   $lumiereSub     = \App\Models\Setting::get('lumiere_hero_subtitle', 'Sustainably made silk lingerie, finished by hand in India. Everyday elegance, no compromise.');
+  $lumiereBtnText  = \App\Models\Setting::get('lumiere_hero_btn_text', 'Shop the Edit');
+  $lumiereBtnUrl   = \App\Models\Setting::get('lumiere_hero_btn_url', '#curatedPicks');
+  $lumiereBtn2Text = \App\Models\Setting::get('lumiere_hero_btn2_text', 'Explore All');
+  $lumiereBtn2Url  = \App\Models\Setting::get('lumiere_hero_btn2_url', route('search'));
 @endphp
 
 <section class="relative bg-[#FFE6A5] overflow-hidden min-h-[580px] sm:min-h-[660px] lg:min-h-[760px] flex items-center select-none w-full">
@@ -77,12 +81,16 @@
       </p>
 
       <div class="flex flex-wrap gap-4 items-center">
-        <a href="#curatedPicks" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
-          Shop the Edit
-        </a>
-        <a href="{{ route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border-2 border-[#405549] text-[#405549] hover:bg-[#405549] hover:text-white transition-all shadow-sm">
-          Explore All
-        </a>
+        @if($lumiereBtnText)
+          <a href="{{ $lumiereBtnUrl ?: '#curatedPicks' }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white hover:bg-pink-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+            {{ $lumiereBtnText }}
+          </a>
+        @endif
+        @if($lumiereBtn2Text)
+          <a href="{{ $lumiereBtn2Url ?: route('search') }}" class="px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest border-2 border-[#405549] text-[#405549] hover:bg-[#405549] hover:text-white transition-all shadow-sm">
+            {{ $lumiereBtn2Text }}
+          </a>
+        @endif
       </div>
     </div>
   </div>

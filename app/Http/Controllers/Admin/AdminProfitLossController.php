@@ -49,53 +49,53 @@ class AdminProfitLossController extends Controller
         return response()->streamDownload(function () use ($pl) {
             $handle = fopen('php://output', 'w');
 
-            fputcsv($handle, ['NexStore Business Suite - Profit & Loss Statement (P&L)']);
-            fputcsv($handle, ['Reporting Period:', $pl['startDate']->format('d M Y') . ' to ' . $pl['endDate']->format('d M Y')]);
-            fputcsv($handle, ['Generated At:', now()->toDayDateTimeString()]);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['NexStore Business Suite - Profit & Loss Statement (P&L)']);
+            \App\Services\CsvExporter::writeRow($handle, ['Reporting Period:', $pl['startDate']->format('d M Y') . ' to ' . $pl['endDate']->format('d M Y')]);
+            \App\Services\CsvExporter::writeRow($handle, ['Generated At:', now()->toDayDateTimeString()]);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 1. REVENUE
-            fputcsv($handle, ['1. OPERATING REVENUE']);
-            fputcsv($handle, ['Gross Merchandise Sales', number_format($pl['grossSales'], 2)]);
-            fputcsv($handle, ['Shipping & Packaging Fees Collected', number_format($pl['shippingCollected'], 2)]);
-            fputcsv($handle, ['Less: Promotional Discounts & Coupons', '-' . number_format($pl['discountsGiven'], 2)]);
-            fputcsv($handle, ['Less: Customer Refunds & Returns', '-' . number_format($pl['refundsGiven'], 2)]);
-            fputcsv($handle, ['NET OPERATING REVENUE (A)', number_format($pl['netRevenue'], 2)]);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['1. OPERATING REVENUE']);
+            \App\Services\CsvExporter::writeRow($handle, ['Gross Merchandise Sales', number_format($pl['grossSales'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Shipping & Packaging Fees Collected', number_format($pl['shippingCollected'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Less: Promotional Discounts & Coupons', '-' . number_format($pl['discountsGiven'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Less: Customer Refunds & Returns', '-' . number_format($pl['refundsGiven'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['NET OPERATING REVENUE (A)', number_format($pl['netRevenue'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 2. COGS
-            fputcsv($handle, ['2. COST OF GOODS SOLD (COGS)']);
-            fputcsv($handle, ['Product Inventory Direct Cost', number_format($pl['cogsProducts'], 2)]);
-            fputcsv($handle, ['Supplier Inbound Freight & Processing', number_format($pl['cogsFreight'], 2)]);
-            fputcsv($handle, ['TOTAL COST OF GOODS SOLD (B)', number_format($pl['totalCogs'], 2)]);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['2. COST OF GOODS SOLD (COGS)']);
+            \App\Services\CsvExporter::writeRow($handle, ['Product Inventory Direct Cost', number_format($pl['cogsProducts'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Supplier Inbound Freight & Processing', number_format($pl['cogsFreight'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['TOTAL COST OF GOODS SOLD (B)', number_format($pl['totalCogs'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 3. GROSS PROFIT
-            fputcsv($handle, ['3. GROSS PROFIT (A - B)', number_format($pl['grossProfit'], 2)]);
-            fputcsv($handle, ['Gross Margin %', number_format($pl['grossMarginPercent'], 1) . '%']);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['3. GROSS PROFIT (A - B)', number_format($pl['grossProfit'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Gross Margin %', number_format($pl['grossMarginPercent'], 1) . '%']);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 4. OPEX
-            fputcsv($handle, ['4. OPERATING EXPENSES (OPEX)']);
+            \App\Services\CsvExporter::writeRow($handle, ['4. OPERATING EXPENSES (OPEX)']);
             foreach ($pl['opexByCategory'] as $cat) {
-                fputcsv($handle, [$cat['name'], number_format($cat['amount'], 2)]);
+                \App\Services\CsvExporter::writeRow($handle, [$cat['name'], number_format($cat['amount'], 2)]);
             }
-            fputcsv($handle, ['TOTAL OPERATING EXPENSES (C)', number_format($pl['totalOpex'], 2)]);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['TOTAL OPERATING EXPENSES (C)', number_format($pl['totalOpex'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 5. EBITDA
-            fputcsv($handle, ['5. OPERATING INCOME / EBITDA (Gross Profit - OPEX)', number_format($pl['ebitda'], 2)]);
-            fputcsv($handle, ['Operating Margin %', number_format($pl['operatingMarginPercent'], 1) . '%']);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['5. OPERATING INCOME / EBITDA (Gross Profit - OPEX)', number_format($pl['ebitda'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Operating Margin %', number_format($pl['operatingMarginPercent'], 1) . '%']);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // 6. TAX & NET PROFIT
-            fputcsv($handle, ['6. TAXES & NET PROFIT']);
-            fputcsv($handle, ['Output GST Collected (Estimated)', number_format($pl['gstOutput'], 2)]);
-            fputcsv($handle, ['Input GST Credit (ITC)', number_format($pl['gstInputCredit'], 2)]);
-            fputcsv($handle, ['Net GST Liability', number_format($pl['netGstLiability'], 2)]);
-            fputcsv($handle, ['Corporate Income Tax Provision (25%)', number_format($pl['taxProvision'], 2)]);
-            fputcsv($handle, ['NET PROFIT AFTER TAX (PAT)', number_format($pl['netProfit'], 2)]);
-            fputcsv($handle, ['Net Margin %', number_format($pl['netMarginPercent'], 1) . '%']);
+            \App\Services\CsvExporter::writeRow($handle, ['6. TAXES & NET PROFIT']);
+            \App\Services\CsvExporter::writeRow($handle, ['Output GST Collected (Estimated)', number_format($pl['gstOutput'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Input GST Credit (ITC)', number_format($pl['gstInputCredit'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Net GST Liability', number_format($pl['netGstLiability'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Corporate Income Tax Provision (25%)', number_format($pl['taxProvision'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['NET PROFIT AFTER TAX (PAT)', number_format($pl['netProfit'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Net Margin %', number_format($pl['netMarginPercent'], 1) . '%']);
 
             fclose($handle);
         }, $fileName, [

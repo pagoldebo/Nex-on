@@ -36,7 +36,7 @@ class WebhookService
      */
     public static function getWebhookUrls(): array
     {
-        $urlsString = config('services.webhooks.order_urls', env('ORDER_WEBHOOK_URLS', ''));
+        $urlsString = config('services.webhooks.order_urls', '');
         
         if (empty($urlsString)) {
             $urlsString = Setting::get('order_webhook_urls', '');

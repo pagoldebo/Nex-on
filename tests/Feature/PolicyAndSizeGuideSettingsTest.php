@@ -239,7 +239,7 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
 
     public function test_return_policy_uses_support_email_from_env(): void
     {
-        $envEmail = env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app'));
+        $envEmail = config('app.support_email', config('mail.from.address', 'support@nexon.app'));
         $this->assertEquals($envEmail, Setting::supportEmail());
 
         // Return Policy
@@ -252,8 +252,8 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
         $privacyResponse->assertStatus(200);
         $privacyResponse->assertSee($envEmail);
 
-        // Dynamic change via env
-        \Illuminate\Support\Env::getRepository()->set('SUPPORT_EMAIL', 'custom_env@nexon.app');
+        // Dynamic change via config
+        config(['app.support_email' => 'custom_env@nexon.app']);
         $this->assertEquals('custom_env@nexon.app', Setting::supportEmail());
         $this->assertEquals('custom_env@nexon.app', Setting::get('support_email'));
 
@@ -261,7 +261,7 @@ class PolicyAndSizeGuideSettingsTest extends TestCase
         $dynResponse->assertStatus(200);
         $dynResponse->assertSee('custom_env@nexon.app');
 
-        // Reset env
-        \Illuminate\Support\Env::getRepository()->set('SUPPORT_EMAIL', $envEmail);
+        // Reset config
+        config(['app.support_email' => $envEmail]);
     }
 }

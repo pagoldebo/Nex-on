@@ -59,8 +59,17 @@ class CrossSiteScriptingSecurityTest extends TestCase
 
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
-        $response->assertHeader('X-XSS-Protection', '1; mode=block');
+        $response->assertHeader('Content-Security-Policy');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+        $csp = $response->headers->get('Content-Security-Policy');
+        preg_match('/script-src\s+([^;]+)/', $csp, $matches);
+        $scriptSrc = $matches[1] ?? '';
+
+        $this->assertStringNotContainsString("'unsafe-inline'", $scriptSrc);
+        $this->assertStringNotContainsString("'unsafe-eval'", $scriptSrc);
+        $this->assertStringContainsString("'strict-dynamic'", $scriptSrc);
+        $this->assertStringContainsString("'nonce-", $scriptSrc);
     }
 
     public function test_html_sanitizer_cleans_stored_settings(): void

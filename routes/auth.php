@@ -55,6 +55,12 @@ Route::middleware('guest')->group(function () {
 
         $user = User::where('email', $credentials['email'])->first();
 
+        if ($user && $user->isDeactivated()) {
+            return back()->withErrors([
+                'email' => 'Your account has been deactivated. Please contact support.',
+            ])->onlyInput('email');
+        }
+
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             RateLimiter::hit($throttleKey, 60);
             return back()->withErrors([
@@ -68,12 +74,6 @@ Route::middleware('guest')->group(function () {
         if (Hash::needsRehash($user->password)) {
             $user->password = Hash::make($credentials['password']);
             $user->save();
-        }
-
-        if ($user->isDeactivated()) {
-            return back()->withErrors([
-                'email' => 'Your account has been deactivated. Please contact support.',
-            ])->onlyInput('email');
         }
 
         // Branch 1: If user has enabled RFC 6238 TOTP App (Google Authenticator / Authy)
@@ -147,7 +147,7 @@ Route::middleware('guest')->group(function () {
 
     $verifyOtpHandler = function (Request $request) {
         $request->validate([
-            'otp' => ['required', 'string', 'digits:4'],
+            'otp' => ['required', 'string', 'digits_between:4,6'],
         ]);
 
         $pendingUserId = session('pending_2fa_user_id');
@@ -273,8 +273,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/resend-otp', $resendOtpHandler)->name('verification.store')->middleware('throttle:otp_resend');
     Route::post('/resend-2fa', $resendOtpHandler)->name('verification.2fa.resend')->middleware('throttle:otp_resend');
 
-    // Mail OTP Theme Preview Route (for testing & visual review)
+    // Mail OTP Theme Preview Route (for local testing & visual review only)
     Route::get('/preview-mail/otp', function () {
+        if (! app()->environment('local', 'testing')) {
+            abort(404);
+        }
+
         $otp = request('otp', '4829');
         $user = (object) ['name' => request('name', 'Lady Eleanor')];
         $appName = \App\Models\Setting::appName();
@@ -305,12 +309,13 @@ Route::middleware('guest')->group(function () {
             'phone'    => ['nullable', 'string', 'max:50'],
         ]);
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'phone'    => $request->input('phone'),
             'password' => Hash::make($validated['password']),
             'role'     => 'customer',
+            'is_staff' => false,
         ]);
 
         // Auto-enroll into baseline Loyalty Tier if available
@@ -353,13 +358,12 @@ Route::middleware('guest')->group(function () {
         $request->validate(['email' => ['required', 'email']]);
 
         // Send reset link using secure hashed tokens in password_reset_tokens
-        $status = PasswordBroker::sendResetLink(
+        PasswordBroker::sendResetLink(
             $request->only('email')
         );
 
-        return $status === PasswordBroker::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+        // Always return generic success message to prevent user account enumeration (M-02)
+        return back()->with('status', 'If an account exists with that email address, we have emailed your password reset link.');
     })->name('password.email')->middleware('throttle:password_reset');
 
     Route::get('/reset-password/{token}', function (string $token) {

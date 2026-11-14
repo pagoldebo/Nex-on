@@ -203,7 +203,7 @@ class AdminOrderController extends Controller
             fputs($handle, "\xEF\xBB\xBF");
 
             // CSV Header
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Order Reference',
                 'Date',
                 'Customer Name',
@@ -234,7 +234,7 @@ class AdminOrderController extends Controller
                     return "{$i->product_name} ({$i->color_name}/{$i->size}) x {$i->qty}";
                 })->implode('; ');
 
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $o->reference,
                     $o->created_at->format('Y-m-d H:i:s'),
                     $o->shipping_name,

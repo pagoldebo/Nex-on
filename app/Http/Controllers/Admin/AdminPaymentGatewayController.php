@@ -21,9 +21,9 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Accept UPI, Debit/Credit Cards, Netbanking & Wallets across India.',
                 'enabled'        => Setting::get('gateway_razorpay_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_razorpay_mode', 'test'), // test or live
-                'key_id'         => Setting::get('gateway_razorpay_key_id', 'rzp_test_12345'),
-                'key_secret'     => Setting::get('gateway_razorpay_key_secret', 'sec_test_SecretKey'),
-                'webhook_secret' => Setting::get('gateway_razorpay_webhook_secret', 'whsec_rzp2026'),
+                'key_id'         => Setting::get('gateway_razorpay_key_id', ''),
+                'key_secret'     => !empty(Setting::get('gateway_razorpay_key_secret', '')) ? '••••••••' : '',
+                'webhook_secret' => !empty(Setting::get('gateway_razorpay_webhook_secret', '')) ? '••••••••' : '',
                 'webhook_url'    => url('/webhook/razorpay'),
             ],
             'stripe' => [
@@ -31,9 +31,9 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Global credit card payments, Apple Pay, Google Pay & multi-currency billing.',
                 'enabled'        => Setting::get('gateway_stripe_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_stripe_mode', 'test'),
-                'publishable_key'=> Setting::get('gateway_stripe_publishable_key', 'pk_test_51StoreStripeDemoKey'),
-                'secret_key'     => Setting::get('gateway_stripe_secret_key', 'sk_test_51StoreSecretDemoKey'),
-                'webhook_secret' => Setting::get('gateway_stripe_webhook_secret', 'whsec_stripeDemo'),
+                'publishable_key'=> Setting::get('gateway_stripe_publishable_key', ''),
+                'secret_key'     => !empty(Setting::get('gateway_stripe_secret_key', '')) ? '••••••••' : '',
+                'webhook_secret' => !empty(Setting::get('gateway_stripe_webhook_secret', '')) ? '••••••••' : '',
                 'webhook_url'    => url('/webhook/stripe'),
             ],
             'phonepe' => [
@@ -41,8 +41,8 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'Direct Indian UPI app intent flow & QR code checkout.',
                 'enabled'        => Setting::get('gateway_phonepe_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_phonepe_mode', 'sandbox'),
-                'merchant_id'    => Setting::get('gateway_phonepe_merchant_id', 'M22STOREDEMOUAT'),
-                'salt_key'       => Setting::get('gateway_phonepe_salt_key', 'd3b07384d113edec49eaa6238ad5ff00'),
+                'merchant_id'    => Setting::get('gateway_phonepe_merchant_id', ''),
+                'salt_key'       => !empty(Setting::get('gateway_phonepe_salt_key', '')) ? '••••••••' : '',
                 'salt_index'     => Setting::get('gateway_phonepe_salt_index', '1'),
                 'webhook_url'    => url('/webhook/phonepe'),
             ],
@@ -51,8 +51,8 @@ class AdminPaymentGatewayController extends Controller
                 'description'    => 'International shoppers checkout with PayPal wallet & international cards.',
                 'enabled'        => Setting::get('gateway_paypal_enabled', '0') === '1',
                 'mode'           => Setting::get('gateway_paypal_mode', 'sandbox'),
-                'client_id'      => Setting::get('gateway_paypal_client_id', 'AX_demo_paypal_client_id'),
-                'secret'         => Setting::get('gateway_paypal_secret', 'EP_demo_paypal_secret'),
+                'client_id'      => Setting::get('gateway_paypal_client_id', ''),
+                'secret'         => !empty(Setting::get('gateway_paypal_secret', '')) ? '••••••••' : '',
                 'webhook_url'    => url('/webhook/paypal'),
             ],
             'offline' => [
@@ -106,7 +106,22 @@ class AdminPaymentGatewayController extends Controller
             'store_upi_vpa'                   => $request->input('store_upi_vpa', 'nexonstore@okhdfcbank'),
         ];
 
+        $secretKeys = [
+            'gateway_razorpay_key_secret',
+            'gateway_razorpay_webhook_secret',
+            'gateway_stripe_secret_key',
+            'gateway_stripe_webhook_secret',
+            'gateway_phonepe_salt_key',
+            'gateway_paypal_secret',
+        ];
+
         foreach ($fields as $key => $value) {
+            if (in_array($key, $secretKeys, true)) {
+                // Do not wipe or overwrite existing secrets with masked placeholders
+                if ($value === '' || $value === '••••••••' || preg_match('/^[•*]+$/u', (string) $value)) {
+                    continue;
+                }
+            }
             Setting::set($key, $value);
         }
 

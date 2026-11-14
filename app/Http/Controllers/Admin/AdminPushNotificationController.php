@@ -58,18 +58,26 @@ class AdminPushNotificationController extends Controller
     }
 
     /**
-     * Client API: Register or update browser push subscription.
+     * Client API: Register or update browser push subscription (requires authentication - L-01).
      */
     public function apiSubscribe(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'endpoint'    => 'required|string',
+            'endpoint'    => 'required|url|starts_with:https://',
             'p256dh_key'  => 'nullable|string',
             'auth_token'  => 'nullable|string',
             'device_type' => 'nullable|string',
         ]);
 
         $hash = hash('sha256', $validated['endpoint']);
+
+        $existing = PushSubscription::where('endpoint_hash', $hash)->first();
+        if ($existing && $existing->user_id && $existing->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Subscription endpoint belongs to another user.',
+            ], 403);
+        }
 
         $sub = PushSubscription::updateOrCreate(
             ['endpoint_hash' => $hash],
@@ -96,11 +104,21 @@ class AdminPushNotificationController extends Controller
     public function apiUnsubscribe(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'endpoint' => 'required|string',
+            'endpoint' => 'required|url|starts_with:https://',
         ]);
 
         $hash = hash('sha256', $validated['endpoint']);
-        PushSubscription::where('endpoint_hash', $hash)->update(['is_active' => false]);
+        $sub = PushSubscription::where('endpoint_hash', $hash)->first();
+
+        if ($sub) {
+            if ($sub->user_id && (! Auth::check() || $sub->user_id !== Auth::id())) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized.',
+                ], 403);
+            }
+            $sub->update(['is_active' => false]);
+        }
 
         return response()->json([
             'success' => true,

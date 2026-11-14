@@ -20,7 +20,7 @@ use Illuminate\View\View;
  *
  * Back-office controller for global store configuration, theme visuals, and security policies.
  * Dynamically persists key-value settings, validates webhooks against SSRF,
- * enforces strict image upload whitelisting (Domain 5), and sanitizes SVG files.
+ * enforces strict image upload whitelisting (Domain 5), and rejects SVG files to prevent stored XSS (M-01).
  *
  * @package App\Http\Controllers\Admin
  */
@@ -78,31 +78,31 @@ class AdminSettingController extends Controller
         ];
 
         $request->validate([
-            'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:5120',
-            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif,mp4,webm,mov,ogg|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif,video/mp4,video/webm,video/quicktime,video/ogg|max:51200',
-            'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_slide_3_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_slide_4_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_slide_1_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_slide_2_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_slide_3_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_slide_4_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_slide_5_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'organic_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'organic_ad1_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'organic_ad2_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'organic_ad3_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
-            'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,image/webp,image/avif|max:10240',
+            'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:5120',
+            'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif,mp4,webm,mov,ogg|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/quicktime,video/ogg|max:20480',
+            'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_slide_2_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_slide_3_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_slide_4_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_slide_5_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'lumiere_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_hero_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_slide_1_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_slide_2_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_slide_3_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_slide_4_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_slide_5_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'saaya_story_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'vyra_story_image'        => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'buttercup_story_image'   => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'lumiere_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'organic_hero_image'      => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'organic_story_image'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'organic_ad1_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'organic_ad2_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'organic_ad3_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
         ]);
 
         // Validate webhook URLs against SSRF (mitigates internal network scanning & cloud metadata access)
@@ -136,9 +136,11 @@ class AdminSettingController extends Controller
                         if (Storage::disk('public')->exists($clean)) {
                             Storage::disk('public')->delete($clean);
                         }
+                        $publicImagesDir = realpath(public_path('images'));
                         $publicFile = public_path('images/' . $clean);
-                        if (file_exists($publicFile) && !is_dir($publicFile)) {
-                            @unlink($publicFile);
+                        $realFile = realpath($publicFile);
+                        if ($realFile && $publicImagesDir && str_starts_with($realFile, $publicImagesDir) && !is_dir($realFile)) {
+                            @unlink($realFile);
                         }
                     }
                     Setting::set($targetKey, '');
@@ -168,43 +170,33 @@ class AdminSettingController extends Controller
                 $uploadedFile = $request->file($fileKey);
 
                 if ($fileKey === 'site_logo') {
-                    // Logo is stored as branding/logo.png (or logo.svg), not converted to webp or random hash
-                    if ($oldImg && $oldImg !== 'branding/logo.png' && $oldImg !== 'branding/logo.svg' && Storage::disk('public')->exists($oldImg)) {
+                    // Logo is stored as branding/logo.png, converted to safe raster PNG (rejects SVG per M-01)
+                    if ($oldImg && $oldImg !== 'branding/logo.png' && Storage::disk('public')->exists($oldImg)) {
                         Storage::disk('public')->delete($oldImg);
                     }
 
-                    $ext = strtolower($uploadedFile->getClientOriginalExtension());
-                    $mime = $uploadedFile->getMimeType() ?? '';
-                    $isSvg = ($ext === 'svg' || str_contains($mime, 'svg'));
-
-                    if ($isSvg) {
-                        $sanitized = HtmlSanitizerService::sanitizeSvg(file_get_contents($uploadedFile->getRealPath()));
-                        Storage::disk('public')->put('branding/logo.svg', $sanitized);
-                        Setting::set('site_logo', 'branding/logo.svg');
-                    } else {
-                        $raw = file_get_contents($uploadedFile->getRealPath());
-                        $saved = false;
-                        if (function_exists('imagecreatefromstring')) {
-                            $im = @imagecreatefromstring($raw);
-                            if ($im !== false) {
-                                imagepalettetotruecolor($im);
-                                imagealphablending($im, false);
-                                imagesavealpha($im, true);
-                                ob_start();
-                                imagepng($im);
-                                $pngData = ob_get_clean();
-                                imagedestroy($im);
-                                if ($pngData !== false && strlen($pngData) > 0) {
-                                    Storage::disk('public')->put('branding/logo.png', $pngData);
-                                    $saved = true;
-                                }
+                    $raw = file_get_contents($uploadedFile->getRealPath());
+                    $saved = false;
+                    if (function_exists('imagecreatefromstring')) {
+                        $im = @imagecreatefromstring($raw);
+                        if ($im !== false) {
+                            imagepalettetotruecolor($im);
+                            imagealphablending($im, false);
+                            imagesavealpha($im, true);
+                            ob_start();
+                            imagepng($im);
+                            $pngData = ob_get_clean();
+                            imagedestroy($im);
+                            if ($pngData !== false && strlen($pngData) > 0) {
+                                Storage::disk('public')->put('branding/logo.png', $pngData);
+                                $saved = true;
                             }
                         }
-                        if (!$saved) {
-                            $uploadedFile->storeAs('branding', 'logo.png', 'public');
-                        }
-                        Setting::set('site_logo', 'branding/logo.png');
                     }
+                    if (!$saved) {
+                        $uploadedFile->storeAs('branding', 'logo.png', 'public');
+                    }
+                    Setting::set('site_logo', 'branding/logo.png');
                 } else {
                     if ($oldImg) {
                         $cleanOld = ltrim($oldImg, '/');
@@ -214,9 +206,11 @@ class AdminSettingController extends Controller
                         if (Storage::disk('public')->exists($cleanOld)) {
                             Storage::disk('public')->delete($cleanOld);
                         }
+                        $publicImagesDir = realpath(public_path('images'));
                         $publicOldFile = public_path('images/' . $cleanOld);
-                        if (file_exists($publicOldFile) && !is_dir($publicOldFile)) {
-                            @unlink($publicOldFile);
+                        $realOldFile = realpath($publicOldFile);
+                        if ($realOldFile && $publicImagesDir && str_starts_with($realOldFile, $publicImagesDir) && !is_dir($realOldFile)) {
+                            @unlink($realOldFile);
                         }
                     }
                     $isSlider = str_starts_with($fileKey, 'vyra_hero')
@@ -276,8 +270,73 @@ class AdminSettingController extends Controller
             'organic_returns_info',
         ];
 
+        $blockedSettingKeys = [
+            'gateway_razorpay_key_secret',
+            'gateway_razorpay_webhook_secret',
+            'gateway_stripe_secret_key',
+            'gateway_stripe_webhook_secret',
+            'gateway_phonepe_salt_key',
+            'gateway_paypal_secret',
+            'sms_twilio_token',
+            'sms_msg91_authkey',
+            'sms_fast2sms_api_key',
+        ];
+
+        $allowedPrefixes = [
+            'vyra_', 'buttercup_', 'lumiere_', 'saaya_', 'organic_',
+            'shipping_', 'return_', 'privacy_', 'terms_', 'about_', 'contact_',
+            'sizeguide_', 'pwa_prompt_', 'hero_', 'footer_', 'ticker_', 'faq_',
+        ];
+
+        $allowedSettingKeys = [
+            'store_name', 'support_email', 'support_phone', 'support_whatsapp', 'store_address',
+            'gstin', 'store_state', 'invoice_footer', 'free_shipping_threshold', 'shipping_cost',
+            'enable_cod', 'cod_charge', 'tax_percentage', 'announcement_bar', 'ticker_enabled',
+            'pwa_prompt_enabled', 'pwa_prompt_title', 'pwa_prompt_description', 'pwa_prompt_delay',
+            'footer_bio', 'footer_badge1', 'footer_badge2',
+            'product_delivery_info', 'product_returns_info', 'organic_delivery_info', 'organic_returns_info',
+            'return_custom_content', 'shipping_custom_content',
+            'order_webhook_urls', 'tally_sales_ledger',
+        ];
+
+        $isSuperAdmin = \Illuminate\Support\Facades\Auth::user()?->isSuperAdmin();
+
         foreach ($data as $key => $value) {
             if (!is_array($value)) {
+                if (in_array($key, $blockedSettingKeys, true)) {
+                    continue; // Gateway & SMS secrets must be configured via their dedicated admin controllers
+                }
+
+                // Check allowlist
+                $isAllowed = in_array($key, $allowedSettingKeys, true);
+                if (! $isAllowed) {
+                    foreach ($allowedPrefixes as $prefix) {
+                        if (str_starts_with($key, $prefix)) {
+                            $isAllowed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (! $isAllowed) {
+                    continue; // Ignore un-whitelisted keys
+                }
+
+                // Guard outbound webhook exfiltration: only super-admin can change webhook endpoints
+                if ($key === 'order_webhook_urls') {
+                    if (! $isSuperAdmin) {
+                        continue;
+                    }
+                    if (!empty($value)) {
+                        $urls = array_map('trim', explode(',', (string) $value));
+                        foreach ($urls as $u) {
+                            if (!empty($u)) {
+                                \App\Services\SsrfProtectionService::validateUrl($u);
+                            }
+                        }
+                    }
+                }
+
                 if (in_array($key, $richContentKeys, true)) {
                     $value = \App\Services\HtmlSanitizerService::clean($value);
                 }
@@ -353,6 +412,7 @@ class AdminSettingController extends Controller
         });
 
         $count = $variants->count();
+        \Illuminate\Support\Facades\Log::info("Admin ID " . \Illuminate\Support\Facades\Auth::id() . " performed bulk price adjustment ({$adjustmentType} {$adjustmentValue}) across {$count} variants in {$scopeName} from IP " . $request->ip());
         return back()->with('success', "Bulk price adjustment applied to {$count} variants across {$scopeName}.");
     }
 

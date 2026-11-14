@@ -369,7 +369,7 @@
                                     <input type="number" step="0.01" name="price" value="1499" required class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white font-bold">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-slate-600 text-[10px] uppercase mb-1">MRP / Compare (₹)</label>
+                                    <label class="block font-bold text-slate-600 text-[10px] uppercase mb-1">MRP / Retail (₹)</label>
                                     <input type="number" step="0.01" name="compare_at_price" value="1999" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white">
                                 </div>
                             </div>

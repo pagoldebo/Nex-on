@@ -193,29 +193,29 @@ class AdminReportController extends Controller
      */
     protected function getInventoryData(): array
     {
-        $variants = ProductVariant::with(['product.category', 'color'])->get();
-
-        $totalSkus      = $variants->count();
-        $totalUnits     = (int) $variants->sum('stock');
+        $totalSkus      = ProductVariant::count();
+        $totalUnits     = (int) ProductVariant::sum('stock');
         $totalCostValue = 0.0;
         $totalRetailVal = 0.0;
         $lowStockValue  = 0.0;
         $lowStockCount  = 0;
 
-        foreach ($variants as $v) {
-            $cost = (float) ($v->cost_price ?: ($v->price * 0.5)); // Default fallback 50% COGS
-            $retail = (float) $v->price;
-            $stock = max(0, (int) $v->stock);
+        ProductVariant::select('cost_price', 'price', 'stock', 'reorder_threshold')
+            ->lazy(200)
+            ->each(function ($v) use (&$totalCostValue, &$totalRetailVal, &$lowStockValue, &$lowStockCount) {
+                $cost = (float) ($v->cost_price ?: ($v->price * 0.5)); // Default fallback 50% COGS
+                $retail = (float) $v->price;
+                $stock = max(0, (int) $v->stock);
 
-            $totalCostValue += ($cost * $stock);
-            $totalRetailVal += ($retail * $stock);
+                $totalCostValue += ($cost * $stock);
+                $totalRetailVal += ($retail * $stock);
 
-            $threshold = (int) ($v->reorder_threshold ?? 5);
-            if ($stock <= $threshold) {
-                $lowStockCount++;
-                $lowStockValue += ($retail * $stock);
-            }
-        }
+                $threshold = (int) ($v->reorder_threshold ?? 5);
+                if ($stock <= $threshold) {
+                    $lowStockCount++;
+                    $lowStockValue += ($retail * $stock);
+                }
+            });
 
         $marginSpread = $totalRetailVal - $totalCostValue;
         $marginPct    = $totalRetailVal > 0 ? round(($marginSpread / $totalRetailVal) * 100, 1) : 0;
@@ -245,10 +245,6 @@ class AdminReportController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        $allOrders = Order::whereBetween('created_at', [$start, $end])
-            ->where('status', '!=', Order::STATUS_CANCELLED)
-            ->get();
-
         $totalInvoiceValue = 0.0;
         $totalTaxableValue = 0.0;
         $totalCgst         = 0.0;
@@ -258,31 +254,51 @@ class AdminReportController extends Controller
 
         $gstRows = [];
 
-        foreach ($allOrders as $ord) {
-            $invTotal = (float) $ord->total;
-            // Assuming 18% standard GST inclusive in retail prices
-            $taxable = round($invTotal / 1.18, 2);
-            $tax = round($invTotal - $taxable, 2);
+        $taxPercentage = (float) Setting::get('tax_percentage', 18);
+        $divisor = 1 + ($taxPercentage / 100);
 
-            $isInterstate = strcasecmp(trim($ord->shipping_state ?? ''), trim($storeState)) !== 0;
+        Order::whereBetween('created_at', [$start, $end])
+            ->where('status', '!=', Order::STATUS_CANCELLED)
+            ->lazy(100)
+            ->each(function ($ord) use (&$totalInvoiceValue, &$totalTaxableValue, &$totalCgst, &$totalSgst, &$totalIgst, &$totalTax, &$gstRows, $storeState, $taxPercentage, $divisor) {
+                $invTotal = (float) $ord->total;
+                $taxable = round($invTotal / $divisor, 2);
+                $tax = round($invTotal - $taxable, 2);
 
-            if ($isInterstate) {
-                $cgst = 0.0;
-                $sgst = 0.0;
-                $igst = $tax;
-            } else {
-                $cgst = round($tax / 2, 2);
-                $sgst = round($tax - $cgst, 2);
-                $igst = 0.0;
-            }
+                $isInterstate = strcasecmp(trim($ord->shipping_state ?? ''), trim($storeState)) !== 0;
 
-            $totalInvoiceValue += $invTotal;
-            $totalTaxableValue += $taxable;
-            $totalCgst         += $cgst;
-            $totalSgst         += $sgst;
-            $totalIgst         += $igst;
-            $totalTax          += $tax;
-        }
+                if ($isInterstate) {
+                    $cgst = 0.0;
+                    $sgst = 0.0;
+                    $igst = $tax;
+                } else {
+                    $cgst = round($tax / 2, 2);
+                    $sgst = round($tax - $cgst, 2);
+                    $igst = 0.0;
+                }
+
+                $totalInvoiceValue += $invTotal;
+                $totalTaxableValue += $taxable;
+                $totalCgst         += $cgst;
+                $totalSgst         += $sgst;
+                $totalIgst         += $igst;
+                $totalTax          += $tax;
+
+                $gstRows[] = [
+                    'order'       => $ord,
+                    'invoice_ref' => $ord->reference,
+                    'date'        => $ord->created_at->format('d M Y'),
+                    'customer'    => $ord->shipping_name,
+                    'state'       => $ord->shipping_state ?? 'N/A',
+                    'type'        => $isInterstate ? 'Inter-State (IGST)' : 'Intra-State (CGST+SGST)',
+                    'inv_value'   => $invTotal,
+                    'taxable'     => $taxable,
+                    'cgst'        => $cgst,
+                    'sgst'        => $sgst,
+                    'igst'        => $igst,
+                    'total_tax'   => $tax,
+                ];
+            });
 
         return compact(
             'storeState', 'orders', 'totalInvoiceValue', 'totalTaxableValue',
@@ -297,39 +313,38 @@ class AdminReportController extends Controller
     {
         [$start, $end] = $this->resolveDateRange($request);
 
-        $orders = Order::whereBetween('created_at', [$start, $end])
-            ->latest()
-            ->get();
-
         $filename = "sales_report_{$start->format('Ymd')}_{$end->format('Ymd')}.csv";
 
-        return response()->streamDownload(function () use ($orders) {
+        return response()->streamDownload(function () use ($start, $end) {
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM
 
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Order Reference', 'Date', 'Channel', 'Customer Name', 'Phone',
                 'Subtotal', 'Discount', 'Shipping', 'COD Fee', 'Total',
                 'Payment Method', 'Payment Status', 'Order Status'
             ]);
 
-            foreach ($orders as $order) {
-                fputcsv($handle, [
-                    $order->reference,
-                    $order->created_at->format('Y-m-d H:i:s'),
-                    strtoupper($order->channel ?? 'ONLINE'),
-                    $order->shipping_name,
-                    $order->shipping_phone,
-                    $order->subtotal,
-                    $order->discount,
-                    $order->shipping_charge,
-                    $order->cod_charge,
-                    $order->total,
-                    strtoupper($order->payment_method),
-                    strtoupper($order->payment_status),
-                    strtoupper($order->status),
-                ]);
-            }
+            Order::whereBetween('created_at', [$start, $end])
+                ->latest()
+                ->lazy(100)
+                ->each(function ($order) use ($handle) {
+                    \App\Services\CsvExporter::writeRow($handle, [
+                        $order->reference,
+                        $order->created_at->format('Y-m-d H:i:s'),
+                        strtoupper($order->channel ?? 'ONLINE'),
+                        $order->shipping_name,
+                        $order->shipping_phone,
+                        $order->subtotal,
+                        $order->discount,
+                        $order->shipping_charge,
+                        $order->cod_charge,
+                        $order->total,
+                        strtoupper($order->payment_method),
+                        strtoupper($order->payment_status),
+                        strtoupper($order->status),
+                    ]);
+                });
 
             fclose($handle);
         }, $filename, [
@@ -348,37 +363,36 @@ class AdminReportController extends Controller
             ->where('status', '!=', Order::STATUS_CANCELLED)
             ->pluck('id');
 
-        $items = OrderItem::whereIn('order_id', $orderIds)
-            ->select(
-                'product_name',
-                'size',
-                'color_name',
-                DB::raw('SUM(qty) as units_sold'),
-                DB::raw('SUM(line_total) as total_revenue'),
-                DB::raw('AVG(price) as avg_price')
-            )
-            ->groupBy('product_name', 'size', 'color_name')
-            ->orderByDesc('total_revenue')
-            ->get();
-
         $filename = "products_report_{$start->format('Ymd')}_{$end->format('Ymd')}.csv";
 
-        return response()->streamDownload(function () use ($items) {
+        return response()->streamDownload(function () use ($orderIds) {
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, ['Product Title', 'Size', 'Color', 'Units Sold', 'Avg Price', 'Gross Revenue']);
+            \App\Services\CsvExporter::writeRow($handle, ['Product Title', 'Size', 'Color', 'Units Sold', 'Avg Price', 'Gross Revenue']);
 
-            foreach ($items as $item) {
-                fputcsv($handle, [
-                    $item->product_name,
-                    $item->size,
-                    $item->color_name,
-                    $item->units_sold,
-                    round($item->avg_price, 2),
-                    round($item->total_revenue, 2),
-                ]);
-            }
+            OrderItem::whereIn('order_id', $orderIds)
+                ->select(
+                    'product_name',
+                    'size',
+                    'color_name',
+                    DB::raw('SUM(qty) as units_sold'),
+                    DB::raw('SUM(line_total) as total_revenue'),
+                    DB::raw('AVG(price) as avg_price')
+                )
+                ->groupBy('product_name', 'size', 'color_name')
+                ->orderByDesc('total_revenue')
+                ->lazy(100)
+                ->each(function ($item) use ($handle) {
+                    \App\Services\CsvExporter::writeRow($handle, [
+                        $item->product_name,
+                        $item->size,
+                        $item->color_name,
+                        $item->units_sold,
+                        round($item->avg_price, 2),
+                        round($item->total_revenue, 2),
+                    ]);
+                });
 
             fclose($handle);
         }, $filename, [
@@ -391,38 +405,39 @@ class AdminReportController extends Controller
      */
     public function exportInventoryCsv(): StreamedResponse
     {
-        $variants = ProductVariant::with(['product', 'color', 'supplier'])->get();
         $filename = "inventory_valuation_" . date('Ymd_His') . ".csv";
 
-        return response()->streamDownload(function () use ($variants) {
+        return response()->streamDownload(function () {
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'SKU', 'Product Name', 'Color', 'Size', 'Supplier',
                 'Stock Qty', 'Cost Price (₹)', 'Retail Price (₹)',
                 'Cost Valuation (₹)', 'Retail Valuation (₹)', 'Potential Margin (₹)'
             ]);
 
-            foreach ($variants as $v) {
-                $cost = (float) ($v->cost_price ?: ($v->price * 0.5));
-                $retail = (float) $v->price;
-                $stock = max(0, (int) $v->stock);
+            ProductVariant::with(['product', 'color', 'supplier'])
+                ->lazy(100)
+                ->each(function ($v) use ($handle) {
+                    $cost = (float) ($v->cost_price ?: ($v->price * 0.5));
+                    $retail = (float) $v->price;
+                    $stock = max(0, (int) $v->stock);
 
-                fputcsv($handle, [
-                    $v->sku,
-                    $v->product->name ?? 'N/A',
-                    $v->color->name ?? 'N/A',
-                    $v->size,
-                    $v->supplier->name ?? 'Default Supplier',
-                    $stock,
-                    $cost,
-                    $retail,
-                    round($cost * $stock, 2),
-                    round($retail * $stock, 2),
-                    round(($retail - $cost) * $stock, 2),
-                ]);
-            }
+                    \App\Services\CsvExporter::writeRow($handle, [
+                        $v->sku,
+                        $v->product->name ?? 'N/A',
+                        $v->color->name ?? 'N/A',
+                        $v->size,
+                        $v->supplier->name ?? 'Default Supplier',
+                        $stock,
+                        $cost,
+                        $retail,
+                        round($cost * $stock, 2),
+                        round($retail * $stock, 2),
+                        round(($retail - $cost) * $stock, 2),
+                    ]);
+                });
 
             fclose($handle);
         }, $filename, [
@@ -438,56 +453,55 @@ class AdminReportController extends Controller
         [$start, $end] = $this->resolveDateRange($request);
         $storeState = Setting::get('store_state', 'Maharashtra');
 
-        $orders = Order::whereBetween('created_at', [$start, $end])
-            ->where('status', '!=', Order::STATUS_CANCELLED)
-            ->latest()
-            ->get();
-
         $filename = "gst_tax_report_{$start->format('Ymd')}_{$end->format('Ymd')}.csv";
 
-        return response()->streamDownload(function () use ($orders, $storeState) {
+        return response()->streamDownload(function () use ($start, $end, $storeState) {
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Invoice Ref', 'Order Date', 'Customer Name', 'Customer State',
                 'Supply Type', 'Invoice Value (₹)', 'Taxable Amount (₹)',
                 'CGST 9% (₹)', 'SGST 9% (₹)', 'IGST 18% (₹)', 'Total Tax (₹)'
             ]);
 
-            foreach ($orders as $ord) {
-                $invTotal = (float) $ord->total;
-                $taxable  = round($invTotal / 1.18, 2);
-                $tax      = round($invTotal - $taxable, 2);
+            Order::whereBetween('created_at', [$start, $end])
+                ->where('status', '!=', Order::STATUS_CANCELLED)
+                ->latest()
+                ->lazy(100)
+                ->each(function ($ord) use ($handle, $storeState) {
+                    $invTotal = (float) $ord->total;
+                    $taxable  = round($invTotal / 1.18, 2);
+                    $tax      = round($invTotal - $taxable, 2);
 
-                $isInterstate = strcasecmp(trim($ord->shipping_state ?? ''), trim($storeState)) !== 0;
+                    $isInterstate = strcasecmp(trim($ord->shipping_state ?? ''), trim($storeState)) !== 0;
 
-                if ($isInterstate) {
-                    $supplyType = 'Inter-State';
-                    $cgst = 0.0;
-                    $sgst = 0.0;
-                    $igst = $tax;
-                } else {
-                    $supplyType = 'Intra-State';
-                    $cgst = round($tax / 2, 2);
-                    $sgst = round($tax - $cgst, 2);
-                    $igst = 0.0;
-                }
+                    if ($isInterstate) {
+                        $supplyType = 'Inter-State';
+                        $cgst = 0.0;
+                        $sgst = 0.0;
+                        $igst = $tax;
+                    } else {
+                        $supplyType = 'Intra-State';
+                        $cgst = round($tax / 2, 2);
+                        $sgst = round($tax - $cgst, 2);
+                        $igst = 0.0;
+                    }
 
-                fputcsv($handle, [
-                    $ord->reference,
-                    $ord->created_at->format('Y-m-d'),
-                    $ord->shipping_name,
-                    $ord->shipping_state ?: 'Unknown',
-                    $supplyType,
-                    $invTotal,
-                    $taxable,
-                    $cgst,
-                    $sgst,
-                    $igst,
-                    $tax,
-                ]);
-            }
+                    \App\Services\CsvExporter::writeRow($handle, [
+                        $ord->reference,
+                        $ord->created_at->format('Y-m-d'),
+                        $ord->shipping_name,
+                        $ord->shipping_state ?: 'Unknown',
+                        $supplyType,
+                        $invTotal,
+                        $taxable,
+                        $cgst,
+                        $sgst,
+                        $igst,
+                        $tax,
+                    ]);
+                });
 
             fclose($handle);
         }, $filename, [

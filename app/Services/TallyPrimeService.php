@@ -21,18 +21,36 @@ class TallyPrimeService
 
         $partyLedger = $order->payment_method === 'cash' 
             ? 'Cash' 
-            : htmlspecialchars($order->shipping_name ?: 'Sundry Debtors Retail', ENT_XML1);
+            : htmlspecialchars($order->shipping_name ?: 'Sundry Debtors Retail', ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
-        // Tax calculation: Assume inclusive 18% GST (9% CGST + 9% SGST for intra-state, or 18% IGST)
+        // Tax calculation: Dynamic GST based on store settings (defaults to 18%: 9% CGST + 9% SGST for intra-state, or 18% IGST)
+        $taxPercentage = (float) Setting::get('tax_percentage', 18);
+        $divisor = 1 + ($taxPercentage / 100);
+        $halfRate = (int) ($taxPercentage / 2) == ($taxPercentage / 2) ? (int) ($taxPercentage / 2) : round($taxPercentage / 2, 2);
+        $fullRate = (int) $taxPercentage == $taxPercentage ? (int) $taxPercentage : round($taxPercentage, 2);
+
         $subtotal = $order->subtotal;
         $discount = $order->discount;
-        $netTaxable = max(0, round(($subtotal - $discount) / 1.18, 2));
-        $taxTotal = round(($subtotal - $discount) - $netTaxable, 2);
-        $isInterState = !empty($order->shipping_state) && strtolower(trim($order->shipping_state)) !== 'karnataka';
+
+        // Use stored persisted tax if present, otherwise derive dynamically from store rate
+        if (!empty($order->tax_amount) && $order->tax_amount > 0) {
+            $taxTotal = round($order->tax_amount / 100, 2);
+            $netTaxable = max(0, round(($subtotal - $discount) - $taxTotal, 2));
+        } else {
+            $netTaxable = max(0, round(($subtotal - $discount) / $divisor, 2));
+            $taxTotal = round(($subtotal - $discount) - $netTaxable, 2);
+        }
+        
+        $storeState = Setting::get('store_state', 'Karnataka');
+        $isInterState = !empty($order->shipping_state) && strcasecmp(trim($order->shipping_state), trim($storeState)) !== 0;
         
         $cgst = $isInterState ? 0 : round($taxTotal / 2, 2);
         $sgst = $isInterState ? 0 : round($taxTotal / 2, 2);
         $igst = $isInterState ? $taxTotal : 0;
+
+        $methodSafe = htmlspecialchars(strtoupper((string) $order->payment_method), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $channelSafe = htmlspecialchars((string) $order->channel, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $salesLedger = htmlspecialchars(Setting::get('tally_sales_ledger', Setting::appName() . ' Sales Account'), ENT_XML1);
 
         $xml = [];
         $xml[] = '    <TALLYMESSAGE xmlns:UDF="TallyUDF">';
@@ -46,7 +64,7 @@ class TallyPrimeService
         $xml[] = "        <PARTYNAME>{$partyLedger}</PARTYNAME>";
         $xml[] = "        <PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>";
         $xml[] = "        <ISINVOICE>Yes</ISINVOICE>";
-        $xml[] = "        <NARRATION>Online Store Sale - Ref #{$ref} via " . strtoupper($order->payment_method) . " (Channel: {$order->channel})</NARRATION>";
+        $xml[] = "        <NARRATION>Online Store Sale - Ref #{$ref} via {$methodSafe} (Channel: {$channelSafe})</NARRATION>";
 
         // 1. Party Ledger (Debit total)
         $xml[] = '        <ALLLEDGERENTRIES.LIST>';
@@ -57,7 +75,7 @@ class TallyPrimeService
 
         // 2. Sales Account (Credit net taxable)
         $xml[] = '        <ALLLEDGERENTRIES.LIST>';
-        $xml[] = '          <LEDGERNAME>Sales - Apparel &amp; Lingerie</LEDGERNAME>';
+        $xml[] = "          <LEDGERNAME>{$salesLedger}</LEDGERNAME>";
         $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
         $xml[] = "          <AMOUNT>{$netTaxable}</AMOUNT>";
         $xml[] = '        </ALLLEDGERENTRIES.LIST>';
@@ -65,21 +83,21 @@ class TallyPrimeService
         // 3. Taxes
         if ($cgst > 0) {
             $xml[] = '        <ALLLEDGERENTRIES.LIST>';
-            $xml[] = '          <LEDGERNAME>Output CGST @ 9%</LEDGERNAME>';
+            $xml[] = "          <LEDGERNAME>Output CGST @ {$halfRate}%</LEDGERNAME>";
             $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
             $xml[] = "          <AMOUNT>{$cgst}</AMOUNT>";
             $xml[] = '        </ALLLEDGERENTRIES.LIST>';
         }
         if ($sgst > 0) {
             $xml[] = '        <ALLLEDGERENTRIES.LIST>';
-            $xml[] = '          <LEDGERNAME>Output SGST @ 9%</LEDGERNAME>';
+            $xml[] = "          <LEDGERNAME>Output SGST @ {$halfRate}%</LEDGERNAME>";
             $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
             $xml[] = "          <AMOUNT>{$sgst}</AMOUNT>";
             $xml[] = '        </ALLLEDGERENTRIES.LIST>';
         }
         if ($igst > 0) {
             $xml[] = '        <ALLLEDGERENTRIES.LIST>';
-            $xml[] = '          <LEDGERNAME>Output IGST @ 18%</LEDGERNAME>';
+            $xml[] = "          <LEDGERNAME>Output IGST @ {$fullRate}%</LEDGERNAME>";
             $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
             $xml[] = "          <AMOUNT>{$igst}</AMOUNT>";
             $xml[] = '        </ALLLEDGERENTRIES.LIST>';
@@ -91,6 +109,13 @@ class TallyPrimeService
             $xml[] = '          <LEDGERNAME>Courier Freight &amp; Delivery Income</LEDGERNAME>';
             $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
             $xml[] = "          <AMOUNT>{$order->shipping_charge}</AMOUNT>";
+            $xml[] = '        </ALLLEDGERENTRIES.LIST>';
+        }
+        if ($order->cod_charge > 0) {
+            $xml[] = '        <ALLLEDGERENTRIES.LIST>';
+            $xml[] = '          <LEDGERNAME>Cash on Delivery Convenience Fee</LEDGERNAME>';
+            $xml[] = '          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
+            $xml[] = "          <AMOUNT>{$order->cod_charge}</AMOUNT>";
             $xml[] = '        </ALLLEDGERENTRIES.LIST>';
         }
 
@@ -145,7 +170,10 @@ class TallyPrimeService
 
         $partyLedger = $order->payment_method === 'cash' 
             ? 'Cash' 
-            : htmlspecialchars($order->shipping_name ?: 'Sundry Debtors Retail', ENT_XML1);
+            : htmlspecialchars($order->shipping_name ?: 'Sundry Debtors Retail', ENT_XML1 | ENT_QUOTES, 'UTF-8');
+
+        $methodSafe = htmlspecialchars(strtoupper((string) $order->payment_method), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $txnSafe = htmlspecialchars((string) ($order->payment_reference ?? 'N/A'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
         $xml = [];
         $xml[] = '    <TALLYMESSAGE xmlns:UDF="TallyUDF">';
@@ -154,7 +182,7 @@ class TallyPrimeService
         $xml[] = "        <VOUCHERTYPENAME>Receipt</VOUCHERTYPENAME>";
         $xml[] = "        <VOUCHERNUMBER>{$rcpNo}</VOUCHERNUMBER>";
         $xml[] = "        <REFERENCE>{$ref}</REFERENCE>";
-        $xml[] = "        <NARRATION>Payment received for Order #{$ref} via " . strtoupper($order->payment_method) . " (Txn: {$order->payment_reference})</NARRATION>";
+        $xml[] = "        <NARRATION>Payment received for Order #{$ref} via {$methodSafe} (Txn: {$txnSafe})</NARRATION>";
 
         // Debit Bank / Cash
         $xml[] = '        <ALLLEDGERENTRIES.LIST>';

@@ -11,9 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->encryptCookies(except: [
-            'admin_theme',
-        ]);
+        $middleware->encryptCookies();
         $middleware->validateCsrfTokens(except: [
             'webhook/*',
         ]);

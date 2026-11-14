@@ -35,13 +35,17 @@ class SmsService
             default    => $this->sendViaLog($formattedPhone, $message),
         };
 
-        // Record in audit log
+        // Record in audit log (mask sensitive verification OTPs in all non-local environments)
+        $loggedMessage = (! app()->environment('local', 'testing') && str_contains($templateType, 'otp'))
+            ? preg_replace('/\b\d{4,6}\b/', '******', $message)
+            : $message;
+
         $log = SmsLog::create([
             'phone'               => $formattedPhone,
             'driver'              => $driver,
             'template_type'       => $templateType,
             'order_id'            => $orderId,
-            'message'             => $message,
+            'message'             => $loggedMessage,
             'status'              => $result['success'] ? 'sent' : 'failed',
             'gateway_response_id' => $result['response_id'] ?? null,
             'error_message'       => $result['error'] ?? null,
@@ -85,10 +89,10 @@ class SmsService
         $phone = preg_replace('/[^0-9]/', '', $phone);
         $otp = (string) random_int(100000, 999999);
 
-        // Store in phone_otps table valid for 10 minutes
+        // Store hashed OTP in phone_otps table valid for 10 minutes (L-08 hardening)
         PhoneOtp::create([
             'phone'       => $phone,
-            'otp'         => $otp,
+            'otp'         => hash('sha256', $otp),
             'expires_at'  => now()->addMinutes(10),
             'is_verified' => false,
         ]);
@@ -106,14 +110,19 @@ class SmsService
     public function verifyOtp(string $phone, string $otp): bool
     {
         $phone = preg_replace('/[^0-9]/', '', $phone);
+        $cleanOtp = trim($otp);
+        $hashedOtp = hash('sha256', $cleanOtp);
 
         $record = PhoneOtp::where('phone', $phone)
-            ->where('otp', trim($otp))
+            ->where(function ($query) use ($cleanOtp, $hashedOtp) {
+                $query->where('otp', $hashedOtp)
+                      ->orWhere('otp', $cleanOtp);
+            })
             ->where('is_verified', false)
             ->latest()
             ->first();
 
-        if ($record && !$record->isExpired()) {
+        if ($record && ! $record->isExpired()) {
             $record->update(['is_verified' => true]);
             return true;
         }
@@ -240,7 +249,11 @@ class SmsService
      */
     protected function sendViaLog(string $phone, string $message, ?string $note = null): array
     {
-        Log::info("[SMS SIMULATION] To: {$phone} | Msg: {$message}" . ($note ? " | Note: {$note}" : ''));
+        $sanitizedMsg = app()->environment('production')
+            ? preg_replace('/\b\d{4,6}\b/', '******', $message)
+            : $message;
+
+        Log::info("[SMS SIMULATION] To: {$phone} | Msg: {$sanitizedMsg}" . ($note ? " | Note: {$note}" : ''));
         return [
             'success'     => true,
             'response_id' => 'LOG-' . uniqid(),

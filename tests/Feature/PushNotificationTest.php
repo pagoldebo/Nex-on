@@ -36,9 +36,10 @@ class PushNotificationTest extends TestCase
 
     public function test_client_can_subscribe_device()
     {
+        $user = User::factory()->create();
         $endpoint = 'https://fcm.googleapis.com/fcm/send/test-device-token-12345';
 
-        $response = $this->postJson(route('api.push.subscribe'), [
+        $response = $this->actingAs($user)->postJson(route('api.push.subscribe'), [
             'endpoint'    => $endpoint,
             'p256dh_key'  => 'BNcRdreALRF8FsII...',
             'auth_token'  => 'tBHItDaQ...',
@@ -52,21 +53,39 @@ class PushNotificationTest extends TestCase
 
         $this->assertDatabaseHas('push_subscriptions', [
             'endpoint_hash' => hash('sha256', $endpoint),
+            'user_id'       => $user->id,
             'is_active'     => true,
             'device_type'   => 'desktop',
         ]);
     }
 
+    public function test_anonymous_client_cannot_subscribe_or_unsubscribe()
+    {
+        $endpoint = 'https://fcm.googleapis.com/fcm/send/guest-attempt';
+
+        $subResponse = $this->postJson(route('api.push.subscribe'), [
+            'endpoint' => $endpoint,
+        ]);
+        $subResponse->assertStatus(401);
+
+        $unsubResponse = $this->postJson(route('api.push.unsubscribe'), [
+            'endpoint' => $endpoint,
+        ]);
+        $unsubResponse->assertStatus(401);
+    }
+
     public function test_client_can_unsubscribe_device()
     {
+        $user = User::factory()->create();
         $endpoint = 'https://fcm.googleapis.com/fcm/send/unsub-test-token';
         PushSubscription::create([
+            'user_id'       => $user->id,
             'endpoint'      => $endpoint,
             'endpoint_hash' => hash('sha256', $endpoint),
             'is_active'     => true,
         ]);
 
-        $response = $this->postJson(route('api.push.unsubscribe'), [
+        $response = $this->actingAs($user)->postJson(route('api.push.unsubscribe'), [
             'endpoint' => $endpoint,
         ]);
 

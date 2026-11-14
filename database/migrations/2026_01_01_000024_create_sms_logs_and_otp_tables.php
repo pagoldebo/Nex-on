@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::create('phone_otps', function (Blueprint $table) {
             $table->id();
             $table->string('phone', 30)->index();
-            $table->string('otp', 8);
+            $table->string('otp', 100);
             $table->timestamp('expires_at');
             $table->boolean('is_verified')->default(false);
             $table->timestamps();

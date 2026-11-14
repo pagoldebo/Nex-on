@@ -12,6 +12,9 @@ class RbacService
      * Predefined system permission specifications.
      */
     public const SYSTEM_PERMISSIONS = [
+        'dashboard' => [
+            ['slug' => 'dashboard.view',        'name' => 'View Administrative Dashboard & Metrics'],
+        ],
         'inventory' => [
             ['slug' => 'inventory.view',        'name' => 'View Inventory & Stock'],
             ['slug' => 'inventory.manage',      'name' => 'Manage Inventory & Adjust Stock'],
@@ -58,6 +61,7 @@ class RbacService
             'name'        => 'Store Manager',
             'description' => 'Comprehensive management of store items, catalog, inventory, orders, sales billing, POS checkout, and reports.',
             'permissions' => [
+                'dashboard.view',
                 'inventory.view', 'inventory.manage', 'inventory.forecasting', 'inventory.batches',
                 'orders.view', 'orders.manage', 'orders.export',
                 'products.view', 'products.manage',
@@ -69,6 +73,7 @@ class RbacService
             'name'        => 'eCommerce Manager',
             'description' => 'Oversees digital storefront operations, online catalog merchandising, web orders fulfillment, and eCommerce analytics.',
             'permissions' => [
+                'dashboard.view',
                 'orders.view', 'orders.manage', 'orders.export',
                 'products.view', 'products.manage',
                 'reports.view', 'reports.export',

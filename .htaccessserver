@@ -1,9 +1,13 @@
+# --------------------------------------------------------------------------
+# DEPLOYMENT TEMPLATE: Reference configuration for shared Apache hosts.
+# Ensure this is copied or synchronized with the root .htaccess file.
+# --------------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    --------------------------------------------------------------------------
-    1. SECURITY: Block direct access to sensitive system files
-    --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # 1. SECURITY: Block direct access to sensitive system files
+    # --------------------------------------------------------------------------
     <FilesMatch "^\.(env|git|editorconfig|phpunit)">
         Require all denied
     </FilesMatch>
@@ -12,24 +16,23 @@
         Require all denied
     </FilesMatch>
 
-    --------------------------------------------------------------------------
-    2. SECURITY: Block direct access to internal Laravel directories
-    --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # 2. SECURITY: Block direct access to internal Laravel directories
+    # --------------------------------------------------------------------------
     RewriteRule ^(app|bootstrap|config|database|lang|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L,NC]
 
-    --------------------------------------------------------------------------
-    3. Handle Authorization Header for API & Bearer Tokens
-    --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # 3. Handle Authorization Header for API & Bearer Tokens
+    # --------------------------------------------------------------------------
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    --------------------------------------------------------------------------
-    4. REDIRECT: Silently forward all requests into the /public directory
-    --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # 4. REDIRECT: Silently forward all requests into the /public directory
+    # --------------------------------------------------------------------------
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
 # Disable Directory Browsing
 Options -Indexes
-

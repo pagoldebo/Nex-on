@@ -193,7 +193,7 @@ class AdminAttendanceController extends Controller
             $handle = fopen('php://output', 'w');
 
             // Header row
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Employee Name',
                 'Email',
                 'Department',
@@ -208,7 +208,7 @@ class AdminAttendanceController extends Controller
             ]);
 
             foreach ($attendances as $row) {
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $row->user?->name ?? 'Staff',
                     $row->user?->email ?? '',
                     $row->department?->name ?? 'Store Operations',

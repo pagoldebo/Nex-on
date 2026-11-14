@@ -45,7 +45,7 @@ class PasswordSecurityTest extends TestCase
 
     public function test_user_model_hides_sensitive_credentials_from_serialization(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                      => 'Serialization User',
             'email'                     => 'serial@example.com',
             'password'                  => 'Secret123!',
@@ -263,6 +263,36 @@ class PasswordSecurityTest extends TestCase
         $this->assertEquals('bcrypt', config('hashing.driver'));
         $this->assertTrue(config('hashing.rehash_on_login'));
         $this->assertTrue(config('hashing.bcrypt.verify'));
+    }
+
+    public function test_user_mass_assignment_protection_guards_sensitive_attributes(): void
+    {
+        User::$allowPrivilegedMassAssignment = false;
+        try {
+            $user = User::create([
+                'name'                      => 'Attacker Mass Assign',
+                'email'                     => 'attacker@example.com',
+                'password'                  => 'Password123!',
+                'two_factor_secret'         => 'planted_secret',
+                'two_factor_confirmed_at'   => now(),
+                'otp_code'                  => '999999',
+                'otp_expires_at'            => now()->addHour(),
+                'deactivated_at'            => now(),
+                'role'                      => 'admin',
+                'is_staff'                  => true,
+            ]);
+
+            $this->assertNull($user->fresh()->two_factor_secret);
+            $this->assertNull($user->fresh()->two_factor_confirmed_at);
+            $this->assertNull($user->fresh()->otp_code);
+            $this->assertNull($user->fresh()->otp_expires_at);
+            $this->assertNull($user->fresh()->deactivated_at);
+            $this->assertNotEquals('admin', $user->fresh()->role);
+            $this->assertEquals('customer', $user->fresh()->role);
+            $this->assertFalse((bool) $user->fresh()->is_staff);
+        } finally {
+            User::$allowPrivilegedMassAssignment = true;
+        }
     }
 }
 

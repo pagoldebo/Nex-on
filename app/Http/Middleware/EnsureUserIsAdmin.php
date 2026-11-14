@@ -22,8 +22,12 @@ class EnsureUserIsAdmin
             return redirect()->guest(route('login'));
         }
 
-        // If the user has a pure customer role and has no staff/admin roles or departments assigned, block access
-        if ($user->isCustomer() && ! $user->isAdmin() && ! $user->roles()->exists() && ! $user->departments()->exists()) {
+        // Allow access only to users who are system administrators or authorized staff members with assigned RBAC roles
+        $isAuthorized = (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin())
+            || (method_exists($user, 'isAdmin') && $user->isAdmin())
+            || ($user->is_staff && $user->roles()->exists());
+
+        if (! $isAuthorized) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Forbidden. Administrator privileges required.'], 403);
             }

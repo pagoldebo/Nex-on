@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Store Contact & Legal Information
+    |--------------------------------------------------------------------------
+    */
+    'support_email' => env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'support@nexon.app')),
+    'support_phone' => env('SUPPORT_PHONE', '+91 98765 43210'),
+    'store_address' => env('STORE_ADDRESS', '101 Fashion Boulevard, Bandra West, Mumbai, Maharashtra 400050'),
+    'store_gstin'   => env('STORE_GSTIN', '27AABCS1429B1ZB'),
+
 ];

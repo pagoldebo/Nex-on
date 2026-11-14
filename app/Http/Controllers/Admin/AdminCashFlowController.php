@@ -40,18 +40,18 @@ class AdminCashFlowController extends Controller
             $handle = fopen('php://output', 'w');
             
             // File Header
-            fputcsv($handle, ['NexStore Business Suite - Daily Cash Flow Statement']);
-            fputcsv($handle, ['Period:', $data['startDate']->format('d M Y') . ' to ' . $data['endDate']->format('d M Y')]);
-            fputcsv($handle, ['Total Inflows (INR):', number_format($data['totalInflows'], 2)]);
-            fputcsv($handle, ['Total Outflows (INR):', number_format($data['totalOutflows'], 2)]);
-            fputcsv($handle, ['Net Cash Flow (INR):', number_format($data['netCashFlow'], 2)]);
-            fputcsv($handle, []);
+            \App\Services\CsvExporter::writeRow($handle, ['NexStore Business Suite - Daily Cash Flow Statement']);
+            \App\Services\CsvExporter::writeRow($handle, ['Period:', $data['startDate']->format('d M Y') . ' to ' . $data['endDate']->format('d M Y')]);
+            \App\Services\CsvExporter::writeRow($handle, ['Total Inflows (INR):', number_format($data['totalInflows'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Total Outflows (INR):', number_format($data['totalOutflows'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, ['Net Cash Flow (INR):', number_format($data['netCashFlow'], 2)]);
+            \App\Services\CsvExporter::writeRow($handle, []);
 
             // Table Columns
-            fputcsv($handle, ['Date', 'Day', 'Operational Inflows (₹)', 'Operational Outflows (₹)', 'Net Change (₹)', 'Running Balance (₹)']);
+            \App\Services\CsvExporter::writeRow($handle, ['Date', 'Day', 'Operational Inflows (₹)', 'Operational Outflows (₹)', 'Net Change (₹)', 'Running Balance (₹)']);
 
             foreach ($dailyRows as $row) {
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $row['date'],
                     $row['day'],
                     number_format($row['inflows'], 2),

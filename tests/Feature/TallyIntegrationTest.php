@@ -148,4 +148,39 @@ class TallyIntegrationTest extends TestCase
             'status'         => 'success',
         ]);
     }
+
+    public function test_sales_voucher_reconciles_debits_and_credits_with_shipping_and_cod()
+    {
+        [$admin] = $this->setupSeedData();
+
+        // Create an order with subtotal, discount, shipping, cod, and stored tax_amount
+        $order = Order::create([
+            'user_id'          => null,
+            'reference'        => 'SAA-20261114-RECON',
+            'status'           => Order::STATUS_DELIVERED,
+            'subtotal'         => 2000,
+            'shipping_charge'  => 100,
+            'cod_charge'       => 40,
+            'discount'         => 200,
+            'tax_amount'       => 27458, // in paise = 274.58
+            'total'            => 1940, // (2000 - 200) + 100 + 40
+            'payment_method'   => 'cod',
+            'payment_status'   => Order::PAYMENT_PAID,
+            'shipping_name'    => 'Reconciliation Customer',
+            'shipping_phone'   => '9888877777',
+            'shipping_email'   => 'recon@test.com',
+            'shipping_address1'=> '101 Accounting Road',
+            'shipping_city'    => 'Bengaluru',
+            'shipping_state'   => 'Karnataka',
+            'shipping_pincode' => '560001',
+        ]);
+
+        $xml = app(\App\Services\TallyPrimeService::class)->generateSalesVoucherXml($order);
+
+        $this->assertStringContainsString("<AMOUNT>-1940</AMOUNT>", $xml);
+        $this->assertStringContainsString("<AMOUNT>100</AMOUNT>", $xml); // shipping
+        $this->assertStringContainsString("<AMOUNT>40</AMOUNT>", $xml);  // cod
+        $this->assertStringContainsString("Courier Freight &amp; Delivery Income", $xml);
+        $this->assertStringContainsString("Cash on Delivery Convenience Fee", $xml);
+    }
 }

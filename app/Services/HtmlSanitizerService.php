@@ -177,6 +177,9 @@ class HtmlSanitizerService
         $svg = preg_replace('/<set\b[^>]*\/?>/is', '', $svg);
         $svg = preg_replace('/<handler\b[^>]*>(.*?)<\/handler>/is', '', $svg);
         $svg = preg_replace('/<handler\b[^>]*\/?>/is', '', $svg);
+        $svg = preg_replace('/<use\b[^>]*\/?>/is', '', $svg);
+        $svg = preg_replace('/<use\b[^>]*>(.*?)<\/use>/is', '', $svg);
+        $svg = preg_replace('/<style\b[^>]*>.*?javascript:.*?<\/style>/is', '', $svg);
 
         // 3. Strip all event handlers (onload, onclick, onerror, onmouseover, etc.)
         $svg = preg_replace('/\s+on[a-z0-9_-]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/is', '', $svg);

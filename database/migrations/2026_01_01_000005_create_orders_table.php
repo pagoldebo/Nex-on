@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedInteger('shipping_charge')->default(0);
             $table->unsignedInteger('cod_charge')->default(0);
             $table->unsignedInteger('discount')->default(0);
+            $table->unsignedInteger('tax_amount')->default(0);
             $table->unsignedInteger('total');           // subtotal + shipping + cod - discount
 
             // --- Payment ---

@@ -328,21 +328,25 @@
                                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Size *</label>
                                         <input type="text" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][size]" required value="{{ $variant->size }}" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs uppercase bg-white">
                                     </div>
-                                    <div class="col-span-3">
+                                    <div class="col-span-2">
                                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Variant SKU</label>
                                         <input type="text" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][sku]" value="{{ $variant->sku }}" placeholder="Auto-generated" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-mono uppercase bg-white">
                                     </div>
                                     <div class="col-span-2">
-                                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Price (₹) *</label>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Selling (₹) *</label>
                                         <input type="number" step="0.01" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][price]" required value="{{ $variant->price }}" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
                                     </div>
                                     <div class="col-span-2">
-                                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">MRP / Compare (₹)</label>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">MRP / Retail (₹)</label>
                                         <input type="number" step="0.01" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][compare_at_price]" value="{{ $variant->compare_at_price }}" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
                                     </div>
                                     <div class="col-span-2">
+                                        <label class="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Cost / Purchase (₹)</label>
+                                        <input type="number" step="0.01" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][cost_price]" value="{{ $variant->cost_price }}" placeholder="650" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none bg-white">
+                                    </div>
+                                    <div class="col-span-1">
                                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Stock *</label>
-                                        <input type="number" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][stock]" required value="{{ $variant->stock }}" min="0" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+                                        <input type="number" name="colors[{{ $color->id }}][sizes][{{ $variant->id }}][stock]" required value="{{ $variant->stock }}" min="0" class="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white">
                                     </div>
                                     <div class="col-span-1 text-center">
                                         <button type="button" onclick="this.closest('.size-row').remove()" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1 hover:bg-rose-50 rounded" title="Remove Size">
@@ -491,21 +495,25 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Size *</label>
             <input type="text" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][size]" required placeholder="S, 32B..." class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs uppercase bg-white">
         </div>
-        <div class="col-span-3">
+        <div class="col-span-2">
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Variant SKU</label>
             <input type="text" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][sku]" placeholder="Auto-generated" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-mono uppercase bg-white">
         </div>
         <div class="col-span-2">
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Price (₹) *</label>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Selling (₹) *</label>
             <input type="number" step="0.01" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][price]" required placeholder="1299" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
         </div>
         <div class="col-span-2">
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">MRP / Compare (₹)</label>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">MRP / Retail (₹)</label>
             <input type="number" step="0.01" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][compare_at_price]" placeholder="1899" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
         </div>
         <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Cost / Purchase (₹)</label>
+            <input type="number" step="0.01" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][cost_price]" placeholder="650" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none bg-white">
+        </div>
+        <div class="col-span-1">
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Stock *</label>
-            <input type="number" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][stock]" required value="10" min="0" class="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+            <input type="number" name="colors[__COLOR_INDEX__][sizes][__SIZE_INDEX__][stock]" required value="10" min="0" class="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white">
         </div>
         <div class="col-span-1 text-center">
             <button type="button" onclick="this.closest('.size-row').remove()" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1 hover:bg-rose-50 rounded" title="Remove Size">

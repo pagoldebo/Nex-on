@@ -63,15 +63,32 @@
                 </div>
                 <div>
                     <h2 class="text-base font-black text-slate-900">Rider Login</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Enter your registered mobile phone number to view your assigned drop-offs.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        @if(session('driver_pending_phone'))
+                            Enter the 6-digit OTP code sent to your registered phone.
+                        @else
+                            Enter your registered mobile phone number to authenticate your delivery session.
+                        @endif
+                    </p>
                 </div>
 
-                <form method="GET" action="{{ route('driver.portal') }}" class="space-y-3 pt-2 text-xs">
-                    <input type="text" name="phone" required placeholder="e.g. +91 98765 00000"
-                           class="w-full px-4 py-3 rounded-xl border border-slate-200 text-center font-mono font-bold text-sm focus:outline-none focus:border-indigo-500">
-                    <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition shadow-md shadow-indigo-600/20">
-                        Access My Deliveries
-                    </button>
+                <form method="POST" action="{{ route('driver.login') }}" class="space-y-3 pt-2 text-xs">
+                    @csrf
+                    @if(session('driver_pending_phone'))
+                        <input type="hidden" name="phone" value="{{ session('driver_pending_phone') }}">
+                        <div class="text-xs text-slate-600 font-bold mb-1">Phone: {{ session('driver_pending_phone') }}</div>
+                        <input type="text" name="otp" required maxlength="6" autofocus placeholder="• • • • • •"
+                               class="w-full px-4 py-3 rounded-xl border border-indigo-400 text-center font-mono font-black text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition shadow-md shadow-indigo-600/20">
+                            Verify Security Code
+                        </button>
+                    @else
+                        <input type="text" name="phone" required placeholder="e.g. +91 98765 00000"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 text-center font-mono font-bold text-sm focus:outline-none focus:border-indigo-500">
+                        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition shadow-md shadow-indigo-600/20">
+                            Request Login OTP
+                        </button>
+                    @endif
                 </form>
             </div>
         @else

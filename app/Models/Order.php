@@ -27,6 +27,7 @@ class Order extends Model
         'shipping_charge',
         'cod_charge',
         'discount',
+        'tax_amount',
         'total',
         'tendered_amount',
         'change_amount',
@@ -89,11 +90,18 @@ class Order extends Model
     {
         $prefix = 'SAA';
         $date   = now()->format('Ymd');
-        $seq    = str_pad(
-            static::whereDate('created_at', today())->count() + 1,
-            4, '0', STR_PAD_LEFT
-        );
-        return "{$prefix}-{$date}-{$seq}";
+        $attempts = 0;
+        do {
+            $random = strtoupper(\Illuminate\Support\Str::random(6));
+            $seq    = str_pad(
+                static::whereDate('created_at', today())->count() + 1 + $attempts,
+                4, '0', STR_PAD_LEFT
+            );
+            $ref = "{$prefix}-{$date}-{$seq}-{$random}";
+            $attempts++;
+        } while ($attempts < 5 && static::where('reference', $ref)->exists());
+
+        return $ref;
     }
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -235,7 +243,7 @@ class Order extends Model
 
                 $variant = null;
                 if ($variantId) {
-                    $variant = ProductVariant::find($variantId);
+                    $variant = ProductVariant::with(['product', 'color'])->lockForUpdate()->find($variantId);
                 } elseif ($productId && !empty($item['size'])) {
                     $colorQuery = ProductColor::where('product_id', $productId);
                     if (!empty($colorName)) {
@@ -246,6 +254,7 @@ class Order extends Model
                         $colorId = $color->id;
                         $variant = ProductVariant::where('product_color_id', $color->id)
                             ->where('size', $item['size'])
+                            ->lockForUpdate()
                             ->first();
                     }
                 }
@@ -254,20 +263,25 @@ class Order extends Model
                 $product = $productId ? Product::find($productId) : null;
 
                 if ($variant) {
+                    if ($variant->stock < $qty) {
+                        throw new \InvalidArgumentException("Insufficient stock for SKU [{$variant->sku}]. Available: {$variant->stock}, Requested: {$qty}");
+                    }
                     $variantId      = $variant->id;
                     $colorId        = $colorId ?? $variant->product_color_id;
                     $itemSku        = $variant->sku;
                     $unitPrice      = (int) round($variant->price);
                     $compareAtPrice = $variant->compare_at_price !== null ? (int) round($variant->compare_at_price) : null;
-                } elseif ($product) {
+                } elseif ($product && $product->is_active) {
+                    if ($product->starting_price === null) {
+                        throw new \InvalidArgumentException("Price could not be verified for product [{$product->name}].");
+                    }
                     $itemSku        = $product->sku;
-                    $unitPrice      = (int) round($product->starting_price ?? ($item['price'] ?? 0));
+                    $unitPrice      = (int) round($product->starting_price);
                     $compareAtPrice = $product->starting_compare_at_price !== null
                         ? (int) round($product->starting_compare_at_price)
-                        : (isset($item['compareAtPrice']) ? (int) $item['compareAtPrice'] : (isset($item['compare_at_price']) ? (int) $item['compare_at_price'] : null));
+                        : null;
                 } else {
-                    $unitPrice      = (int) ($item['price'] ?? 0);
-                    $compareAtPrice = isset($item['compareAtPrice']) ? (int) $item['compareAtPrice'] : (isset($item['compare_at_price']) ? (int) $item['compare_at_price'] : null);
+                    throw new \InvalidArgumentException("Invalid, unavailable, or unresolvable product in checkout cart.");
                 }
 
                 $lineTotal         = $unitPrice * $qty;
@@ -295,10 +309,13 @@ class Order extends Model
             // 2. Re-verify coupon discount against the server-verified subtotal
             $verifiedDiscount = 0;
             $validCoupon      = null;
+            $shipping         = $data['shipping'] ?? [];
+            $customerEmail    = $shipping['email'] ?? $data['customer_email'] ?? null;
+
             if ($couponCode) {
-                $coupon = Coupon::where('code', $couponCode)->first();
+                $coupon = Coupon::where('code', $couponCode)->lockForUpdate()->first();
                 if ($coupon) {
-                    $check = $coupon->isValidForAmount((float) $verifiedSubtotal);
+                    $check = $coupon->isValidForAmount((float) $verifiedSubtotal, $userId, $customerEmail);
                     if ($check['valid']) {
                         $validCoupon      = $coupon;
                         $verifiedDiscount = (int) round($coupon->calculateDiscount((float) $verifiedSubtotal));
@@ -313,7 +330,9 @@ class Order extends Model
             // 3. Compute verified shipping & total charges
             $shippingCharge = $verifiedSubtotal >= $freeThreshold ? 0 : $standardShip;
             $total          = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
-            $shipping       = $data['shipping'] ?? [];
+            $taxableGoods   = max(0, $verifiedSubtotal - $verifiedDiscount);
+            $taxRate        = (float) Setting::get('tax_percentage', 18);
+            $taxAmount      = $taxRate > 0 ? (int) round(($taxableGoods * $taxRate) / (100 + $taxRate)) : 0;
 
             // 4. Create the verified Order record
             $order = static::create([
@@ -324,6 +343,7 @@ class Order extends Model
                 'cod_charge'       => $codCharge,
                 'discount'         => $verifiedDiscount,
                 'coupon_code'      => $couponCode,
+                'tax_amount'       => $taxAmount,
                 'total'            => $total,
                 'payment_method'   => $method,
                 'payment_status'   => self::PAYMENT_PENDING,
@@ -337,12 +357,11 @@ class Order extends Model
                 'shipping_pincode' => $shipping['pincode']  ?? $data['shipping_pincode'] ?? '',
             ]);
 
-            // 5. Create Order Items & atomically adjust inventory
+            // 5. Create Order Items & atomically adjust inventory exactly
             foreach ($resolvedItems as $res) {
                 $variant = $res['variant'];
-                if ($variant && $variant->stock > 0) {
-                    $deductQty = min($res['qty'], $variant->stock);
-                    $variant->adjustStock(-$deductQty, 'order_deduction', "Order #{$order->reference}", $userId);
+                if ($variant) {
+                    $variant->adjustStock(-$res['qty'], 'order_deduction', "Order #{$order->reference}", $userId);
                 }
 
                 $order->items()->create([

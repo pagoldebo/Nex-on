@@ -279,7 +279,7 @@ class AdminPayrollController extends Controller
             $handle = fopen('php://output', 'w');
             
             // CSV Header Row
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Beneficiary Name',
                 'Account Number',
                 'IFSC Code',
@@ -290,7 +290,7 @@ class AdminPayrollController extends Controller
             ]);
 
             foreach ($payroll->items as $item) {
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $item->user?->name ?? 'Staff Member',
                     $item->bank_account_no ?? 'A/C PENDING',
                     $item->bank_ifsc ?? 'HDFC0000123',

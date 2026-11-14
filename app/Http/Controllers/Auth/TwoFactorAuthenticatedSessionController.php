@@ -127,8 +127,15 @@ class TwoFactorAuthenticatedSessionController extends Controller
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        if ($user->role === 'admin') {
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if ($user->isStaff()) {
+            $defaultRoute = $user->hasPermission('dashboard.view')
+                ? route('admin.dashboard')
+                : ($user->hasPermission('pos.access') ? route('admin.pos.index') : route('admin.orders.index'));
+            return redirect()->intended($defaultRoute);
         }
 
         return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . $user->name . '!');

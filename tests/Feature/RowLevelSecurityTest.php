@@ -301,4 +301,80 @@ class RowLevelSecurityTest extends TestCase
 
         $this->assertEquals($this->alice->id, $address->user_id);
     }
+
+    public function test_staff_with_operational_permissions_bypasses_rls(): void
+    {
+        $orderStaffRole = \App\Models\Role::create([
+            'name'      => 'Order Manager',
+            'slug'      => 'order-manager',
+            'is_system' => false,
+        ]);
+        $ordersViewPerm = \App\Models\Permission::create([
+            'name'       => 'View Orders',
+            'slug'       => 'orders.view',
+            'group_name' => 'Orders',
+        ]);
+        $orderStaffRole->permissions()->attach($ordersViewPerm->id);
+
+        $staffUser = User::create([
+            'name'     => 'Staff Order Viewer',
+            'email'    => 'staff-orders@rls-test.test',
+            'password' => bcrypt('password123'),
+            'role'     => 'staff',
+            'is_staff' => true,
+        ]);
+        $staffUser->roles()->attach($orderStaffRole->id);
+
+        $aliceAddress = CustomerAddress::create([
+            'user_id'    => $this->alice->id,
+            'name'       => 'Alice Home',
+            'phone'      => '9123456780',
+            'address1'   => '123 Alice St',
+            'city'       => 'Mumbai',
+            'state'      => 'Maharashtra',
+            'pincode'    => '400001',
+            'type'       => 'home',
+            'is_default' => true,
+        ]);
+
+        $this->actingAs($staffUser);
+
+        // Staff holding orders.view operational permission can query customer records
+        $this->assertNotNull(CustomerAddress::find($aliceAddress->id));
+    }
+
+    public function test_staff_with_system_role_without_operational_permissions_cannot_bypass_rls(): void
+    {
+        $narrowSystemRole = \App\Models\Role::create([
+            'name'      => 'Narrow System Role',
+            'slug'      => 'narrow-system',
+            'is_system' => true,
+        ]);
+
+        $narrowStaffUser = User::create([
+            'name'     => 'Narrow Staff User',
+            'email'    => 'narrow-staff@rls-test.test',
+            'password' => bcrypt('password123'),
+            'role'     => 'staff',
+            'is_staff' => true,
+        ]);
+        $narrowStaffUser->roles()->attach($narrowSystemRole->id);
+
+        $aliceAddress = CustomerAddress::create([
+            'user_id'    => $this->alice->id,
+            'name'       => 'Alice Home',
+            'phone'      => '9123456780',
+            'address1'   => '123 Alice St',
+            'city'       => 'Mumbai',
+            'state'      => 'Maharashtra',
+            'pincode'    => '400001',
+            'type'       => 'home',
+            'is_default' => true,
+        ]);
+
+        $this->actingAs($narrowStaffUser);
+
+        // Staff without operational permissions is blocked by RLS even if holding a system role (L-02)
+        $this->assertNull(CustomerAddress::find($aliceAddress->id));
+    }
 }

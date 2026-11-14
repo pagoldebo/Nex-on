@@ -86,7 +86,7 @@ class LoginEmailOtpTest extends TestCase
 
         $freshUser = $user->fresh();
         $this->assertNotNull($freshUser->otp_code);
-        $this->assertEquals(4, strlen($freshUser->otp_code));
+        $this->assertEquals(6, strlen($freshUser->otp_code));
         $this->assertNotNull($freshUser->otp_expires_at);
 
         Notification::assertSentOnDemand(

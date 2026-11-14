@@ -178,7 +178,8 @@ Route::match(['GET', 'POST'], '/locale/{locale}', [StorefrontController::class, 
 Route::get('/p/{slug}',                   [StorefrontController::class, 'customPage'])->name('custom-page.show');
 
 // Driver Delivery Web App Portal
-Route::get('/driver/portal',              [AdminDeliveryPersonnelController::class, 'driverPortal'])->name('driver.portal');
+Route::get('/driver/portal',              [AdminDeliveryPersonnelController::class, 'driverPortal'])->middleware('throttle:driver_status')->name('driver.portal');
+Route::post('/driver/login',               [AdminDeliveryPersonnelController::class, 'driverLogin'])->middleware('throttle:login')->name('driver.login');
 Route::post('/driver/orders/{order}/status', [AdminDeliveryPersonnelController::class, 'driverUpdateStatus'])->middleware('throttle:driver_status')->name('driver.order.status');
 
 // Live Payment Gateways Webhooks & Client APIs
@@ -192,9 +193,11 @@ Route::get('/api/payment/gateways',       [PaymentWebhookController::class, 'get
 Route::post('/api/sms/send-otp',             [AdminSmsController::class, 'apiSendOtp'])->middleware('throttle:sms_send')->name('api.sms.sendOtp');
 Route::post('/api/sms/verify-otp',           [AdminSmsController::class, 'apiVerifyOtp'])->middleware('throttle:sms_verify')->name('api.sms.verifyOtp');
 
-// Web & Mobile Push Notification Subscription APIs
-Route::post('/api/push/subscribe',           [AdminPushNotificationController::class, 'apiSubscribe'])->middleware('throttle:push_subscription')->name('api.push.subscribe');
-Route::post('/api/push/unsubscribe',         [AdminPushNotificationController::class, 'apiUnsubscribe'])->middleware('throttle:push_subscription')->name('api.push.unsubscribe');
+// Web & Mobile Push Notification Subscription APIs (authenticated to prevent anonymous DB growth - L-01)
+Route::middleware(['auth', 'throttle:push_subscription'])->group(function () {
+    Route::post('/api/push/subscribe',           [AdminPushNotificationController::class, 'apiSubscribe'])->name('api.push.subscribe');
+    Route::post('/api/push/unsubscribe',         [AdminPushNotificationController::class, 'apiUnsubscribe'])->name('api.push.unsubscribe');
+});
 
 // Customer Wholesale & VIP Group Pricing API
 Route::post('/api/customer-group/check',      [StorefrontController::class, 'checkCustomerGroup'])->middleware('throttle:30,1')->name('api.customer-group.check');
@@ -209,8 +212,12 @@ Route::post('/api/customer-group/check',      [StorefrontController::class, 'che
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->group(function () {
     // Dashboard & System Status
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/', [AdminDashboardController::class, 'index'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.index');
 
     // Administrative Cache Flush
     Route::post('/optimize/clear', [AdminSettingController::class, 'clearCache'])

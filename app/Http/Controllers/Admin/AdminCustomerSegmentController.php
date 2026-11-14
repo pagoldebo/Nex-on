@@ -46,7 +46,7 @@ class AdminCustomerSegmentController extends Controller
 
         return response()->streamDownload(function () use ($customers) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'Customer ID',
                 'Name',
                 'Email',
@@ -59,7 +59,7 @@ class AdminCustomerSegmentController extends Controller
             ]);
 
             foreach ($customers as $row) {
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $row->id,
                     $row->name,
                     $row->email,

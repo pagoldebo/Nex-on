@@ -73,42 +73,22 @@ class FileUploadSecurityTest extends TestCase
     }
 
     /**
-     * Test Category SVG upload sanitizes embedded scripts and XXE doctypes.
+     * Test Category uploads strictly reject SVG active content to prevent stored XSS (M-01).
      */
-    public function test_category_svg_upload_is_sanitized(): void
+    public function test_category_upload_rejects_svg(): void
     {
         Storage::fake('public');
 
-        $maliciousSvg = <<<SVG
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg [ <!ENTITY xxe "malicious_entity"> ]>
-<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" onload="alert('XSS')">
-    <script>alert(document.cookie);</script>
-    <foreignObject width="100" height="100">
-        <body xmlns="http://www.w3.org/1999/xhtml"><script>alert(1)</script></body>
-    </foreignObject>
-    <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
-</svg>
-SVG;
-
-        $file = UploadedFile::fake()->createWithContent('vector.svg', $maliciousSvg);
+        $svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40"/></svg>';
+        $file = UploadedFile::fake()->createWithContent('vector.svg', $svgContent);
 
         $response = $this->actingAs($this->admin)->post(route('admin.categories.store'), [
             'name'  => 'Vector Category',
             'image' => $file,
         ]);
 
-        $response->assertRedirect(route('admin.categories.index'));
-        $category = Category::where('name', 'Vector Category')->first();
-        $this->assertNotNull($category);
-        $this->assertNotNull($category->image);
-
-        $savedContent = Storage::disk('public')->get($category->image);
-        $this->assertStringNotContainsString('<script', $savedContent);
-        $this->assertStringNotContainsString('onload=', $savedContent);
-        $this->assertStringNotContainsString('<!DOCTYPE', $savedContent);
-        $this->assertStringNotContainsString('<!ENTITY', $savedContent);
-        $this->assertStringContainsString('<circle', $savedContent);
+        $response->assertSessionHasErrors(['image']);
+        $this->assertDatabaseMissing('categories', ['name' => 'Vector Category']);
     }
 
     /**
@@ -240,6 +220,74 @@ SVG;
         ]);
 
         $responsePhp->assertSessionHasErrors(['receipt']);
+    }
+
+    /**
+     * Test AdminSettingController strictly rejects SVG uploads for site_logo (M-01).
+     */
+    public function test_settings_upload_rejects_svg_for_site_logo(): void
+    {
+        Storage::fake('public');
+
+        $svgFile = UploadedFile::fake()->createWithContent('malicious_logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'store_name' => 'Nexon Fashion',
+            'site_logo'  => $svgFile,
+        ]);
+
+        $response->assertSessionHasErrors(['site_logo']);
+        $this->assertNotEquals('branding/logo.svg', Setting::get('site_logo'));
+    }
+
+    /**
+     * Test AdminSettingController strictly rejects SVG uploads for hero and banner images (M-01).
+     */
+    public function test_settings_upload_rejects_svg_for_hero_banner(): void
+    {
+        Storage::fake('public');
+
+        $svgFile = UploadedFile::fake()->createWithContent('banner.svg', '<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40"/></svg>');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'store_name'        => 'Nexon Fashion',
+            'hero_banner_image' => $svgFile,
+        ]);
+
+        $response->assertSessionHasErrors(['hero_banner_image']);
+    }
+
+    /**
+     * Test AdminSettingController caps hero video upload size to 20MB (L-08).
+     */
+    public function test_settings_upload_rejects_oversized_hero_video(): void
+    {
+        Storage::fake('public');
+
+        // Create fake video file slightly over 20MB (20481 KB)
+        $oversizedVideo = UploadedFile::fake()->create('heavy_video.mp4', 20500, 'video/mp4');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.settings.update'), [
+            'store_name'      => 'Nexon Fashion',
+            'vyra_hero_image' => $oversizedVideo,
+        ]);
+
+        $response->assertSessionHasErrors(['vyra_hero_image']);
+    }
+
+    /**
+     * Test ProductImageService rejects video files containing embedded polyglot scripts (L-02).
+     */
+    public function test_video_upload_rejects_polyglot_payload(): void
+    {
+        Storage::fake('public');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Security violation: executable payload');
+
+        $maliciousVideo = UploadedFile::fake()->createWithContent('exploit.mp4', "\x00\x00\x00\x20ftypisom<?php phpinfo(); ?>", 'video/mp4');
+
+        ProductImageService::storeUpload($maliciousVideo, 'slider');
     }
 }
 

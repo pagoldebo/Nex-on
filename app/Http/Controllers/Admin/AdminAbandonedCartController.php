@@ -112,9 +112,13 @@ class AdminAbandonedCartController extends Controller
     {
         $cart = AbandonedCart::where('recovery_hash', $hash)->firstOrFail();
 
-        // Restore items to session cart
+        // Restore items to session cart (merge with existing items to prevent silent cart overwrites)
         if (!empty($cart->cart_data) && is_array($cart->cart_data)) {
-            session(['cart' => $cart->cart_data]);
+            $existing = session('cart', []);
+            $merged = is_array($existing) && !empty($existing)
+                ? array_replace($cart->cart_data, $existing)
+                : $cart->cart_data;
+            session(['cart' => $merged]);
         }
 
         return redirect()->route('cart')

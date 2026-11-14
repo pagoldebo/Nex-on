@@ -57,7 +57,7 @@ class AdminCategoryController extends Controller
             'slug'       => 'nullable|string|max:100|unique:categories,slug',
             'parent_id'  => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
-            'image'      => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif|max:5120',
+            'image'      => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/gif|max:5120',
         ]);
 
         $slug = !empty($validated['slug']) 
@@ -100,7 +100,7 @@ class AdminCategoryController extends Controller
             'slug'         => 'nullable|string|max:100|unique:categories,slug,' . $category->id,
             'parent_id'    => 'nullable|exists:categories,id',
             'sort_order'   => 'nullable|integer|min:0',
-            'image'        => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,svg,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif|max:5120',
+            'image'        => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/gif|max:5120',
             'remove_image' => 'nullable|boolean',
         ]);
 

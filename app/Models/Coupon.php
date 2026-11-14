@@ -26,9 +26,9 @@ class Coupon extends Model
     ];
 
     /**
-     * Check if the coupon is currently valid for a given order subtotal.
+     * Check if the coupon is currently valid for a given order subtotal and customer.
      */
-    public function isValidForAmount(float $subtotal): array
+    public function isValidForAmount(float $subtotal, ?int $userId = null, ?string $email = null): array
     {
         if (!$this->is_active) {
             return ['valid' => false, 'message' => 'This coupon is no longer active.'];
@@ -42,6 +42,11 @@ class Coupon extends Model
             return ['valid' => false, 'message' => 'This coupon has reached its maximum redemptions.'];
         }
 
+        // Per-customer redemption limit (M-09): single-use or per-customer coupons cannot be reused
+        if ($this->max_uses === 1 && ($userId || !empty($email)) && $this->isUsedByUser($userId, $email)) {
+            return ['valid' => false, 'message' => 'You have already redeemed this single-use coupon.'];
+        }
+
         if ($subtotal < (float) $this->min_order_amount) {
             return [
                 'valid'   => false,
@@ -50,6 +55,33 @@ class Coupon extends Model
         }
 
         return ['valid' => true, 'message' => 'Coupon applied successfully!'];
+    }
+
+    /**
+     * Determine if this coupon has already been redeemed by the user or email in a non-cancelled order.
+     */
+    public function isUsedByUser(?int $userId, ?string $email): bool
+    {
+        if (!$userId && empty($email)) {
+            return false;
+        }
+
+        $query = Order::where('coupon_code', $this->code)
+            ->where('status', '!=', Order::STATUS_CANCELLED);
+
+        return $query->where(function ($q) use ($userId, $email) {
+            if ($userId) {
+                $q->where('user_id', $userId);
+            }
+            if (!empty($email)) {
+                $cleanEmail = strtolower(trim($email));
+                if ($userId) {
+                    $q->orWhere('shipping_email', $cleanEmail);
+                } else {
+                    $q->where('shipping_email', $cleanEmail);
+                }
+            }
+        })->exists();
     }
 
     /**

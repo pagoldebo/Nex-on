@@ -29,6 +29,28 @@ class Setting extends Model
     protected $fillable = ['key', 'value'];
 
     /**
+     * Keys containing sensitive third-party tokens and secrets that MUST be encrypted at rest.
+     *
+     * @var array<int, string>
+     */
+    protected static array $encryptedKeys = [
+        'gateway_razorpay_key_secret',
+        'gateway_razorpay_webhook_secret',
+        'gateway_stripe_secret_key',
+        'gateway_stripe_webhook_secret',
+        'gateway_phonepe_salt_key',
+        'gateway_paypal_secret',
+        'sms_twilio_token',
+        'sms_msg91_authkey',
+        'sms_fast2sms_api_key',
+    ];
+
+    public static function isEncryptedKey(string $key): bool
+    {
+        return in_array($key, static::$encryptedKeys, true);
+    }
+
+    /**
      * Get setting value by key with caching and optional fallback default.
      * In local development, short TTL allows direct database changes to take effect immediately.
      */
@@ -43,7 +65,15 @@ class Setting extends Model
             return Cache::remember("setting_{$key}", $ttl, function () use ($key, $default) {
                 try {
                     $record = static::where('key', $key)->first();
-                    return $record !== null && $record->value !== null ? $record->value : $default;
+                    $raw = ($record !== null && $record->value !== null) ? $record->value : $default;
+                    if ($raw !== null && static::isEncryptedKey($key) && is_string($raw) && $raw !== '') {
+                        try {
+                            return \Illuminate\Support\Facades\Crypt::decryptString($raw);
+                        } catch (\Throwable $e) {
+                            return $raw; // Fallback to raw string if not encrypted yet
+                        }
+                    }
+                    return $raw;
                 } catch (\Throwable $e) {
                     return $default;
                 }
@@ -54,52 +84,49 @@ class Setting extends Model
     }
 
     /**
-     * Dynamically resolve Store/App Name from Database, Settings Page, or .env APP_NAME
+     * Dynamically resolve Store/App Name from Database, Settings Page, or config
      */
     public static function appName(): string
     {
         return static::get('store_name') 
-            ?: (config('app.name') ?: env('APP_NAME', 'Nex-on'));
+            ?: config('app.name', 'Nex-on');
     }
 
     /**
-     * Dynamically resolve Support Email directly from .env file (SUPPORT_EMAIL / MAIL_FROM_ADDRESS).
-     * Any change in the .env file automatically updates everywhere in real-time.
+     * Dynamically resolve Support Email from Config or Fallback (L-01).
      */
     public static function supportEmail(): string
     {
-        return env('SUPPORT_EMAIL') 
-            ?: (env('MAIL_FROM_ADDRESS') 
-            ?: (config('mail.from.address') ?: 'support@nexon.app'));
+        return (string) (config('app.support_email') ?: config('mail.from.address', 'support@nexon.app'));
     }
 
     /**
-     * Dynamically resolve Support Phone from Database, Settings Page, or .env SUPPORT_PHONE
+     * Dynamically resolve Support Phone from Database, Settings, or Config.
      */
     public static function supportPhone(): string
     {
         return static::get('support_phone') 
-            ?: static::get('store_phone') 
-            ?: (env('SUPPORT_PHONE') ?: '+91 98765 43210');
+            ?: (static::get('store_phone') 
+            ?: config('app.support_phone', '+91 98765 43210'));
     }
 
     /**
-     * Dynamically resolve Registered Store Address from Database, Settings Page, or .env STORE_ADDRESS
+     * Dynamically resolve Registered Store Address from Database, Settings, or Config.
      */
     public static function storeAddress(): string
     {
         return static::get('store_address') 
-            ?: (env('STORE_ADDRESS') ?: '101 Fashion Boulevard, Bandra West, Mumbai, Maharashtra 400050');
+            ?: config('app.store_address', '101 Fashion Boulevard, Bandra West, Mumbai, Maharashtra 400050');
     }
 
     /**
-     * Dynamically resolve GSTIN from Database, Settings Page, or .env STORE_GSTIN
+     * Dynamically resolve GSTIN from Database, Settings, or Config.
      */
     public static function gstin(): string
     {
         return static::get('gstin') 
-            ?: static::get('store_gstin') 
-            ?: (env('STORE_GSTIN') ?: '27AABCS1429B1ZB');
+            ?: (static::get('store_gstin') 
+            ?: config('app.store_gstin', '27AABCS1429B1ZB'));
     }
 
     /**
@@ -119,9 +146,19 @@ class Setting extends Model
         Cache::forget("setting_{$key}");
         Cache::forget('all_settings');
 
+        $valStr = is_bool($value) ? ($value ? '1' : '0') : (string) $value;
+
+        if (static::isEncryptedKey($key) && $valStr !== '') {
+            try {
+                $valStr = \Illuminate\Support\Facades\Crypt::encryptString($valStr);
+            } catch (\Throwable $e) {
+                // If encryption fails (e.g., in test without app key), store raw
+            }
+        }
+
         return static::updateOrCreate(
             ['key' => $key],
-            ['value' => is_bool($value) ? ($value ? '1' : '0') : (string) $value]
+            ['value' => $valStr]
         );
     }
 
@@ -131,7 +168,17 @@ class Setting extends Model
     public static function getAll(): array
     {
         return Cache::remember('all_settings', 3600, function () {
-            return static::pluck('value', 'key')->toArray();
+            $settings = static::pluck('value', 'key')->toArray();
+            foreach (static::$encryptedKeys as $encKey) {
+                if (isset($settings[$encKey]) && is_string($settings[$encKey]) && $settings[$encKey] !== '') {
+                    try {
+                        $settings[$encKey] = \Illuminate\Support\Facades\Crypt::decryptString($settings[$encKey]);
+                    } catch (\Throwable $e) {
+                        // ignore and leave raw if not encrypted yet
+                    }
+                }
+            }
+            return $settings;
         });
     }
 

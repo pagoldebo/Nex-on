@@ -23,6 +23,11 @@ class EnterpriseDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Guard against running demo seeds in production (L-03)
+        if (app()->environment('production')) {
+            return;
+        }
+
         // 0. Sync Default Roles & Permissions
         app(\App\Services\RbacService::class)->syncDefaults();
 
@@ -42,7 +47,7 @@ class EnterpriseDemoSeeder extends Seeder
             [
                 'name'              => 'Store Manager',
                 'password'          => Hash::make('manager123'),
-                'role'              => 'admin',
+                'role'              => 'staff',
                 'is_staff'          => true,
                 'designation'       => 'Store Manager',
                 'department_name'   => 'Store Operations',
@@ -61,7 +66,8 @@ class EnterpriseDemoSeeder extends Seeder
             [
                 'name'              => 'Meera Kapoor',
                 'password'          => Hash::make('staff123'),
-                'role'              => 'admin',
+                'role'              => 'staff',
+                'is_staff'          => true,
                 'email_verified_at' => now(),
             ]
         );

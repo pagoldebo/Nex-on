@@ -164,14 +164,16 @@ class AdminPosController extends Controller
             ? strtolower(trim($validated['email']))
             : 'walkin_' . preg_replace('/[^0-9]/', '', $validated['phone']) . '@retail.pos';
 
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
+        $user = User::where('email', $email)->first();
+        if (! $user) {
+            $user = User::forceCreate([
+                'email'    => $email,
                 'name'     => $validated['name'],
                 'role'     => 'customer',
+                'is_staff' => false,
                 'password' => Hash::make(Str::random(16)),
-            ]
-        );
+            ]);
+        }
 
         if (!empty($validated['address']) || !empty($validated['city']) || !empty($validated['phone'])) {
             CustomerAddress::firstOrCreate(
@@ -241,7 +243,8 @@ class AdminPosController extends Controller
                     ], 422);
                 }
 
-                $unitPrice = (int) $itemInput['price'];
+                // Load genuinely verified price from database, ignoring client-supplied price
+                $unitPrice = (int) round($variant->price ?? $variant->product?->price ?? 0);
                 $qty = (int) $itemInput['qty'];
                 $lineTotal = $unitPrice * $qty;
                 $subtotal += $lineTotal;
@@ -254,7 +257,9 @@ class AdminPosController extends Controller
                 ];
             }
 
-            $discount = (int) ($validated['discount'] ?? 0);
+            // Cap discount so it cannot exceed verified subtotal or become negative
+            $rawDiscount = (int) ($validated['discount'] ?? 0);
+            $discount = min($subtotal, max(0, $rawDiscount));
             $total = max(0, $subtotal - $discount);
             $paymentMethod = $validated['payment_method'];
 
@@ -267,14 +272,23 @@ class AdminPosController extends Controller
             }
             $change = $paymentMethod === 'cash' ? max(0, $tendered - $total) : 0;
 
-            // Generate POS sequence reference
+            // Generate POS sequence reference with unique retry loop & random entropy
             $date = now()->format('Ymd');
-            $countToday = Order::whereDate('created_at', today())->where('channel', 'pos')->count() + 1;
-            $reference = 'POS-' . $date . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+            $attempts = 0;
+            do {
+                $countToday = Order::whereDate('created_at', today())->where('channel', 'pos')->count() + 1 + $attempts;
+                $randomSuffix = strtoupper(Str::random(6));
+                $reference = 'POS-' . $date . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT) . '-' . $randomSuffix;
+                $attempts++;
+            } while ($attempts < 5 && Order::where('reference', $reference)->exists());
 
             $customerName  = $validated['customer_name'] ?? 'Walk-in Customer';
             $customerPhone = $validated['customer_phone'] ?? '9999999999';
             $customerEmail = $validated['customer_email'] ?? 'walkin@pos.store';
+
+            $taxableGoods = max(0, $subtotal - $discount);
+            $taxRate = (float) Setting::get('tax_percentage', 18);
+            $taxAmount = $taxRate > 0 ? (int) round(($taxableGoods * $taxRate) / (100 + $taxRate)) : 0;
 
             $order = Order::create([
                 'user_id'           => $validated['customer_id'] ?? null,
@@ -286,6 +300,7 @@ class AdminPosController extends Controller
                 'shipping_charge'   => 0,
                 'cod_charge'        => 0,
                 'discount'          => $discount,
+                'tax_amount'        => $taxAmount,
                 'total'             => $total,
                 'tendered_amount'   => $tendered,
                 'change_amount'     => $change,

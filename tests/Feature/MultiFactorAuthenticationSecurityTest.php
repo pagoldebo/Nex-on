@@ -57,7 +57,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
 
         $otp = $user->generateOtp(10);
 
-        $this->assertEquals(4, strlen($otp));
+        $this->assertEquals(6, strlen($otp));
         $this->assertTrue(ctype_digit($otp));
         $this->assertEquals($otp, $user->fresh()->otp_code);
         $this->assertNotNull($user->fresh()->otp_expires_at);
@@ -68,7 +68,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
     {
         $rawSecret = $this->totp->generateSecretKey();
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'MFA Patron',
             'email'                   => 'mfa-patron@example.com',
             'password'                => bcrypt('ValidPass123!'),
@@ -93,7 +93,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
     {
         $rawSecret = $this->totp->generateSecretKey();
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Replay Target',
             'email'                   => 'replay-target@example.com',
             'password'                => bcrypt('ValidPass123!'),
@@ -128,7 +128,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
         $rawSecret = $this->totp->generateSecretKey();
 
         // User started 2FA setup but never confirmed it
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Unconfirmed 2FA User',
             'email'                   => 'unconfirmed-2fa@example.com',
             'password'                => bcrypt('ValidPass123!'),
@@ -151,7 +151,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
     {
         $rawSecret = $this->totp->generateSecretKey();
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Brute Target',
             'email'                   => 'brute-target@example.com',
             'password'                => bcrypt('ValidPass123!'),
@@ -181,7 +181,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
         $rawSecret = $this->totp->generateSecretKey();
         $recoveryCodes = ['code1-1234567890', 'code2-0987654321'];
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                      => 'Recovery Code User',
             'email'                     => 'recovery@example.com',
             'password'                  => bcrypt('ValidPass123!'),
@@ -218,7 +218,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
     {
         $rawSecret = $this->totp->generateSecretKey();
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Armed User',
             'email'                   => 'armed@example.com',
             'password'                => bcrypt('MySecretPassword123!'),
@@ -248,7 +248,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
         $rawSecret = $this->totp->generateSecretKey();
 
         // User is setting up 2FA, has not yet confirmed
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Setup Canceller',
             'email'                   => 'cancel@example.com',
             'password'                => bcrypt('MySecretPassword123!'),
@@ -267,7 +267,7 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
     {
         $rawSecret = $this->totp->generateSecretKey();
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'                    => 'Confirm Brute User',
             'email'                   => 'confirm-brute@example.com',
             'password'                => bcrypt('MySecretPassword123!'),

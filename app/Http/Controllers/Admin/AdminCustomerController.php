@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
@@ -18,7 +19,11 @@ class AdminCustomerController extends Controller
         $search = trim((string) $request->input('q', ''));
         $status = $request->input('status', 'all');
 
-        $query = User::withCount('orders')
+        $query = User::where('is_staff', false)
+            ->where(function ($q) {
+                $q->where('role', 'customer')->orWhereNull('role');
+            })
+            ->withCount('orders')
             ->withSum('orders', 'total')
             ->latest();
 
@@ -37,11 +42,15 @@ class AdminCustomerController extends Controller
 
         $customers = $query->paginate(15)->withQueryString();
 
+        $customerBase = User::where('is_staff', false)->where(function ($q) {
+            $q->where('role', 'customer')->orWhereNull('role');
+        });
+
         $stats = [
-            'total_customers'       => User::count(),
-            'active_customers'      => User::whereNull('deactivated_at')->count(),
-            'deactivated_customers' => User::whereNotNull('deactivated_at')->count(),
-            'ordering_customers'    => User::has('orders')->count(),
+            'total_customers'       => (clone $customerBase)->count(),
+            'active_customers'      => (clone $customerBase)->whereNull('deactivated_at')->count(),
+            'deactivated_customers' => (clone $customerBase)->whereNotNull('deactivated_at')->count(),
+            'ordering_customers'    => (clone $customerBase)->has('orders')->count(),
             'total_lifetime_value'  => \App\Models\Order::whereNotNull('user_id')->sum('total'),
         ];
 
@@ -50,6 +59,8 @@ class AdminCustomerController extends Controller
 
     public function show(User $customer): View
     {
+        $this->assertIsCustomer($customer);
+
         $customer->loadCount('orders');
         $customer->loadSum('orders', 'total');
         
@@ -64,6 +75,8 @@ class AdminCustomerController extends Controller
      */
     public function toggleStatus(User $customer): RedirectResponse
     {
+        $this->assertIsCustomer($customer);
+
         if ($customer->isDeactivated()) {
             $customer->deactivated_at = null;
             $msg = "Customer account for {$customer->name} has been activated.";
@@ -82,6 +95,8 @@ class AdminCustomerController extends Controller
      */
     public function updatePassword(Request $request, User $customer): RedirectResponse
     {
+        $this->assertIsCustomer($customer);
+
         $validated = $request->validate([
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
@@ -89,6 +104,22 @@ class AdminCustomerController extends Controller
         $customer->password = Hash::make($validated['password']);
         $customer->save();
 
+        // Invalidate active sessions and password reset tokens for security
+        DB::table('sessions')->where('user_id', $customer->id)->delete();
+        DB::table('password_reset_tokens')->where('email', $customer->email)->delete();
+
+        \Illuminate\Support\Facades\Log::warning("Admin ID " . \Illuminate\Support\Facades\Auth::id() . " reset password for customer ID {$customer->id} ({$customer->email}) from IP " . $request->ip());
+
         return back()->with('success', "Password for {$customer->name} has been reset successfully.");
+    }
+
+    /**
+     * Enforce strict BOLA boundary ensuring target user is a customer and not admin/staff.
+     */
+    protected function assertIsCustomer(User $customer): void
+    {
+        if ($customer->is_staff || $customer->isAdmin() || $customer->isSuperAdmin()) {
+            abort(404, 'Customer record not found.');
+        }
     }
 }

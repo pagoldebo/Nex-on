@@ -64,7 +64,7 @@ class AdminForecastingController extends Controller
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM
 
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 'SKU', 'Product Title', 'Category', 'Variant / Color',
                 'Current Stock', 'Cost Price (₹)', 'Tied Up Capital (₹)',
                 '7d Sold', '30d Sold', '90d Sold',
@@ -73,7 +73,7 @@ class AdminForecastingController extends Controller
             ]);
 
             foreach ($analysis['items'] as $item) {
-                fputcsv($handle, [
+                \App\Services\CsvExporter::writeRow($handle, [
                     $item['sku'],
                     $item['product_name'],
                     $item['category_name'],

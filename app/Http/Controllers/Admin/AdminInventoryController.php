@@ -272,7 +272,7 @@ class AdminInventoryController extends Controller
         fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
         // Header row
-        fputcsv($handle, [
+        \App\Services\CsvExporter::writeRow($handle, [
             'Variant SKU',
             'Base Product SKU',
             'Product Name',
@@ -295,7 +295,7 @@ class AdminInventoryController extends Controller
                 $stockStatus = 'Low Stock';
             }
 
-            fputcsv($handle, [
+            \App\Services\CsvExporter::writeRow($handle, [
                 $v->sku ?? 'N/A',
                 $v->product->sku ?? 'N/A',
                 $v->product->name ?? 'N/A',

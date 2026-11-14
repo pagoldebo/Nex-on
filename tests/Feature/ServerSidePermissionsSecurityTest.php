@@ -258,4 +258,141 @@ class ServerSidePermissionsSecurityTest extends TestCase
             'required_permissions',
         ]);
     }
+
+    public function test_non_super_admin_cannot_escalate_via_staff_creation_with_super_admin_role(): void
+    {
+        // Create an HR manager who only holds roles.manage
+        $hrRole = Role::create([
+            'name' => 'HR Staff Manager',
+            'slug' => 'hr-staff-manager',
+            'is_system' => false,
+        ]);
+        $hrRole->permissions()->attach(
+            \App\Models\Permission::where('slug', 'roles.manage')->firstOrFail()->id
+        );
+
+        $hrUser = User::create([
+            'name' => 'Delegated HR Officer',
+            'email' => 'hr@nexon.test',
+            'password' => bcrypt('Password123!'),
+            'role' => 'staff',
+            'is_staff' => true,
+        ]);
+        $hrUser->roles()->attach($hrRole->id);
+
+        $dept = Department::firstOrCreate(['name' => 'Operations'], ['code' => 'OPS', 'is_active' => true]);
+
+        // Attempt C-01 exploit: HR tries to create a Super Admin user
+        $response = $this->actingAs($hrUser)->post(route('admin.staff.store'), [
+            'name'              => 'Attacker Super Admin',
+            'email'             => 'attacker.admin@evil.test',
+            'phone'             => '9999999999',
+            'role_title'        => 'Super Admin',
+            'department_name'   => $dept->name,
+            'employment_status' => 'active',
+            'password'          => 'HackedPass123!',
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('users', ['email' => 'attacker.admin@evil.test']);
+    }
+
+    public function test_staff_created_has_staff_role_and_cannot_access_arbitrary_customer_invoices(): void
+    {
+        $superAdmin = $this->createSuperAdmin();
+        $dept = Department::firstOrCreate(['name' => 'Support Desk'], ['code' => 'SUP', 'is_active' => true]);
+
+        // Super-admin creates a POS cashier employee
+        $this->actingAs($superAdmin)->post(route('admin.staff.store'), [
+            'name'              => 'Junior Cashier',
+            'email'             => 'junior.cashier@nexon.test',
+            'phone'             => '9888877777',
+            'role_title'        => 'POS Cashier',
+            'department_name'   => $dept->name,
+            'employment_status' => 'active',
+            'password'          => 'CashierPass123!',
+        ]);
+
+        $staffUser = User::where('email', 'junior.cashier@nexon.test')->firstOrFail();
+
+        // Verify H-01 fix: role is 'staff' and isAdmin() is false
+        $this->assertEquals('staff', $staffUser->role);
+        $this->assertTrue((bool) $staffUser->is_staff);
+        $this->assertFalse($staffUser->isAdmin());
+        $this->assertFalse($staffUser->isSuperAdmin());
+
+        // Create a customer order
+        $customer = User::create([
+            'name' => 'John Customer',
+            'email' => 'john.cust@test.com',
+            'password' => bcrypt('CustPass123!'),
+            'role' => 'customer',
+        ]);
+        $order = \App\Models\Order::create([
+            'user_id' => $customer->id,
+            'reference' => 'SAA-20261114-9999',
+            'status' => 'pending',
+            'subtotal' => 1000,
+            'total' => 1000,
+            'payment_method' => 'cod',
+            'payment_status' => 'pending',
+            'shipping_name' => 'John Customer',
+            'shipping_phone' => '9888888888',
+            'shipping_email' => 'john.cust@test.com',
+            'shipping_address1' => '123 Test St',
+            'shipping_city' => 'Mumbai',
+            'shipping_state' => 'Maharashtra',
+            'shipping_pincode' => '400001',
+        ]);
+
+        // Junior cashier cannot access customer's order invoice (H-01 check)
+        $invoiceResponse = $this->actingAs($staffUser)->get(route('account.orders.invoice', $order));
+        $invoiceResponse->assertStatus(403);
+    }
+
+    public function test_non_super_admin_cannot_change_another_staff_member_email_address(): void
+    {
+        $hrRole = Role::create([
+            'name' => 'HR Staff Officer',
+            'slug' => 'hr-staff-officer',
+            'is_system' => false,
+        ]);
+        $hrRole->permissions()->attach(
+            \App\Models\Permission::where('slug', 'roles.manage')->firstOrFail()->id
+        );
+
+        $hrUser = User::create([
+            'name' => 'HR Manager',
+            'email' => 'hr.mgr@nexon.test',
+            'password' => bcrypt('Password123!'),
+            'role' => 'staff',
+            'is_staff' => true,
+        ]);
+        $hrUser->roles()->attach($hrRole->id);
+
+        $victimStaff = User::create([
+            'name' => 'Finance Clerk',
+            'email' => 'finance.clerk@nexon.test',
+            'password' => bcrypt('Password123!'),
+            'role' => 'staff',
+            'is_staff' => true,
+            'department_name' => 'Finance',
+            'designation' => 'Clerk',
+            'employment_status' => 'active',
+        ]);
+
+        $dept = Department::firstOrCreate(['name' => 'Finance'], ['code' => 'FIN', 'is_active' => true]);
+
+        // HR user attempts to change finance clerk's email to takeover account (M-03 exploit)
+        $response = $this->actingAs($hrUser)->put(route('admin.staff.update', $victimStaff), [
+            'name'              => $victimStaff->name,
+            'email'             => 'attacker.clerk@evil.test',
+            'role_title'        => 'Clerk',
+            'department_name'   => $dept->name,
+            'employment_status' => 'active',
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertEquals('finance.clerk@nexon.test', $victimStaff->fresh()->email);
+    }
 }

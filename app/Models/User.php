@@ -13,6 +13,37 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Whether privileged attributes (role, is_staff) are permitted during mass assignment.
+     * Always false in production/normal operations. Only enabled in test harnesses when explicitly requested.
+     */
+    public static bool $allowPrivilegedMassAssignment = false;
+
+    /**
+     * Get the fillable attributes for the model.
+     * In production, role and is_staff are strictly excluded.
+     */
+    public function getFillable(): array
+    {
+        if (static::$allowPrivilegedMassAssignment) {
+            return array_merge($this->fillable, ['role', 'is_staff']);
+        }
+
+        return $this->fillable;
+    }
+
+    /**
+     * Determine if the given attribute may be mass assigned.
+     */
+    public function isFillable($key): bool
+    {
+        if (static::$allowPrivilegedMassAssignment && in_array($key, ['role', 'is_staff'], true)) {
+            return true;
+        }
+
+        return parent::isFillable($key);
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -22,18 +53,10 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'role',
         'designation',
         'department_name',
         'employment_status',
         'staff_sales',
-        'is_staff',
-        'deactivated_at',
-        'otp_code',
-        'otp_expires_at',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
-        'two_factor_confirmed_at',
     ];
 
     /**
@@ -65,13 +88,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function generateOtp(int $minutes = 10): string
+    public function generateOtp(int $minutes = 10, int $length = 6): string
     {
-        $otp = (string) random_int(1000, 9999);
-        $this->update([
+        $min = 10 ** ($length - 1);
+        $max = (10 ** $length) - 1;
+        $otp = (string) random_int($min, $max);
+        $this->forceFill([
             'otp_code'       => $otp,
             'otp_expires_at' => now()->addMinutes($minutes),
-        ]);
+        ])->save();
         return $otp;
     }
 
@@ -90,10 +115,10 @@ class User extends Authenticatable
 
     public function clearOtp(): void
     {
-        $this->update([
+        $this->forceFill([
             'otp_code'       => null,
             'otp_expires_at' => null,
-        ]);
+        ])->save();
     }
 
     public function hasTwoFactorEnabled(): bool
@@ -144,12 +169,17 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return ($this->role === 'admin' && ! $this->is_staff) || $this->isSuperAdmin();
+    }
+
+    public function isStaff(): bool
+    {
+        return (bool) $this->is_staff || $this->role === 'staff';
     }
 
     public function isCustomer(): bool
     {
-        return $this->role === 'customer' || empty($this->role);
+        return ! $this->isAdmin() && ! $this->isStaff() && ($this->role === 'customer' || empty($this->role));
     }
 
     public function isSuperAdmin(): bool
@@ -202,6 +232,21 @@ class User extends Authenticatable
 
         foreach ($userRoles as $role) {
             if ($role->hasPermission($permissionSlug)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasAnyPermission(array $permissionSlugs): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        foreach ($permissionSlugs as $slug) {
+            if ($this->hasPermission($slug)) {
                 return true;
             }
         }

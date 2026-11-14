@@ -130,6 +130,7 @@ class ProductController extends Controller
             'colors.*.sizes.*.sku'       => 'nullable|string|max:60',
             'colors.*.sizes.*.price'     => 'required|numeric|min:0',
             'colors.*.sizes.*.compare_at_price' => 'nullable|numeric|min:0',
+            'colors.*.sizes.*.cost_price'       => 'nullable|numeric|min:0',
             'colors.*.sizes.*.stock'     => 'required|integer|min:0',
         ]);
 
@@ -192,6 +193,7 @@ class ProductController extends Controller
             'colors.*.sizes.*.sku'       => 'nullable|string|max:60',
             'colors.*.sizes.*.price'     => 'required|numeric|min:0',
             'colors.*.sizes.*.compare_at_price' => 'nullable|numeric|min:0',
+            'colors.*.sizes.*.cost_price'       => 'nullable|numeric|min:0',
             'colors.*.sizes.*.stock'     => 'required|integer|min:0',
         ]);
 
@@ -278,6 +280,7 @@ class ProductController extends Controller
                         'sku'              => $variantSku,
                         'price'            => $variant->price,
                         'compare_at_price' => $variant->compare_at_price,
+                        'cost_price'       => $variant->cost_price,
                         'stock'            => $variant->stock,
                     ]);
                 }
@@ -392,6 +395,7 @@ class ProductController extends Controller
                         'sku'              => $variantSku,
                         'price'            => $sizeData['price'],
                         'compare_at_price' => $sizeData['compare_at_price'] ?? null,
+                        'cost_price'       => $sizeData['cost_price'] ?? null,
                         'stock'            => $sizeData['stock'],
                     ]
                 );

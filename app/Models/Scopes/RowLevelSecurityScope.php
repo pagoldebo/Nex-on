@@ -34,7 +34,10 @@ class RowLevelSecurityScope implements Scope
             if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
                 return;
             }
-            if ($user->role === 'admin' || (method_exists($user, 'roles') && $user->roles()->where('is_system', true)->exists())) {
+            // Staff members holding explicit operational permissions bypass customer RLS across custom & system roles (L-02)
+            if ($user->is_staff && method_exists($user, 'hasAnyPermission') && $user->hasAnyPermission([
+                'orders.view', 'orders.manage', 'reports.view', 'pos.access', 'roles.manage', 'settings.manage'
+            ])) {
                 return;
             }
 

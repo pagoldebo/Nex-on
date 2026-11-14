@@ -13,6 +13,11 @@ class StaffReferenceSeeder extends Seeder
 {
     public function run(): void
     {
+        // Guard against running demo seeds in production (L-03)
+        if (app()->environment('production')) {
+            return;
+        }
+
         $seedStaff = [
             [
                 'name'              => 'Robert Hayes',
@@ -85,7 +90,7 @@ class StaffReferenceSeeder extends Seeder
             $user->staff_sales = $data['staff_sales'];
             $user->employment_status = $data['employment_status'];
             $user->is_staff = true;
-            $user->role = 'admin';
+            $user->role = 'staff';
             if (!$user->exists) {
                 $user->password = Hash::make('password123');
                 $user->created_at = $data['created_at'];

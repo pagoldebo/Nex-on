@@ -401,9 +401,10 @@ class StorefrontController extends Controller
 
         // Dispatch transactional emails
         try {
-            Mail::send('emails.order-confirmation', ['order' => $order], function ($m) use ($order) {
+            $storeName = Setting::get('store_name', config('app.name', 'Nex-on'));
+            Mail::send('emails.order-confirmation', ['order' => $order], function ($m) use ($order, $storeName) {
                 $m->to($order->shipping_email, $order->shipping_name)
-                  ->subject('Order Confirmed: #' . $order->reference . ' — Saaya');
+                  ->subject('Order Confirmed: #' . $order->reference . ' — ' . $storeName);
             });
 
             $adminEmail = Setting::supportEmail();
@@ -423,9 +424,16 @@ class StorefrontController extends Controller
         }
 
         // Store placed order credentials in session for guest order confirmation access control
+        $recentOrderIds = (array) session('recent_order_ids', []);
+        $recentOrderIds[] = $order->id;
+        $recentOrderRefs = (array) session('recent_order_refs', []);
+        $recentOrderRefs[] = $order->reference;
+
         session([
-            'recent_order_id'  => $order->id,
-            'recent_order_ref' => $order->reference,
+            'recent_order_id'   => $order->id,
+            'recent_order_ref'  => $order->reference,
+            'recent_order_ids'  => array_values(array_unique($recentOrderIds)),
+            'recent_order_refs' => array_values(array_unique($recentOrderRefs)),
         ]);
 
         return response()->json([
@@ -470,12 +478,16 @@ class StorefrontController extends Controller
             ->firstOrFail();
 
         // Broken Object Level Authorization (BOLA) Check:
-        // Only the order owner, an administrator, or the guest session that placed this order may access it.
-        $isOwner = Auth::check() && $orderModel->user_id && $orderModel->user_id === Auth::id();
-        $isAdmin = Auth::check() && Auth::user()->isAdmin();
-        $isSessionGuest = session('recent_order_id') == $orderModel->id || session('recent_order_ref') === $orderModel->reference;
+        // Only the order owner, an administrator, an authorized staff manager, or the guest session that placed this order may access it.
+        $user = Auth::user();
+        $isOwner = $user && $orderModel->user_id && $orderModel->user_id === $user->id;
+        $isAuthorizedAdmin = $user && ($user->isSuperAdmin() || $user->isAdmin() || $user->hasPermission('orders.view') || $user->hasPermission('orders.manage'));
+        $isSessionGuest = session('recent_order_id') == $orderModel->id
+            || session('recent_order_ref') === $orderModel->reference
+            || in_array($orderModel->id, (array) session('recent_order_ids', []))
+            || in_array($orderModel->reference, (array) session('recent_order_refs', []));
 
-        if (! $isOwner && ! $isAdmin && ! $isSessionGuest) {
+        if (! $isOwner && ! $isAuthorizedAdmin && ! $isSessionGuest) {
             abort(403, 'Unauthorized access to order confirmation.');
         }
 
@@ -535,6 +547,7 @@ class StorefrontController extends Controller
      */
     public function removeCoupon(Request $request): JsonResponse
     {
+        session()->forget('applied_coupon');
         return response()->json([
             'success' => true,
             'message' => 'Coupon has been removed.',
@@ -597,6 +610,23 @@ class StorefrontController extends Controller
      */
     public function submitReview(Request $request, Product $product): JsonResponse
     {
+        if (! Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please sign in to submit a review.',
+            ], 401);
+        }
+
+        $userThrottleKey = 'review_user:' . Auth::id();
+        if (RateLimiter::tooManyAttempts($userThrottleKey, 5)) {
+            $seconds = RateLimiter::availableIn($userThrottleKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many review submissions. Please wait {$seconds} seconds.",
+            ], 429);
+        }
+        RateLimiter::hit($userThrottleKey, 300);
+
         $validated = $request->validate([
             'rating'        => 'required|integer|between:1,5',
             'customer_name' => 'required|string|max:100',
@@ -605,21 +635,30 @@ class StorefrontController extends Controller
             'comment'       => 'required|string|max:1000',
         ]);
 
+        $sanitizedTitle   = !empty($validated['title']) ? \App\Services\HtmlSanitizerService::clean($validated['title']) : null;
+        $sanitizedComment = \App\Services\HtmlSanitizerService::clean($validated['comment']);
+
         $review = ProductReview::create([
             'product_id'    => $product->id,
             'user_id'       => Auth::id(),
-            'customer_name' => $validated['customer_name'],
-            'city'          => $validated['city'] ?? null,
+            'customer_name' => strip_tags($validated['customer_name']),
+            'city'          => !empty($validated['city']) ? strip_tags($validated['city']) : null,
             'rating'        => $validated['rating'],
-            'title'         => $validated['title'] ?? null,
-            'comment'       => $validated['comment'],
+            'title'         => $sanitizedTitle,
+            'comment'       => $sanitizedComment,
             'is_approved'   => false, // Pending admin moderation
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Thank you for your review! It will be published upon moderation.',
-            'review'  => $review,
+            'review'  => [
+                'id'            => $review->id,
+                'customer_name' => $review->customer_name,
+                'rating'        => $review->rating,
+                'title'         => $review->title,
+                'comment'       => $review->comment,
+            ],
         ]);
     }
 
@@ -657,7 +696,10 @@ class StorefrontController extends Controller
         // Broken Object Level Authorization (BOLA) Check:
         $isOwner = Auth::check() && $order->user_id && $order->user_id === Auth::id();
         $isAdmin = Auth::check() && Auth::user()->isAdmin();
-        $isSessionGuest = session('recent_order_id') == $order->id || session('recent_order_ref') === $order->reference;
+        $isSessionGuest = session('recent_order_id') == $order->id
+            || session('recent_order_ref') === $order->reference
+            || in_array($order->id, (array) session('recent_order_ids', []))
+            || in_array($order->reference, (array) session('recent_order_refs', []));
 
         if (! $isOwner && ! $isAdmin && ! $isSessionGuest) {
             return response()->json(['success' => false, 'message' => 'Unauthorized. You do not have permission to modify this order.'], 403);
@@ -870,7 +912,7 @@ class StorefrontController extends Controller
             return redirect()->route('login');
         }
 
-        if ($order->user_id !== $user->id && $user->role !== 'admin') {
+        if ($order->user_id !== $user->id && ! $user->isAdmin() && ! $user->isSuperAdmin() && ! $user->hasPermission('orders.view') && ! $user->hasPermission('orders.manage')) {
             abort(403, 'Unauthorized access to this invoice.');
         }
 

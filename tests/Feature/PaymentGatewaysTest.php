@@ -84,6 +84,9 @@ class PaymentGatewaysTest extends TestCase
         [$admin, $order] = $this->createAdminAndOrder();
         $this->assertEquals(Order::PAYMENT_PENDING, $order->payment_status);
 
+        $secret = 'whsec_testSecret123';
+        Setting::set('gateway_razorpay_webhook_secret', $secret);
+
         $payload = [
             'event'   => 'payment.captured',
             'payload' => [
@@ -100,7 +103,21 @@ class PaymentGatewaysTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson(route('webhook.razorpay'), $payload);
+        $jsonPayload = json_encode($payload);
+        $signature = hash_hmac('sha256', $jsonPayload, $secret);
+
+        $response = $this->call(
+            'POST',
+            route('webhook.razorpay'),
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X-Razorpay-Signature' => $signature,
+            ],
+            $jsonPayload
+        );
         $response->assertStatus(200);
         $response->assertJson(['status' => 'success']);
 
@@ -110,9 +127,19 @@ class PaymentGatewaysTest extends TestCase
         $this->assertEquals('pay_RZPTestPayment999', $order->payment_reference);
     }
 
+    public function test_razorpay_webhook_rejects_missing_signature()
+    {
+        Setting::set('gateway_razorpay_webhook_secret', 'secret');
+        $response = $this->postJson(route('webhook.razorpay'), ['event' => 'payment.captured']);
+        $response->assertStatus(400);
+    }
+
     public function test_stripe_webhook_marks_order_paid()
     {
         [$admin, $order] = $this->createAdminAndOrder();
+
+        $secret = 'whsec_stripeSecret456';
+        Setting::set('gateway_stripe_webhook_secret', $secret);
 
         $payload = [
             'type' => 'checkout.session.completed',
@@ -126,12 +153,34 @@ class PaymentGatewaysTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson(route('webhook.stripe'), $payload);
+        $jsonPayload = json_encode($payload);
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp . '.' . $jsonPayload, $secret);
+
+        $response = $this->call(
+            'POST',
+            route('webhook.stripe'),
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_Stripe-Signature' => "t={$timestamp},v1={$signature}",
+            ],
+            $jsonPayload
+        );
         $response->assertStatus(200);
 
         $order->refresh();
         $this->assertEquals(Order::PAYMENT_PAID, $order->payment_status);
         $this->assertEquals(Order::STATUS_CONFIRMED, $order->status);
+    }
+
+    public function test_stripe_webhook_rejects_invalid_signature()
+    {
+        Setting::set('gateway_stripe_webhook_secret', 'secret');
+        $response = $this->postJson(route('webhook.stripe'), ['type' => 'checkout.session.completed']);
+        $response->assertStatus(400);
     }
 
     public function test_active_gateways_api_returns_json()

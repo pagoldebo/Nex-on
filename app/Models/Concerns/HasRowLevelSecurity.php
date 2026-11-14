@@ -19,7 +19,7 @@ trait HasRowLevelSecurity
             $ownerKey = $model->getOwnerKeyName();
             if (empty($model->{$ownerKey}) && Auth::check()) {
                 $user = Auth::user();
-                if (! (method_exists($user, 'isAdmin') && $user->isAdmin())) {
+                if (! ((method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) || (method_exists($user, 'isAdmin') && $user->isAdmin()))) {
                     $model->{$ownerKey} = $user->id;
                 }
             }

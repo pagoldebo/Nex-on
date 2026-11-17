@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -94,7 +94,7 @@ class User extends Authenticatable
         $max = (10 ** $length) - 1;
         $otp = (string) random_int($min, $max);
         $this->forceFill([
-            'otp_code'       => $otp,
+            'otp_code'       => hash_hmac('sha256', $otp, (string) config('app.key')),
             'otp_expires_at' => now()->addMinutes($minutes),
         ])->save();
         return $otp;
@@ -102,7 +102,7 @@ class User extends Authenticatable
 
     public function verifyOtp(string $otp): bool
     {
-        if (empty($this->otp_code) || $this->otp_code !== $otp) {
+        if (empty($this->otp_code)) {
             return false;
         }
 
@@ -110,7 +110,20 @@ class User extends Authenticatable
             return false;
         }
 
-        return true;
+        $cleanOtp = trim($otp);
+        $key = (string) config('app.key');
+        $expectedHash = hash_hmac('sha256', $cleanOtp, $key);
+
+        if (hash_equals((string) $this->otp_code, $expectedHash)) {
+            return true;
+        }
+
+        // Backward compatibility fallback for legacy plaintext rows
+        if (hash_equals((string) $this->otp_code, $cleanOtp)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function clearOtp(): void

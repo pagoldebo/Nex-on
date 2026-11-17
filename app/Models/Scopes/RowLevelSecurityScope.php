@@ -46,7 +46,9 @@ class RowLevelSecurityScope implements Scope
                 ? $model->getOwnerKeyName()
                 : 'user_id';
 
-            $builder->where($model->qualifyColumn($ownerColumn), $user->id);
+            $builder->where(function ($query) use ($model, $ownerColumn, $user) {
+                $query->where($model->qualifyColumn($ownerColumn), $user->id);
+            });
             return;
         }
 
@@ -61,7 +63,9 @@ class RowLevelSecurityScope implements Scope
             ? $model->getOwnerKeyName()
             : 'user_id';
 
-        $builder->whereNull($model->qualifyColumn($ownerColumn));
+        $builder->where(function ($query) use ($model, $ownerColumn) {
+            $query->whereNull($model->qualifyColumn($ownerColumn));
+        });
     }
 }
 

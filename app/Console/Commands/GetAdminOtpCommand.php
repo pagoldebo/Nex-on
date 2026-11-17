@@ -26,6 +26,11 @@ class GetAdminOtpCommand extends Command
      */
     public function handle(): int
     {
+        if (app()->environment('production')) {
+            $this->error('The admin:otp command is strictly disabled in production environments.');
+            return Command::FAILURE;
+        }
+
         $email = $this->argument('email');
 
         $query = User::where('role', 'admin');
@@ -43,17 +48,13 @@ class GetAdminOtpCommand extends Command
             return Command::FAILURE;
         }
 
-        if (empty($admin->otp_code) || ($admin->otp_expires_at && now()->isAfter($admin->otp_expires_at))) {
-            $admin->generateOtp(10);
-            $this->info("Generated fresh 10-minute OTP for {$admin->email}:");
-        } else {
-            $this->info("Current active OTP for {$admin->email}:");
-        }
+        $plainOtp = $admin->generateOtp(10);
+        $this->info("Generated fresh 10-minute OTP for {$admin->email}:");
 
         $this->newLine();
         $this->line("  🔑 Admin Email : <fg=cyan>{$admin->email}</>");
-        $this->line("  ⚡ OTP Code    : <fg=green;options=bold>{$admin->otp_code}</>");
-        $this->line("  ⏳ Expires At  : <fg=yellow>{$admin->otp_expires_at}</>");
+        $this->line("  ⚡ OTP Code    : <fg=green;options=bold>{$plainOtp}</>");
+        $this->line("  ⏳ Expires At  : <fg=yellow>{$admin->fresh()->otp_expires_at}</>");
         $this->newLine();
 
         return Command::SUCCESS;

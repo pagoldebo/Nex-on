@@ -59,7 +59,8 @@ class MultiFactorAuthenticationSecurityTest extends TestCase
 
         $this->assertEquals(6, strlen($otp));
         $this->assertTrue(ctype_digit($otp));
-        $this->assertEquals($otp, $user->fresh()->otp_code);
+        $this->assertTrue($user->fresh()->verifyOtp($otp));
+        $this->assertEquals(64, strlen($user->fresh()->otp_code));
         $this->assertNotNull($user->fresh()->otp_expires_at);
         $this->assertTrue($user->fresh()->otp_expires_at->isFuture());
     }

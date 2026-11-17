@@ -84,13 +84,49 @@ class AdminOrderController extends Controller
 
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
+        $allowedStatuses = [
+            Order::STATUS_PENDING,
+            Order::STATUS_CONFIRMED,
+            Order::STATUS_PROCESSING,
+            Order::STATUS_SHIPPED,
+            Order::STATUS_DELIVERED,
+            Order::STATUS_CANCELLED,
+            Order::STATUS_REFUND_REQ,
+            Order::STATUS_REFUNDED,
+        ];
+        $allowedPaymentStatuses = [
+            Order::PAYMENT_PENDING,
+            Order::PAYMENT_PAID,
+            Order::PAYMENT_FAILED,
+            Order::PAYMENT_REFUNDED,
+        ];
+
         $validated = $request->validate([
-            'status'         => 'required|string',
-            'payment_status' => 'nullable|string',
+            'status'         => ['required', 'string', \Illuminate\Validation\Rule::in($allowedStatuses)],
+            'payment_status' => ['nullable', 'string', \Illuminate\Validation\Rule::in($allowedPaymentStatuses)],
             'notes'          => 'nullable|string',
         ]);
 
+        $wasCancelled = ($order->status === Order::STATUS_CANCELLED);
         $order->status = $validated['status'];
+
+        if ($validated['status'] === Order::STATUS_CANCELLED && ! $wasCancelled) {
+            // Restock items idempotently if not previously restocked
+            $alreadyRestocked = \App\Models\InventoryLog::where('type', 'order_cancellation_restock')
+                ->where('notes', 'like', "%#{$order->reference}%")
+                ->exists();
+
+            if (! $alreadyRestocked) {
+                foreach ($order->items as $item) {
+                    if ($item->product_variant_id) {
+                        $variant = \App\Models\ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->adjustStock($item->qty, 'order_cancellation_restock', "Admin cancelled order #{$order->reference}", Auth::id());
+                        }
+                    }
+                }
+            }
+        }
 
         if (!empty($validated['payment_status'])) {
             $order->payment_status = $validated['payment_status'];

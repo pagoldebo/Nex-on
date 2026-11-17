@@ -186,6 +186,7 @@ Route::post('/driver/orders/{order}/status', [AdminDeliveryPersonnelController::
 Route::post('/webhook/razorpay',          [PaymentWebhookController::class, 'handleRazorpay'])->middleware('throttle:webhooks')->name('webhook.razorpay');
 Route::post('/webhook/stripe',            [PaymentWebhookController::class, 'handleStripe'])->middleware('throttle:webhooks')->name('webhook.stripe');
 Route::post('/webhook/phonepe',           [PaymentWebhookController::class, 'handlePhonePe'])->middleware('throttle:webhooks')->name('webhook.phonepe');
+Route::post('/webhook/paypal',            [PaymentWebhookController::class, 'handlePayPal'])->middleware('throttle:webhooks')->name('webhook.paypal');
 Route::post('/api/payment/razorpay/verify', [PaymentWebhookController::class, 'verifyRazorpayClientPayment'])->middleware('throttle:payment_verify')->name('api.payment.razorpay.verify');
 Route::get('/api/payment/gateways',       [PaymentWebhookController::class, 'getActiveGateways'])->name('api.payment.gateways');
 
@@ -339,18 +340,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::post('/suppliers',                           [AdminPurchaseOrderController::class, 'storeSupplier'])->name('suppliers.store');
     });
 
+    // Orders Export (Must precede parameterised /orders/{order} to prevent route shadowing)
+    Route::get('/orders/export', [AdminOrderController::class, 'exportCsv'])
+        ->middleware('permission:orders.export|orders.manage')
+        ->name('orders.export');
+
     // Orders Management (View)
     Route::middleware('permission:orders.view|orders.manage')->group(function () {
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
-        Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('orders.invoice');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->whereNumber('order')->name('orders.show');
+        Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'invoice'])->whereNumber('order')->name('orders.invoice');
     });
 
     // Orders Management (Mutations & Fleet)
     Route::middleware('permission:orders.manage')->group(function () {
-        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
-        Route::patch('/orders/{order}/tracking', [AdminOrderController::class, 'updateTracking'])->name('orders.updateTracking');
-        Route::post('/orders/{order}/assign-driver', [AdminDeliveryPersonnelController::class, 'assignOrder'])->name('orders.assignDriver');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->whereNumber('order')->name('orders.updateStatus');
+        Route::patch('/orders/{order}/tracking', [AdminOrderController::class, 'updateTracking'])->whereNumber('order')->name('orders.updateTracking');
+        Route::post('/orders/{order}/assign-driver', [AdminDeliveryPersonnelController::class, 'assignOrder'])->whereNumber('order')->name('orders.assignDriver');
 
         // Delivery Personnel Fleet Management
         Route::get('/delivery-personnel',          [AdminDeliveryPersonnelController::class, 'index'])->name('fleet.index');
@@ -361,11 +367,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::get('/order-requests', [AdminOrderRequestController::class, 'index'])->name('order-requests.index');
         Route::patch('/order-requests/{orderRequest}', [AdminOrderRequestController::class, 'update'])->name('order-requests.update');
     });
-
-    // Orders Export
-    Route::get('/orders/export', [AdminOrderController::class, 'exportCsv'])
-        ->middleware('permission:orders.export|orders.manage')
-        ->name('orders.export');
 
     // Financial Statements, Outflows & Commercial Invoices
     Route::middleware('permission:reports.view')->group(function () {
@@ -456,21 +457,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::put('/marketing/loyalty/tiers/{tier}', [AdminLoyaltyController::class, 'updateTier'])->name('marketing.loyalty.tier.update');
         Route::post('/marketing/loyalty/accounts/{account}/adjust', [AdminLoyaltyController::class, 'adjustPoints'])->name('marketing.loyalty.account.adjust');
 
-        // Customers
+    // Customers & Customer Groups Management
+    Route::middleware('permission:customers.view|customers.manage')->group(function () {
         Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/segments', [AdminCustomerSegmentController::class, 'index'])->name('customers.segments');
         Route::get('/customers/segments/export', [AdminCustomerSegmentController::class, 'export'])->name('customers.segments.export');
         Route::get('/customers/{customer}', [AdminCustomerController::class, 'show'])->name('customers.show');
+        Route::get('/customer-groups', [AdminCustomerGroupController::class, 'index'])->name('customer-groups.index');
+    });
+
+    Route::middleware('permission:customers.manage')->group(function () {
         Route::patch('/customers/{customer}/toggle', [AdminCustomerController::class, 'toggleStatus'])->name('customers.toggle');
         Route::post('/customers/{customer}/password', [AdminCustomerController::class, 'updatePassword'])->name('customers.password');
-
-        // Customer Groups & Wholesale Pricing Tiers
-        Route::get('/customer-groups', [AdminCustomerGroupController::class, 'index'])->name('customer-groups.index');
         Route::post('/customer-groups', [AdminCustomerGroupController::class, 'store'])->name('customer-groups.store');
         Route::put('/customer-groups/{customerGroup}', [AdminCustomerGroupController::class, 'update'])->name('customer-groups.update');
         Route::delete('/customer-groups/{customerGroup}', [AdminCustomerGroupController::class, 'destroy'])->name('customer-groups.destroy');
         Route::post('/customer-groups/{customerGroup}/assign', [AdminCustomerGroupController::class, 'assignCustomers'])->name('customer-groups.assign');
         Route::delete('/customer-groups/{customerGroup}/customers/{user}', [AdminCustomerGroupController::class, 'removeCustomer'])->name('customer-groups.remove-customer');
+    });
 
         // Product Reviews Moderation
         Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
@@ -506,7 +510,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::post('/roles/assign-user',               [AdminRoleController::class, 'assignUser'])->name('roles.assignUser');
 
         // HRM: Payroll Management
-        Route::prefix('hrm/payroll')->as('hrm.payroll.')->group(function () {
+        Route::prefix('hrm/payroll')->as('hrm.payroll.')->middleware('permission:payroll.manage|payroll.export')->group(function () {
             Route::get('/overview', [AdminPayrollController::class, 'overview'])->name('overview');
             Route::get('/run', [AdminPayrollController::class, 'run'])->name('run');
             Route::post('/run', [AdminPayrollController::class, 'processRun'])->name('run.process');
@@ -515,7 +519,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
             Route::get('/payslip/{item}/print', [AdminPayrollController::class, 'printPayslip'])->name('payslip.print');
             Route::get('/{payroll}/review', [AdminPayrollController::class, 'review'])->name('review');
             Route::post('/{payroll}/status', [AdminPayrollController::class, 'updateStatus'])->name('status');
-            Route::get('/{payroll}/bank-file', [AdminPayrollController::class, 'exportBankFile'])->name('bank-file');
+            Route::get('/{payroll}/bank-file', [AdminPayrollController::class, 'exportBankFile'])->middleware('permission:payroll.export')->name('bank-file');
         });
 
         // HRM: Performance Management & Appraisals

@@ -143,7 +143,7 @@
                                 Verify Your Sign In
                             </h1>
                             <p class="text-xs sm:text-sm text-stone-500 mt-2 font-light">
-                                Enter the 4-digit verification code sent to your registered email address.
+                                Enter the 6-digit verification code sent to your registered email address.
                             </p>
                         </div>
 
@@ -188,24 +188,24 @@
 
                             <div>
                                 <label for="otp" class="block font-bold text-stone-700 uppercase tracking-wider text-[11px] mb-2 text-center sm:text-left">
-                                    4-Digit Verification Code <span class="text-rose-600">*</span>
+                                    6-Digit Verification Code <span class="text-rose-600">*</span>
                                 </label>
                                 <div class="relative">
                                     <input id="otp"
                                            type="text"
                                            name="otp"
                                            inputmode="numeric"
-                                           pattern="[0-9]{4}"
-                                           maxlength="4"
+                                           pattern="[0-9]{6}"
+                                           maxlength="6"
                                            autocomplete="one-time-code"
                                            required
                                            autofocus
-                                           placeholder="••••"
+                                           placeholder="••••••"
                                            value="{{ old('otp') }}"
                                            class="otp-input-field w-full py-4 px-4 rounded-2xl border-2 {{ $errors->has('otp') ? 'border-rose-400 bg-rose-50/40 text-rose-900' : 'border-stone-300 focus:border-stone-900 bg-stone-50/50 text-stone-900' }} focus:ring-4 focus:ring-stone-900/10 outline-none transition placeholder:text-stone-300 placeholder:opacity-50">
                                 </div>
                                 <p class="text-[11px] text-stone-400 text-center mt-2">
-                                    Code automatically submits once all 4 digits are entered.
+                                    Code automatically submits once all 6 digits are entered.
                                 </p>
                             </div>
 
@@ -274,12 +274,12 @@
             if (otpInput) {
                 otpInput.focus();
 
-                // Format and Auto-submit on 4 digits
+                // Format and Auto-submit on 6 digits
                 otpInput.addEventListener('input', function () {
                     // Only numbers
-                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
 
-                    if (this.value.length === 4 && !isSubmitting) {
+                    if (this.value.length === 6 && !isSubmitting) {
                         isSubmitting = true;
                         submitBtnText.textContent = 'Verifying Code...';
                         submitSpinner.classList.remove('hidden');
@@ -296,10 +296,10 @@
                 otpInput.addEventListener('paste', function (e) {
                     e.preventDefault();
                     const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-                    const cleanDigits = pastedData.replace(/[^0-9]/g, '').slice(0, 4);
+                    const cleanDigits = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
                     this.value = cleanDigits;
 
-                    if (cleanDigits.length === 4 && !isSubmitting) {
+                    if (cleanDigits.length === 6 && !isSubmitting) {
                         isSubmitting = true;
                         submitBtnText.textContent = 'Verifying Code...';
                         submitSpinner.classList.remove('hidden');

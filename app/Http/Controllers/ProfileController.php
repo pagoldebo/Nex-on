@@ -27,7 +27,7 @@ class ProfileController extends Controller
         $secretKey    = null;
         $recoveryCodes = [];
 
-        if ($user->two_factor_secret) {
+        if ($user->two_factor_secret && ! $user->hasTwoFactorEnabled()) {
             try {
                 $secretKey = decrypt($user->two_factor_secret);
                 $qrCodeSvgUrl = $totp->getQrCodeSvgUrl(config('app.name', 'Nex-on'), $user->email, $secretKey);
@@ -35,6 +35,9 @@ class ProfileController extends Controller
             } catch (\Throwable $e) {
                 // If decryption fails, safely leave null
             }
+        } elseif ($user->hasTwoFactorEnabled()) {
+            // Only show newly regenerated recovery codes if flashed in session
+            $recoveryCodes = (array) session('recovery_codes', []);
         }
 
         return view('profile.edit', compact('user', 'theme', 'qrCodeSvgUrl', 'secretKey', 'recoveryCodes'));

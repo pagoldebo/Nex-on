@@ -69,6 +69,8 @@ class SecurityHeadersMiddleware
                 $content = preg_replace_callback('/<script\b(?![^>]*\bnonce=)([^>]*)>/i', function ($matches) use ($nonce) {
                     return "<script nonce=\"{$nonce}\"{$matches[1]}>";
                 }, $content);
+
+
                 $response->setContent($content);
             }
         }

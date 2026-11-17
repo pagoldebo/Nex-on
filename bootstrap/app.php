@@ -11,6 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustHosts(at: fn () => array_values(array_filter([
+            config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
+            'localhost',
+            '127.0.0.1',
+            '*.test',
+        ])));
         $middleware->encryptCookies();
         $middleware->validateCsrfTokens(except: [
             'webhook/*',

@@ -52,6 +52,28 @@ class PaymentWebhookController extends Controller
             if ($orderRef) {
                 $order = Order::where('reference', $orderRef)->first();
                 if ($order && $order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
+                    // Verify amount (paise) and currency binding
+                    $paidAmount = $payloadData['amount'] ?? null;
+                    $paidCurrency = strtoupper($payloadData['currency'] ?? 'INR');
+                    $expectedPaise = (int) round($order->total * 100);
+
+                    if ($paidAmount !== null && (int) $paidAmount !== $expectedPaise) {
+                        Log::error("Razorpay webhook amount mismatch for order #{$order->reference}. Expected {$expectedPaise} paise, got {$paidAmount}.");
+                        return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
+                    if ($paidCurrency !== 'INR') {
+                        Log::error("Razorpay webhook currency mismatch for order #{$order->reference}. Expected INR, got {$paidCurrency}.");
+                        return response()->json(['error' => 'Currency mismatch'], 400);
+                    }
+
+                    // Enforce unique payment reference
+                    $duplicate = Order::where('payment_reference', $paymentId)->where('id', '!=', $order->id)->exists();
+                    if ($duplicate) {
+                        Log::error("Razorpay payment ID {$paymentId} is already attached to another order.");
+                        return response()->json(['error' => 'Duplicate payment reference'], 400);
+                    }
+
                     $order->update([
                         'payment_status'    => Order::PAYMENT_PAID,
                         'payment_reference' => $paymentId,
@@ -100,6 +122,12 @@ class PaymentWebhookController extends Controller
             return response()->json(['error' => 'Invalid signature format'], 400);
         }
 
+        // M-01: Reject replay attacks older than 300s window
+        if (abs(time() - (int) $timestamp) > 300) {
+            Log::warning('Stripe webhook timestamp exceeds 300s replay window.');
+            return response()->json(['error' => 'Webhook timestamp expired'], 400);
+        }
+
         $signedPayload = $timestamp . '.' . $request->getContent();
         $expectedSignature = hash_hmac('sha256', $signedPayload, $webhookSecret);
         if (!hash_equals($expectedSignature, $signature)) {
@@ -122,6 +150,22 @@ class PaymentWebhookController extends Controller
             if ($orderRef) {
                 $order = Order::where('reference', $orderRef)->first();
                 if ($order && $order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
+                    // Check verified amount (cents)
+                    $paidAmount = $dataObject['amount'] ?? $dataObject['amount_total'] ?? null;
+                    $expectedCents = (int) round($order->total * 100);
+
+                    if ($paidAmount !== null && (int) $paidAmount !== $expectedCents) {
+                        Log::error("Stripe webhook amount mismatch for order #{$order->reference}. Expected {$expectedCents} cents, got {$paidAmount}.");
+                        return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
+                    // Enforce unique payment reference
+                    $duplicate = Order::where('payment_reference', $paymentId)->where('id', '!=', $order->id)->exists();
+                    if ($duplicate) {
+                        Log::error("Stripe payment ID {$paymentId} is already attached to another order.");
+                        return response()->json(['error' => 'Duplicate payment reference'], 400);
+                    }
+
                     $order->update([
                         'payment_status'    => Order::PAYMENT_PAID,
                         'payment_reference' => $paymentId,
@@ -171,8 +215,20 @@ class PaymentWebhookController extends Controller
         if (($decoded['code'] ?? '') === 'PAYMENT_SUCCESS') {
             $txnId = $decoded['data']['merchantTransactionId'] ?? null;
             if ($txnId) {
-                $order = Order::where('reference', $txnId)->orWhere('payment_reference', $txnId)->first();
+                $order = Order::where(function ($q) use ($txnId) {
+                    $q->where('reference', $txnId)->orWhere('payment_reference', $txnId);
+                })->first();
+
                 if ($order && $order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
+                    // Check verified amount (paise)
+                    $paidAmount = $decoded['data']['amount'] ?? null;
+                    $expectedPaise = (int) round($order->total * 100);
+
+                    if ($paidAmount !== null && (int) $paidAmount !== $expectedPaise) {
+                        Log::error("PhonePe webhook amount mismatch for order #{$order->reference}. Expected {$expectedPaise} paise, got {$paidAmount}.");
+                        return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
                     $order->update([
                         'payment_status' => Order::PAYMENT_PAID,
                         'status'         => Order::STATUS_CONFIRMED,
@@ -222,6 +278,21 @@ class PaymentWebhookController extends Controller
             return response()->json(['error' => 'Unauthorized order verification.'], 403);
         }
 
+        // Enforce unique payment reference
+        $duplicate = Order::where('payment_reference', $validated['razorpay_payment_id'])->where('id', '!=', $order->id)->exists();
+        if ($duplicate) {
+            Log::error("Razorpay payment ID {$validated['razorpay_payment_id']} is already used on another order.");
+            return response()->json(['error' => 'Duplicate payment reference.'], 400);
+        }
+
+        if ($request->filled('amount')) {
+            $clientAmount = (int) $request->input('amount');
+            $expectedPaise = (int) round($order->total * 100);
+            if ($clientAmount !== $expectedPaise) {
+                return response()->json(['error' => 'Amount mismatch.'], 400);
+            }
+        }
+
         // Idempotent: only update if not already marked paid and not cancelled
         if ($order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
             $order->update([
@@ -236,6 +307,46 @@ class PaymentWebhookController extends Controller
             'message'   => 'Payment verified successfully',
             'reference' => $order->reference,
         ]);
+    }
+
+    /**
+     * PayPal Webhook Listener (POST /webhook/paypal).
+     */
+    public function handlePayPal(Request $request): JsonResponse
+    {
+        $event = $request->input('event_type');
+        $resource = $request->input('resource', []);
+
+        if (in_array($event, ['CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.COMPLETED'])) {
+            $orderRef = $resource['custom_id'] ?? $resource['invoice_id'] ?? null;
+            $paymentId = $resource['id'] ?? null;
+
+            if ($orderRef && $paymentId) {
+                $order = Order::where('reference', $orderRef)->first();
+                if ($order && $order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
+                    $paidAmount = isset($resource['amount']['value']) ? (float) $resource['amount']['value'] : null;
+                    if ($paidAmount !== null && abs($paidAmount - (float) $order->total) > 0.01) {
+                        Log::error("PayPal webhook amount mismatch for order #{$order->reference}. Expected {$order->total}, got {$paidAmount}.");
+                        return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
+                    $duplicate = Order::where('payment_reference', $paymentId)->where('id', '!=', $order->id)->exists();
+                    if ($duplicate) {
+                        Log::error("PayPal payment ID {$paymentId} is already attached to another order.");
+                        return response()->json(['error' => 'Duplicate payment reference'], 400);
+                    }
+
+                    $order->update([
+                        'payment_status'    => Order::PAYMENT_PAID,
+                        'payment_reference' => $paymentId,
+                        'status'            => Order::STATUS_CONFIRMED,
+                    ]);
+                    Log::info("Order #{$order->reference} marked PAID via PayPal Webhook [{$paymentId}].");
+                }
+            }
+        }
+
+        return response()->json(['status' => 'success']);
     }
 
     /**
@@ -254,6 +365,11 @@ class PaymentWebhookController extends Controller
             ],
             'phonepe' => [
                 'enabled' => Setting::get('gateway_phonepe_enabled', '0') === '1',
+            ],
+            'paypal' => [
+                'enabled'   => Setting::get('gateway_paypal_enabled', '0') === '1',
+                'client_id' => Setting::get('gateway_paypal_client_id', ''),
+                'mode'      => Setting::get('gateway_paypal_mode', 'sandbox'),
             ],
             'cod' => [
                 'enabled' => Setting::get('enable_cod', '1') === '1',

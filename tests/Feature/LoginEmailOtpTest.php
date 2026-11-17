@@ -86,14 +86,14 @@ class LoginEmailOtpTest extends TestCase
 
         $freshUser = $user->fresh();
         $this->assertNotNull($freshUser->otp_code);
-        $this->assertEquals(6, strlen($freshUser->otp_code));
+        $this->assertEquals(64, strlen($freshUser->otp_code));
         $this->assertNotNull($freshUser->otp_expires_at);
 
         Notification::assertSentOnDemand(
             TwoFactorOTP::class,
             function ($notification, $channels, $notifiable) use ($user, $freshUser) {
                 return $notifiable->routes['mail'] === $user->email &&
-                       $notification->otp === $freshUser->otp_code;
+                       $freshUser->verifyOtp($notification->otp);
             }
         );
     }
@@ -223,7 +223,7 @@ class LoginEmailOtpTest extends TestCase
             TwoFactorOTP::class,
             function ($notification, $channels, $notifiable) use ($user, $freshUser) {
                 return $notifiable->routes['mail'] === $user->email &&
-                       $notification->otp === $freshUser->otp_code;
+                       $freshUser->verifyOtp($notification->otp);
             }
         );
     }

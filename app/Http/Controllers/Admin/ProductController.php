@@ -121,7 +121,7 @@ class ProductController extends Controller
 
             'colors'                     => 'required|array|min:1',
             'colors.*.name'              => 'required|string|max:50',
-            'colors.*.hex'               => 'nullable|string|max:9',
+            'colors.*.hex'               => ['nullable', 'string', 'max:9', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
             'colors.*.cover_image'       => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/gif|max:4096',
             'colors.*.images'            => 'nullable|array|max:8',
             'colors.*.images.*'          => 'file|mimes:jpeg,png,jpg,webp,avif,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/gif|max:4096',
@@ -178,7 +178,7 @@ class ProductController extends Controller
             'colors'                     => 'required|array|min:1',
             'colors.*.id'                => 'nullable|exists:product_colors,id',
             'colors.*.name'              => 'required|string|max:50',
-            'colors.*.hex'               => 'nullable|string|max:9',
+            'colors.*.hex'               => ['nullable', 'string', 'max:9', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
             'colors.*.cover_image'       => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif|mimetypes:image/jpeg,image/png,image/webp,image/avif,image/gif|max:4096',
             'colors.*.remove_cover_image'=> 'nullable|boolean',
             'colors.*.existing_images_order' => 'nullable|array',

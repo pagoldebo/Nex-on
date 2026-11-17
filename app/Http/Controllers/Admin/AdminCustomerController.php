@@ -96,6 +96,7 @@ class AdminCustomerController extends Controller
     public function updatePassword(Request $request, User $customer): RedirectResponse
     {
         $this->assertIsCustomer($customer);
+        abort_unless($request->user()->isSuperAdmin(), 403, 'Only Super Administrators can reset customer passwords.');
 
         $validated = $request->validate([
             'password' => ['required', 'string', 'confirmed', Password::defaults()],

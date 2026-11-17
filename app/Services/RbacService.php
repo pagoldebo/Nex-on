@@ -46,6 +46,14 @@ class RbacService
         'roles' => [
             ['slug' => 'roles.manage',          'name' => 'Manage Staff Roles & Permissions'],
         ],
+        'customers' => [
+            ['slug' => 'customers.view',        'name' => 'View Customers Directory & Profiles'],
+            ['slug' => 'customers.manage',      'name' => 'Manage Customers & Segments'],
+        ],
+        'payroll' => [
+            ['slug' => 'payroll.manage',        'name' => 'Manage Staff Payroll & Payslips'],
+            ['slug' => 'payroll.export',        'name' => 'Export Payroll Bank Files'],
+        ],
     ];
 
     /**
@@ -67,6 +75,8 @@ class RbacService
                 'products.view', 'products.manage',
                 'reports.view', 'reports.export',
                 'pos.access', 'pos.checkout',
+                'customers.view', 'customers.manage',
+                'payroll.manage',
             ],
         ],
         'ecommerce-manager' => [
@@ -79,6 +89,7 @@ class RbacService
                 'reports.view', 'reports.export',
                 'inventory.view',
                 'settings.manage',
+                'customers.view',
             ],
         ],
         'pos-cashier' => [
@@ -101,6 +112,7 @@ class RbacService
             'description' => 'Client assistance representative reviewing orders, shipments, and customer returns.',
             'permissions' => [
                 'orders.view', 'orders.manage', 'products.view',
+                'customers.view',
             ],
         ],
     ];

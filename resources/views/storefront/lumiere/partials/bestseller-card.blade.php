@@ -32,7 +32,11 @@
     </div>
 
     <div class="px-2 mb-6">
-        <h3 class="text-base font-bold text-gray-800 leading-tight mb-2 truncate">{{ $product->name }}</h3>
+        <h3 class="text-base font-bold text-gray-800 leading-tight mb-2 truncate">
+            <a href="{{ route('product.show', $product->slug) }}" class="hover:text-pink-600 transition-colors">
+                {{ $product->name }}
+            </a>
+        </h3>
         <p class="text-[9px] text-gray-500 font-medium leading-relaxed">{{ $product->description }}</p>
     </div>
 

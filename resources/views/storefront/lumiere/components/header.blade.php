@@ -39,7 +39,7 @@
                         Categories
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-[620px] z-50">
+                    <div x-show="open" x-cloak style="display: none;" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-[620px] z-50">
                         <div class="bg-white rounded-[28px] shadow-2xl shadow-pink-100/50 border border-pink-50 grid grid-cols-3 gap-8 p-8">
                             @foreach ($categories->chunk(max(1, ceil($categories->count() / 3))) as $chunk)
                                 <div>

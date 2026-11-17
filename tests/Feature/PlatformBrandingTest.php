@@ -57,28 +57,17 @@ class PlatformBrandingTest extends TestCase
         });
     }
 
-    public function test_middleware_replaces_tampered_branding(): void
+    public function test_middleware_preserves_response_integrity_without_regex_rewriting(): void
     {
         $middleware = new EnsurePlatformBranding();
         $request = \Illuminate\Http\Request::create('/', 'GET');
 
-        $response = $middleware->handle($request, function () {
-            return new \Illuminate\Http\Response('<html><body><footer><span data-nexon-platform-branding="verified">Tampered Branding</span></footer></body></html>');
+        $originalHtml = '<html><body><footer><p>Custom Footer</p></footer></body></html>';
+        $response = $middleware->handle($request, function () use ($originalHtml) {
+            return new \Illuminate\Http\Response($originalHtml);
         });
 
-        $this->assertStringContainsString('• Powered by Nex-on', $response->getContent());
-        $this->assertStringNotContainsString('Tampered Branding', $response->getContent());
-    }
-
-    public function test_middleware_injects_branding_if_missing(): void
-    {
-        $middleware = new EnsurePlatformBranding();
-        $request = \Illuminate\Http\Request::create('/', 'GET');
-
-        $response = $middleware->handle($request, function () {
-            return new \Illuminate\Http\Response('<html><body><footer><p>No branding here</p></footer></body></html>');
-        });
-
-        $this->assertStringContainsString('• Powered by Nex-on', $response->getContent());
+        // The middleware shares branding variables with views without mutating response bodies
+        $this->assertEquals($originalHtml, $response->getContent());
     }
 }

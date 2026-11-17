@@ -38,7 +38,11 @@
     </div>
 
     <div class="px-2">
-        <h3 class="text-sm font-bold text-gray-800 mb-1 truncate">{{ $product->name }}</h3>
+        <h3 class="text-sm font-bold text-gray-800 mb-1 truncate">
+            <a href="{{ route('product.show', $product->slug) }}" class="hover:text-pink-600 transition-colors">
+                {{ $product->name }}
+            </a>
+        </h3>
         <div class="flex items-center justify-between mb-3">
             <p class="text-pink font-bold text-sm flex items-center gap-1.5 flex-wrap">
                 <span>₹{{ number_format($cardData['startingPrice'], 0) }}</span>

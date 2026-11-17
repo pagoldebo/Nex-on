@@ -100,7 +100,9 @@ class TotpTwoFactorAuthenticationTest extends TestCase
             'two_factor_confirmed_at'   => now(),
         ]);
 
-        $response = $this->actingAs($user)->post(route('two-factor.regenerate-recovery-codes'));
+        $response = $this->actingAs($user)->post(route('two-factor.regenerate-recovery-codes'), [
+            'password' => 'password',
+        ]);
 
         $response->assertSessionHas('status', 'recovery-codes-generated');
         $newCodes = $user->fresh()->getRecoveryCodes();

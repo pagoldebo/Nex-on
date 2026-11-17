@@ -257,8 +257,24 @@ class AdminPosController extends Controller
                 ];
             }
 
-            // Cap discount so it cannot exceed verified subtotal or become negative
+            // Cap discount so it cannot exceed verified subtotal or become negative, and limit cashier discount
             $rawDiscount = (int) ($validated['discount'] ?? 0);
+            $maxAllowedPercent = 20; // 20% max discount for standard cashier without manager override
+            $maxAllowedDiscount = (int) round(($subtotal * $maxAllowedPercent) / 100);
+            $actingUser = Auth::user();
+            $canOverrideDiscount = $actingUser && (
+                $actingUser->isSuperAdmin() ||
+                (method_exists($actingUser, 'hasPermission') && $actingUser->hasPermission('pos.discount.override')) ||
+                (method_exists($actingUser, 'hasPermission') && $actingUser->hasPermission('orders.manage'))
+            );
+
+            if ($rawDiscount > $maxAllowedDiscount && ! $canOverrideDiscount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Discount of ₹{$rawDiscount} exceeds the standard cashier limit of {$maxAllowedPercent}% (₹{$maxAllowedDiscount}). Manager approval required.",
+                ], 422);
+            }
+
             $discount = min($subtotal, max(0, $rawDiscount));
             $total = max(0, $subtotal - $discount);
             $paymentMethod = $validated['payment_method'];
@@ -367,6 +383,17 @@ class AdminPosController extends Controller
      */
     public function receipt(Order $order, Request $request): View
     {
+        $user = Auth::user();
+        $isCashierOwner = ($order->pos_cashier_id === $user?->id);
+        $hasOrderPermission = $user && (
+            $user->isSuperAdmin() ||
+            (method_exists($user, 'hasPermission') && ($user->hasPermission('orders.view') || $user->hasPermission('orders.manage') || $user->hasPermission('reports.view')))
+        );
+
+        if (! $isCashierOwner && ! $hasOrderPermission) {
+            abort(403, 'Unauthorized to view receipt for this order.');
+        }
+
         $order->load(['items.variant', 'posCashier']);
         $format = $request->get('format', '80mm'); // '80mm' or '58mm'
 

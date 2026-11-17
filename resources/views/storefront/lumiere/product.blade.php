@@ -260,7 +260,7 @@
           </span>
           <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div x-show="open" x-transition class="mt-3 text-xs md:text-sm text-gray-600 leading-relaxed pl-6">
+        <div x-show="open" x-cloak style="display: none;" x-transition class="mt-3 text-xs md:text-sm text-gray-600 leading-relaxed pl-6">
           {{ \App\Models\Setting::get('product_delivery_info', 'Ships within 2–3 business days. Free standard delivery on orders above ₹999. Express doorstep delivery available at checkout.') }}
         </div>
       </div>
@@ -273,7 +273,7 @@
           </span>
           <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div x-show="open" x-transition class="mt-3 text-xs md:text-sm text-gray-600 leading-relaxed pl-6">
+        <div x-show="open" x-cloak style="display: none;" x-transition class="mt-3 text-xs md:text-sm text-gray-600 leading-relaxed pl-6">
           {{ \App\Models\Setting::get('product_returns_info', 'Hassle-free returns within 15 days of delivery. Items must be unused, unwashed, and in original packaging with tags intact.') }}
         </div>
       </div>

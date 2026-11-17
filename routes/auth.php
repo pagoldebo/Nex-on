@@ -184,7 +184,7 @@ Route::middleware('guest')->group(function () {
             return back()->withErrors(['otp' => $msg]);
         }
 
-        if ($user->otp_code !== $request->otp) {
+        if (! $user->verifyOtp((string) $request->otp)) {
             RateLimiter::hit($attemptKey, 300);
             $remaining = 5 - RateLimiter::attempts($attemptKey);
             if ($remaining <= 0) {
@@ -400,6 +400,21 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Email Verification Routes (MustVerifyEmail)
+    Route::get('/email/verify', function () {
+        return redirect()->route('profile.edit')->with('status', 'verification-link-sent');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('profile.edit')->with('status', 'email-verified');
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'verification-link-sent');
+    })->middleware('throttle:6,1')->name('verification.send');
+
     // User Profile Management (/profile)
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');

@@ -251,17 +251,24 @@
                         Store these backup codes in a password manager. If you lose access to your phone or authenticator app, each code can be used once to access your account.
                     </p>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs font-bold text-stone-700 bg-white p-3.5 rounded-xl border border-stone-200 select-all">
-                        @foreach ($recoveryCodes as $code)
-                            <div>{{ $code }}</div>
-                        @endforeach
-                    </div>
+                    @if (!empty($recoveryCodes))
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs font-bold text-stone-700 bg-white p-3.5 rounded-xl border border-stone-200 select-all">
+                            @foreach ($recoveryCodes as $code)
+                                <div>{{ $code }}</div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-xs text-stone-500 italic">Emergency recovery codes are concealed for security. Enter your password below to regenerate and view fresh backup codes.</p>
+                    @endif
 
-                    <form method="POST" action="{{ route('two-factor.regenerate-recovery-codes') }}" class="pt-2">
+                    <form method="POST" action="{{ route('two-factor.regenerate-recovery-codes') }}" class="pt-2 space-y-2">
                         @csrf
-                        <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline">
-                            Regenerate Fresh Recovery Codes
-                        </button>
+                        <div class="flex items-center gap-2 max-w-xs">
+                            <input type="password" name="password" placeholder="Account Password" required class="px-3 py-1.5 text-xs rounded-lg border border-stone-300 w-full">
+                            <button type="submit" class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-700 whitespace-nowrap">
+                                Regenerate
+                            </button>
+                        </div>
                     </form>
                 </div>
 

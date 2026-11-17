@@ -473,8 +473,9 @@ class StorefrontController extends Controller
     {
         $theme      = $this->theme();
         $orderModel = Order::with(['items.product', 'items.productColor', 'requests'])
-            ->where('id', $order)
-            ->orWhere('reference', $order)
+            ->where(function ($q) use ($order) {
+                $q->where('id', $order)->orWhere('reference', $order);
+            })
             ->firstOrFail();
 
         // Broken Object Level Authorization (BOLA) Check:
@@ -777,20 +778,24 @@ class StorefrontController extends Controller
             CustomerAddress::where('user_id', $user->id)->update(['is_default' => false]);
         }
 
-        $address = CustomerAddress::updateOrCreate(
-            ['id' => $validated['id'] ?? null, 'user_id' => $user->id],
-            [
-                'name'       => $validated['name'],
-                'phone'      => $validated['phone'],
-                'address1'   => $validated['address1'],
-                'address2'   => $validated['address2'] ?? null,
-                'city'       => $validated['city'],
-                'state'      => $validated['state'],
-                'pincode'    => $validated['pincode'],
-                'type'       => $validated['type'] ?? 'home',
-                'is_default' => $validated['is_default'] ?? false,
-            ]
-        );
+        $addressData = [
+            'name'       => $validated['name'],
+            'phone'      => $validated['phone'],
+            'address1'   => $validated['address1'],
+            'address2'   => $validated['address2'] ?? null,
+            'city'       => $validated['city'],
+            'state'      => $validated['state'],
+            'pincode'    => $validated['pincode'],
+            'type'       => $validated['type'] ?? 'home',
+            'is_default' => $validated['is_default'] ?? false,
+        ];
+
+        if (! empty($validated['id'])) {
+            $address = CustomerAddress::where('user_id', $user->id)->findOrFail($validated['id']);
+            $address->update($addressData);
+        } else {
+            $address = CustomerAddress::create(array_merge($addressData, ['user_id' => $user->id]));
+        }
 
         return response()->json(['success' => true, 'address' => $address, 'message' => 'Address saved successfully.']);
     }

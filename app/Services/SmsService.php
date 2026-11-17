@@ -114,10 +114,7 @@ class SmsService
         $hashedOtp = hash('sha256', $cleanOtp);
 
         $record = PhoneOtp::where('phone', $phone)
-            ->where(function ($query) use ($cleanOtp, $hashedOtp) {
-                $query->where('otp', $hashedOtp)
-                      ->orWhere('otp', $cleanOtp);
-            })
+            ->where('otp', $hashedOtp)
             ->where('is_verified', false)
             ->latest()
             ->first();

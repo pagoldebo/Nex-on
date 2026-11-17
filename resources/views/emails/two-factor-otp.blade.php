@@ -118,7 +118,7 @@
                             <td align="center" style="padding: 28px 20px;">
                                 <div style="display: inline-block; padding: 4px 12px; background-color: #1c1917; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 12px;">
                                     <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; color: #f59e0b; font-weight: 700; font-family: monospace;">
-                                        ✦ YOUR 4-DIGIT VERIFICATION CODE
+                                        ✦ YOUR 6-DIGIT VERIFICATION CODE
                                     </span>
                                 </div>
                                 <p class="otp-digits" style="margin: 0; font-size: 40px; font-weight: 800; letter-spacing: 14px; color: #ffffff; font-family: 'Courier New', Courier, monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">

@@ -112,6 +112,8 @@ class AdminPosShiftController extends Controller
      */
     public function show(PosShift $shift): View
     {
+        $this->authorizeShiftAccess($shift);
+
         $shift->load(['cashier', 'movements.user']);
         if ($shift->status === 'open') {
             $shift->recomputeLiveMetrics();
@@ -127,6 +129,12 @@ class AdminPosShiftController extends Controller
      */
     public function recordMovement(Request $request, PosShift $shift): RedirectResponse
     {
+        $this->authorizeShiftAccess($shift);
+
+        if ($shift->status !== 'open') {
+            abort(422, 'Cannot record movements on a closed shift.');
+        }
+
         $validated = $request->validate([
             'type'   => 'required|in:cash_in,cash_out',
             'amount' => 'required|numeric|min:0.01',
@@ -153,6 +161,12 @@ class AdminPosShiftController extends Controller
      */
     public function closeShift(Request $request, PosShift $shift): RedirectResponse
     {
+        $this->authorizeShiftAccess($shift);
+
+        if ($shift->status !== 'open') {
+            abort(422, 'This shift is already closed.');
+        }
+
         $validated = $request->validate([
             'counted_cash' => 'required|numeric|min:0',
             'notes'        => 'nullable|string|max:500',
@@ -175,6 +189,8 @@ class AdminPosShiftController extends Controller
      */
     public function printReport(PosShift $shift, Request $request): View
     {
+        $this->authorizeShiftAccess($shift);
+
         $shift->load(['cashier', 'movements']);
         if ($shift->status === 'open') {
             $shift->recomputeLiveMetrics();
@@ -190,6 +206,17 @@ class AdminPosShiftController extends Controller
         ];
 
         return view('admin.pos.shift-report', compact('shift', 'reportType', 'storeInfo'));
+    }
+
+    /**
+     * Authorize shift access: cashier must own the shift, or be super-admin / pos-admin.
+     */
+    protected function authorizeShiftAccess(PosShift $shift): void
+    {
+        $user = Auth::user();
+        if ($user && $shift->cashier_id !== $user->id && ! $user->isSuperAdmin() && ! (method_exists($user, 'hasPermission') && $user->hasPermission('pos.admin'))) {
+            abort(403, 'Unauthorized access to another cashier\'s shift.');
+        }
     }
 }
 

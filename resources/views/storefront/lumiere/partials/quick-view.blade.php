@@ -67,10 +67,20 @@ function openQuickView(product) {
     if (descEl) descEl.innerHTML = product.description || product.shortDescription || '';
     const viewDetailsEl = document.getElementById('qvViewDetails');
     if (viewDetailsEl) viewDetailsEl.href = '{{ url('/products') }}/' + encodeURIComponent(product.slug);
-    document.getElementById('colorOptions').innerHTML = product.colors.map((c, i) => `
-        <button type="button" onclick="qvSelectColor(${i})" title="${c.name}"
-                class="qv-swatch w-8 h-8 rounded-full border-2 transition-all"
-                style="background:${c.hex || '#ccc'}"></button>`).join('');
+    const colorsContainer = document.getElementById('colorOptions');
+    if (colorsContainer && product.colors) {
+        colorsContainer.innerHTML = '';
+        product.colors.forEach((c, i) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.title = c.name || '';
+            btn.className = 'qv-swatch w-8 h-8 rounded-full border-2 transition-all';
+            const safeHex = (c.hex && /^#[0-9a-fA-F]{3,8}$/.test(c.hex)) ? c.hex : '#ccc';
+            btn.style.background = safeHex;
+            btn.onclick = function() { qvSelectColor(i); };
+            colorsContainer.appendChild(btn);
+        });
+    }
     qvSelectColor(0);
     const m = document.getElementById('quickViewModal');
     m.classList.remove('hidden'); m.classList.add('flex');
@@ -92,11 +102,20 @@ function qvSelectColor(idx) {
         b.style.borderColor = i === idx ? '#DB2777' : 'transparent';
         b.style.transform = i === idx ? 'scale(1.15)' : 'scale(1)';
     });
-    document.getElementById('sizeOptions').innerHTML = c.sizes.map(s => `
-        <button type="button" onclick="qvSelectSize('${s.size}')" data-size="${s.size}" ${s.inStock ? '' : 'disabled'}
-                class="qv-size px-4 py-2 rounded-full text-xs font-bold border border-pink-100 text-gray-700 transition-colors ${s.inStock ? 'hover:border-pink-400' : 'opacity-30 cursor-not-allowed'}">
-            ${s.size}${s.inStock ? '' : ' (Out)'}
-        </button>`).join('');
+    const sizeContainer = document.getElementById('sizeOptions');
+    if (sizeContainer && c.sizes) {
+        sizeContainer.innerHTML = '';
+        c.sizes.forEach(s => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.size = s.size || '';
+            btn.disabled = !s.inStock;
+            btn.className = `qv-size px-4 py-2 rounded-full text-xs font-bold border border-pink-100 text-gray-700 transition-colors ${s.inStock ? 'hover:border-pink-400' : 'opacity-30 cursor-not-allowed'}`;
+            btn.textContent = (s.size || '') + (s.inStock ? '' : ' (Out)');
+            btn.onclick = function() { qvSelectSize(s.size); };
+            sizeContainer.appendChild(btn);
+        });
+    }
     qvShowPrice(qvProduct.startingPrice, qvProduct.startingCompareAt);
     document.getElementById('qvStockWarning').classList.add('hidden');
     qvUpdateBtn();

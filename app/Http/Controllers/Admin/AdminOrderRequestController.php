@@ -44,6 +44,8 @@ class AdminOrderRequestController extends Controller
 
     public function update(Request $request, OrderRequest $orderRequest): RedirectResponse
     {
+        abort_unless($orderRequest->status === OrderRequest::STATUS_PENDING, 422, 'Only pending requests can be processed.');
+
         $validated = $request->validate([
             'action'      => 'required|in:approve,reject',
             'admin_notes' => 'nullable|string|max:500',
@@ -59,12 +61,18 @@ class AdminOrderRequestController extends Controller
 
             if ($orderRequest->type === OrderRequest::TYPE_CANCEL) {
                 $order->update(['status' => Order::STATUS_CANCELLED]);
-                // Restock items
-                foreach ($order->items as $item) {
-                    if ($item->product_variant_id) {
-                        $variant = ProductVariant::find($item->product_variant_id);
-                        if ($variant) {
-                            $variant->adjustStock($item->qty, 'order_cancellation_restock', "Admin approved cancellation #{$order->reference}", Auth::id());
+                // Restock items idempotently
+                $alreadyRestocked = \App\Models\InventoryLog::where('type', 'order_cancellation_restock')
+                    ->where('notes', 'like', "%#{$order->reference}%")
+                    ->exists();
+
+                if (! $alreadyRestocked) {
+                    foreach ($order->items as $item) {
+                        if ($item->product_variant_id) {
+                            $variant = ProductVariant::find($item->product_variant_id);
+                            if ($variant) {
+                                $variant->adjustStock($item->qty, 'order_cancellation_restock', "Admin approved cancellation #{$order->reference}", Auth::id());
+                            }
                         }
                     }
                 }

@@ -126,24 +126,34 @@ class AdminSmsController extends Controller
         ]);
 
         $phone = preg_replace('/[^0-9]/', '', (string) $request->input('phone', ''));
-        $throttleKey = 'sms_otp_send:' . ($phone ?: 'anon') . '|' . $request->ip();
+        $phoneCooldownKey = 'sms_otp_phone:' . $phone;
+        $ipCooldownKey = 'sms_otp_ip:' . $request->ip();
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
+        if (RateLimiter::tooManyAttempts($ipCooldownKey, 10)) {
+            $seconds = RateLimiter::availableIn($ipCooldownKey);
             return response()->json([
                 'success' => false,
-                'message' => "Too many OTP requests. Please wait {$seconds} seconds before trying again.",
+                'message' => "Too many OTP requests from this connection. Please wait {$seconds} seconds.",
             ], 429);
         }
 
-        RateLimiter::hit($throttleKey, 600);
+        if (RateLimiter::tooManyAttempts($phoneCooldownKey, 5)) {
+            $seconds = RateLimiter::availableIn($phoneCooldownKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many OTP requests for this phone number. Please wait {$seconds} seconds.",
+            ], 429);
+        }
 
-        $res = $this->smsService->generateAndSendOtp($request->input('phone'));
+        RateLimiter::hit($ipCooldownKey, 600);
+        RateLimiter::hit($phoneCooldownKey, 180);
+
+        $this->smsService->generateAndSendOtp($request->input('phone'));
 
         return response()->json([
             'success' => true,
             'message' => 'OTP dispatched to registered mobile number.',
-            'otp'     => app()->environment('local', 'testing') ? ($res['otp'] ?? null) : null,
+            'otp'     => null,
         ]);
     }
 

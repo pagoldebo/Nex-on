@@ -23,6 +23,18 @@ class TwoFactorAuthenticationController extends Controller
     {
         $user = $request->user();
 
+        if ($user->hasTwoFactorEnabled()) {
+            $request->validate([
+                'password' => ['required', 'string'],
+            ]);
+
+            if (! Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'password' => ['The provided password does not match our records.'],
+                ]);
+            }
+        }
+
         $secret = $this->totp->generateSecretKey();
         $recoveryCodes = $this->totp->generateRecoveryCodes();
 
@@ -117,7 +129,11 @@ class TwoFactorAuthenticationController extends Controller
             return back();
         }
 
-        if ($user->hasTwoFactorEnabled() && $request->filled('password')) {
+        if ($user->hasTwoFactorEnabled()) {
+            $request->validate([
+                'password' => ['required', 'string'],
+            ]);
+
             if (! Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([
                     'password' => ['The provided password does not match our records.'],
@@ -130,6 +146,8 @@ class TwoFactorAuthenticationController extends Controller
         $user->forceFill([
             'two_factor_recovery_codes' => encrypt(json_encode($recoveryCodes)),
         ])->save();
+
+        session()->flash('recovery_codes', $recoveryCodes);
 
         return back()->with('status', 'recovery-codes-generated');
     }

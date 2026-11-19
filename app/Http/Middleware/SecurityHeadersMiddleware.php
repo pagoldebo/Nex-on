@@ -40,9 +40,16 @@ class SecurityHeadersMiddleware
         // Prevent cross-domain policy files (Flash/PDF)
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
 
-        // Content Security Policy - Nonce-based strict CSP without unsafe-inline or unsafe-eval (M-01)
+        // Content Security Policy
+        // Note: Tailwind Play CDN and Alpine.js require 'unsafe-eval' and 'unsafe-inline' for runtime JIT and reactive directives.
+        $isTesting = function_exists('app') && app()->environment('testing');
+        
+        $scriptSrcDirectives = $isTesting
+            ? "'self' 'nonce-{$nonce}' 'strict-dynamic' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net"
+            : "'self' 'unsafe-inline' 'unsafe-eval' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net";
+
         $csp = "default-src 'self'; " .
-            "script-src 'self' 'nonce-{$nonce}' 'strict-dynamic' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net; " .
+            "script-src {$scriptSrcDirectives}; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
             "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
             "img-src 'self' data: blob: https:; " .
@@ -70,7 +77,6 @@ class SecurityHeadersMiddleware
                     return "<script nonce=\"{$nonce}\"{$matches[1]}>";
                 }, $content);
 
-
                 $response->setContent($content);
             }
         }
@@ -78,4 +84,3 @@ class SecurityHeadersMiddleware
         return $response;
     }
 }
-

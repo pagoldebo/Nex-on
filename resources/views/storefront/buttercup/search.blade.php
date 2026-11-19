@@ -29,9 +29,14 @@
     <button type="submit" class="px-6 py-3.5 text-xs font-bold uppercase tracking-widest bg-[#D89AA0] text-[#FFFAF5] hover:bg-[#B97680] rounded-full transition-colors">Search</button>
   </form>
 
-  @if ($q)
+  @php
+    $hasSearch = !empty($q) || !empty($tag);
+    $displayQuery = $q ?: ($tag ? '#' . $tag : '');
+  @endphp
+
+  @if ($hasSearch)
     <p class="font-body text-sm opacity-50 mb-8 text-[#4A3B3A]">
-      {{ method_exists($results, 'total') ? $results->total() : $results->count() }} results for &ldquo;{{ $q }}&rdquo;
+      {{ method_exists($results, 'total') ? $results->total() : $results->count() }} results for &ldquo;{{ $displayQuery }}&rdquo;
     </p>
     @if (method_exists($results, 'total') ? $results->total() : $results->count())
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-12">

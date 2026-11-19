@@ -106,6 +106,107 @@
             </div>
         </div>
 
+        {{-- ===== Product Tags & Taxonomy ===== --}}
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4"
+             x-data="{
+                allTags: {{ \Illuminate\Support\Js::from($tags->map(fn($t) => ['id' => $t->id, 'name' => $t->name, 'slug' => $t->slug, 'color' => $t->color ?? '#4F46E5'])) }},
+                selectedTagIds: [],
+                customTags: [],
+                customTagInput: '',
+                toggleTag(id) {
+                    if (this.selectedTagIds.includes(id)) {
+                        this.selectedTagIds = this.selectedTagIds.filter(x => x !== id);
+                    } else {
+                        this.selectedTagIds.push(id);
+                    }
+                },
+                addCustomTag() {
+                    const raw = this.customTagInput.trim();
+                    if (!raw) return;
+                    const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+                    for (const part of parts) {
+                        const existing = this.allTags.find(t => t.name.toLowerCase() === part.toLowerCase());
+                        if (existing) {
+                            if (!this.selectedTagIds.includes(existing.id)) {
+                                this.selectedTagIds.push(existing.id);
+                            }
+                        } else if (!this.customTags.includes(part)) {
+                            this.customTags.push(part);
+                        }
+                    }
+                    this.customTagInput = '';
+                },
+                removeCustomTag(name) {
+                    this.customTags = this.customTags.filter(t => t !== name);
+                }
+             }">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        <span>Product Tags &amp; Filtering Groups</span>
+                    </h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Categorize, group, and enable rapid tag-based filtering across admin and storefront searches.</p>
+                </div>
+                <a href="{{ route('admin.addons.index', ['tab' => 'tags']) }}" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition">
+                    + Manage All Tags ↗
+                </a>
+            </div>
+
+            <!-- Active Selected Tag Badges -->
+            <div class="flex flex-wrap items-center gap-2 min-h-[38px] p-2.5 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <template x-if="selectedTagIds.length === 0 && customTags.length === 0">
+                    <span class="text-xs text-slate-400 italic">No tags selected yet. Click from registered tags below or type new tags.</span>
+                </template>
+
+                <!-- Existing Tag Chips -->
+                <template x-for="id in selectedTagIds" :key="'tag-' + id">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs text-white transition animate-fade-in"
+                          :style="'background-color: ' + (allTags.find(t => t.id === id)?.color || '#4F46E5')">
+                        <span x-text="'#' + (allTags.find(t => t.id === id)?.name || id)"></span>
+                        <button type="button" @click="toggleTag(id)" class="text-white/80 hover:text-white transition cursor-pointer">✕</button>
+                        <input type="hidden" name="tag_ids[]" :value="id">
+                    </span>
+                </template>
+
+                <!-- Custom New Tag Chips -->
+                <template x-for="name in customTags" :key="'custom-' + name">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs bg-indigo-600 text-white transition animate-fade-in">
+                        <span x-text="'#' + name + ' (New)'"></span>
+                        <button type="button" @click="removeCustomTag(name)" class="text-white/80 hover:text-white transition cursor-pointer">✕</button>
+                        <input type="hidden" name="tags[]" :value="name">
+                    </span>
+                </template>
+            </div>
+
+            <!-- Type / Add New Tag Input -->
+            <div class="flex items-center gap-2">
+                <input type="text" x-model="customTagInput" @keydown.enter.prevent="addCustomTag()" @keydown.,.prevent="addCustomTag()"
+                       placeholder="Type a tag name and press Enter or comma (e.g. Silk, Bridal, Limited Edition)..."
+                       class="flex-1 border border-slate-200 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white">
+                <button type="button" @click="addCustomTag()"
+                        class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer">
+                    + Add Tag
+                </button>
+            </div>
+
+            <!-- Quick-Pick Registered Tags -->
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Available Store Tags (Click to toggle):</label>
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="tag in allTags" :key="'avail-' + tag.id">
+                        <button type="button" @click="toggleTag(tag.id)"
+                                :class="selectedTagIds.includes(tag.id) ? 'ring-2 ring-offset-1 ring-slate-900 font-bold opacity-100 shadow-sm' : 'opacity-70 hover:opacity-100'"
+                                class="px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-200 bg-white transition flex items-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full shrink-0" :style="'background-color: ' + tag.color"></span>
+                            <span x-text="tag.name"></span>
+                            <span x-show="selectedTagIds.includes(tag.id)" class="text-emerald-600 font-bold">✓</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
         {{-- ===== Available Add-ons ===== --}}
         <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">

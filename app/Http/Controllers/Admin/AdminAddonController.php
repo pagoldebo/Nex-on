@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\Brand;
+use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class AdminAddonController extends Controller
@@ -19,6 +21,7 @@ class AdminAddonController extends Controller
 
         $addonQuery = Addon::latest();
         $brandQuery = Brand::withCount('products')->orderBy('sort_order')->orderBy('name');
+        $tagQuery   = Tag::withCount('products')->orderBy('name');
 
         if ($search !== '') {
             $addonQuery->where(function ($q) use ($search) {
@@ -31,12 +34,19 @@ class AdminAddonController extends Controller
                   ->orWhere('description', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%");
             });
+
+            $tagQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+            });
         }
 
         $addons = $addonQuery->paginate(15, ['*'], 'addons_page')->withQueryString();
         $brands = $brandQuery->get();
+        $tags   = $tagQuery->get();
 
-        return view('admin.addons.index', compact('addons', 'brands', 'search', 'tab'));
+        return view('admin.addons.index', compact('addons', 'brands', 'tags', 'search', 'tab'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -137,5 +147,47 @@ class AdminAddonController extends Controller
             'is_active' => $brand->is_active,
             'message'   => $brand->is_active ? 'Brand activated' : 'Brand deactivated',
         ]);
+    }
+
+    public function storeTag(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:100',
+            'slug'        => 'nullable|string|max:120|unique:tags,slug',
+            'description' => 'nullable|string|max:255',
+            'color'       => ['nullable', 'string', 'max:20', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        Tag::create($validated);
+
+        return redirect()->route('admin.addons.index', ['tab' => 'tags'])->with('success', 'Product Tag created successfully.');
+    }
+
+    public function updateTag(Request $request, Tag $tag): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:100',
+            'slug'        => 'nullable|string|max:120|unique:tags,slug,' . $tag->id,
+            'description' => 'nullable|string|max:255',
+            'color'       => ['nullable', 'string', 'max:20', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        $tag->update($validated);
+
+        return redirect()->route('admin.addons.index', ['tab' => 'tags'])->with('success', 'Product Tag updated successfully.');
+    }
+
+    public function destroyTag(Tag $tag): RedirectResponse
+    {
+        $tag->delete();
+        return redirect()->route('admin.addons.index', ['tab' => 'tags'])->with('success', 'Product Tag removed successfully.');
     }
 }

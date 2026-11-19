@@ -818,6 +818,7 @@ class StorefrontController extends Controller
     {
         $theme       = $this->theme();
         $q           = trim((string) $request->get('q', ''));
+        $tag         = trim((string) $request->get('tag', ''));
         $currentSort = $request->get('sort', 'default');
         $sortOptions = [
             'default'    => 'Featured',
@@ -826,27 +827,32 @@ class StorefrontController extends Controller
             'newest'     => 'Newest Arrivals',
         ];
 
-        $base = fn () => $this->productQuery()->where(function ($w) use ($q) {
-            $w->where('name', 'like', "%{$q}%")
-              ->orWhere('description', 'like', "%{$q}%")
-              ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$q}%"));
+        $base = fn () => $this->productQuery()->when($q !== '', function ($query) use ($q) {
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                  ->orWhere('description', 'like', "%{$q}%")
+                  ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$q}%"))
+                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$q}%")->orWhere('slug', 'like', "%{$q}%"));
+            });
+        })->when($tag !== '', function ($query) use ($tag) {
+            $query->withTag($tag);
         });
 
         // Live search from the overlay (search-overlay component expects [{name,url}]).
         if ($request->boolean('ajax')) {
             return response()->json(
-                $q === '' ? [] : $base()->take(6)->get()->map(fn ($p) => [
+                ($q === '' && $tag === '') ? [] : $base()->take(6)->get()->map(fn ($p) => [
                     'name' => $p->name,
                     'url'  => route('product.show', $p->slug),
                 ])->values()
             );
         }
 
-        $products   = $q !== '' ? $base()->paginate(16)->withQueryString() : collect();
+        $products   = ($q !== '' || $tag !== '') ? $base()->paginate(16)->withQueryString() : collect();
         $results    = $products;
         $categories = Category::whereNull('parent_id')->with(['children.children'])->orderBy('sort_order')->get();
 
-        return view("storefront.{$theme->key}.search", compact('theme', 'q', 'results', 'products', 'categories', 'currentSort', 'sortOptions'));
+        return view("storefront.{$theme->key}.search", compact('theme', 'q', 'tag', 'results', 'products', 'categories', 'currentSort', 'sortOptions'));
     }
 
     public function compare(Request $request)

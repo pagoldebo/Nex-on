@@ -64,6 +64,29 @@ class Product extends Model
         return $this->belongsToMany(Addon::class);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'product_tag')->withTimestamps();
+    }
+
+    public function getTagsStringAttribute(): string
+    {
+        return $this->tags->pluck('name')->implode(', ');
+    }
+
+    public function scopeWithTag($query, mixed $tag)
+    {
+        return $query->whereHas('tags', function ($q) use ($tag) {
+            if (is_numeric($tag)) {
+                $q->where('tags.id', (int) $tag);
+            } else {
+                $clean = trim((string) $tag);
+                $q->where('tags.slug', $clean)
+                  ->orWhereRaw('LOWER(tags.name) = ?', [strtolower($clean)]);
+            }
+        });
+    }
+
     /**
      * Return all category slugs for this product including all ancestor categories up to the root.
      * e.g. ['bralettes', 'women-bra', 'lingerie', 'women']

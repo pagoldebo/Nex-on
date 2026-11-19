@@ -13,8 +13,8 @@
       - Integrates with master administration shell (@extends('admin.layout'))
 --}}
 @extends('admin.layout', [
-    'title' => 'Brands & Add-ons',
-    'breadcrumb' => 'Brands & Add-ons',
+    'title' => 'Brands, Tags & Add-ons',
+    'breadcrumb' => 'Brands, Tags & Add-ons',
 ])
 
 @section('content')
@@ -79,20 +79,56 @@
         };
         this.brandEditAction = '/admin/brands/' + b.id;
         this.brandModalOpen = true;
+    },
+
+    // Tag modal state
+    tagModalOpen: false,
+    isTagEdit: false,
+    tagEditAction: '',
+    tagForm: {
+        id: null,
+        name: '',
+        slug: '',
+        description: '',
+        color: '#4F46E5'
+    },
+    openCreateTag() {
+        this.isTagEdit = false;
+        this.tagForm = { id: null, name: '', slug: '', description: '', color: '#4F46E5' };
+        this.tagEditAction = '{{ route('admin.tags.store') }}';
+        this.tagModalOpen = true;
+    },
+    openEditTag(t) {
+        this.isTagEdit = true;
+        this.tagForm = {
+            id: t.id,
+            name: t.name,
+            slug: t.slug,
+            description: t.description || '',
+            color: t.color || '#4F46E5'
+        };
+        this.tagEditAction = '/admin/tags/' + t.id;
+        this.tagModalOpen = true;
     }
 }">
 
     <!-- Top Header & Actions -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Brands &amp; Add-ons</h1>
-            <p class="text-sm text-slate-500 mt-1">Configure brand houses, designer labels, and customer packaging &amp; gifting add-ons for your products.</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Brands, Tags &amp; Add-ons</h1>
+            <p class="text-sm text-slate-500 mt-1">Configure brand houses, filtering tags, and packaging &amp; gifting add-ons for your products.</p>
         </div>
         <div class="flex items-center gap-2.5">
             <template x-if="activeTab === 'brands'">
                 <button @click="openCreateBrand()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-600/20 transition flex items-center gap-2 cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Create Brand</span>
+                </button>
+            </template>
+            <template x-if="activeTab === 'tags'">
+                <button @click="openCreateTag()" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold shadow-md shadow-amber-600/20 transition flex items-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Create Tag</span>
                 </button>
             </template>
             <template x-if="activeTab === 'addons'">
@@ -113,6 +149,13 @@
             <span>Brands &amp; Labels</span>
             <span class="px-2 py-0.5 rounded-full text-xs" :class="activeTab === 'brands' ? 'bg-indigo-100 text-indigo-700 font-bold' : 'bg-slate-100 text-slate-600'">{{ count($brands) }}</span>
         </button>
+        <button type="button" @click="activeTab = 'tags'"
+                :class="activeTab === 'tags' ? 'border-amber-600 text-amber-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+                class="px-5 py-3 border-b-2 text-sm transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            <span>Product Tags</span>
+            <span class="px-2 py-0.5 rounded-full text-xs" :class="activeTab === 'tags' ? 'bg-amber-100 text-amber-700 font-bold' : 'bg-slate-100 text-slate-600'">{{ count($tags) }}</span>
+        </button>
         <button type="button" @click="activeTab = 'addons'"
                 :class="activeTab === 'addons' ? 'border-rose-600 text-rose-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
                 class="px-5 py-3 border-b-2 text-sm transition flex items-center gap-2">
@@ -126,7 +169,7 @@
     <div class="flex items-center justify-between">
         <form method="GET" action="{{ route('admin.addons.index') }}" class="relative max-w-sm w-full">
             <input type="hidden" name="tab" :value="activeTab">
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search brand or add-on..."
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search brand, tag, or add-on..."
                    class="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-xs">
             <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </form>
@@ -266,6 +309,74 @@
         @endif
     </div>
 
+    <!-- TAB 3: PRODUCT TAGS -->
+    <div x-show="activeTab === 'tags'" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+                <thead class="bg-slate-50/75 border-b border-slate-200/80 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <tr>
+                        <th class="py-3.5 px-4">Tag Name</th>
+                        <th class="py-3.5 px-4">Slug</th>
+                        <th class="py-3.5 px-4">Description</th>
+                        <th class="py-3.5 px-4 text-center">Associated Products</th>
+                        <th class="py-3.5 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($tags as $tag)
+                        <tr class="hover:bg-slate-50/60 transition">
+                            <td class="py-3.5 px-4 font-semibold text-slate-900">
+                                <div class="inline-flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full shrink-0 shadow-xs" style="background-color: {{ $tag->color ?? '#6366F1' }}"></span>
+                                    <span>{{ $tag->name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 font-mono text-xs text-slate-500">
+                                {{ $tag->slug }}
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500 max-w-xs truncate">
+                                {{ $tag->description ?? '—' }}
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <a href="{{ route('admin.products.index', ['tag_id' => $tag->id]) }}"
+                                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition" title="Filter catalog by this tag">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                                    <span>{{ $tag->products_count ?? $tag->products()->count() }} Products</span>
+                                </a>
+                            </td>
+                            <td class="py-3.5 px-4 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <button @click="openEditTag({{ json_encode($tag) }})" class="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition" title="Edit">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </button>
+                                    <form method="POST" action="{{ route('admin.tags.destroy', $tag) }}" onsubmit="return confirm('Delete tag &quot;{{ $tag->name }}&quot;? Products will not be deleted.')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-slate-100 rounded-lg transition" title="Delete">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-slate-400">
+                                No tags created yet. Click &ldquo;Create Tag&rdquo; to add tags for grouping and filtering products.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if(method_exists($tags, 'hasPages') && $tags->hasPages())
+            <div class="p-4 border-t border-slate-100">
+                {{ $tags->links() }}
+            </div>
+        @endif
+    </div>
+
     <!-- Create/Edit Addon Modal -->
     <div x-show="addonModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -367,6 +478,69 @@
                         </button>
                         <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 transition">
                             Save Brand
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Tag Modal -->
+    <div x-show="tagModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="tag-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="tagModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="tagModalOpen = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div x-show="tagModalOpen" x-transition.scale.95 class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200">
+                <form :action="tagEditAction" method="POST">
+                    @csrf
+                    <template x-if="isTagEdit">
+                        <input type="hidden" name="_method" value="PUT">
+                    </template>
+
+                    <div class="p-6 space-y-4">
+                        <h3 class="text-lg font-bold text-slate-900" x-text="isTagEdit ? 'Edit Product Tag' : 'Create New Tag'"></h3>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tag Name *</label>
+                            <input type="text" name="name" x-model="tagForm.name" required placeholder="e.g. Pure Silk, Festive Edit, Bestseller"
+                                   class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Slug (optional, auto-generated if blank)</label>
+                            <input type="text" name="slug" x-model="tagForm.slug" placeholder="e.g. pure-silk"
+                                   class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-mono text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Description (optional)</label>
+                            <textarea name="description" x-model="tagForm.description" rows="2" placeholder="Brief note explaining what products this tag groups..."
+                                      class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Badge Color Swatch</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color" name="color" x-model="tagForm.color" class="w-10 h-10 p-0.5 rounded-lg border border-slate-200 cursor-pointer">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <template x-for="c in ['#E11D48', '#7C3AED', '#D97706', '#DC2626', '#059669', '#2563EB', '#4338CA', '#0D9488', '#475569']" :key="c">
+                                        <button type="button" @click="tagForm.color = c"
+                                                class="w-6 h-6 rounded-full border border-black/10 transition transform hover:scale-110 cursor-pointer"
+                                                :style="'background-color: ' + c"
+                                                :class="tagForm.color === c ? 'ring-2 ring-offset-1 ring-slate-800' : ''"></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <button type="button" @click="tagModalOpen = false" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-md shadow-amber-600/20 transition">
+                            Save Tag
                         </button>
                     </div>
                 </form>

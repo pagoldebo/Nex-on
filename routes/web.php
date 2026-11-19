@@ -429,6 +429,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::put('/brands/{brand}', [AdminAddonController::class, 'updateBrand'])->name('brands.update');
         Route::delete('/brands/{brand}', [AdminAddonController::class, 'destroyBrand'])->name('brands.destroy');
         Route::patch('/brands/{brand}/toggle', [AdminAddonController::class, 'toggleBrand'])->name('brands.toggle');
+        Route::post('/tags', [AdminAddonController::class, 'storeTag'])->name('tags.store');
+        Route::put('/tags/{tag}', [AdminAddonController::class, 'updateTag'])->name('tags.update');
+        Route::delete('/tags/{tag}', [AdminAddonController::class, 'destroyTag'])->name('tags.destroy');
 
         // Newsletter & Broadcast Campaigns
         Route::get('/newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');

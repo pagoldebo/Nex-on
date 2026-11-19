@@ -45,14 +45,19 @@
     </div>
   </form>
 
-  @if ($q)
+  @php
+    $hasSearch = !empty($q) || !empty($tag);
+    $displayQuery = $q ?: ($tag ? '#' . $tag : '');
+    $total = method_exists($results, 'total') ? $results->total() : $results->count();
+  @endphp
+
+  @if ($hasSearch)
     {{-- Result count --}}
-    @php $total = method_exists($results, 'total') ? $results->total() : $results->count(); @endphp
     <p class="text-sm text-gray-400 mb-8">
       @if ($total)
-        <span class="font-semibold text-gray-900">{{ number_format($total) }}</span> {{ Str::plural('result', $total) }} for &ldquo;<span class="text-pink-600">{{ $q }}</span>&rdquo;
+        <span class="font-semibold text-gray-900">{{ number_format($total) }}</span> {{ Str::plural('result', $total) }} for &ldquo;<span class="text-pink-600">{{ $displayQuery }}</span>&rdquo;
       @else
-        No results for &ldquo;<span class="text-pink-600">{{ $q }}</span>&rdquo;
+        No results for &ldquo;<span class="text-pink-600">{{ $displayQuery }}</span>&rdquo;
       @endif
     </p>
 

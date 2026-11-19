@@ -37,9 +37,9 @@
     <!-- Filters & Search Bar -->
     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
         <form method="GET" action="{{ route('admin.products.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-            <!-- Search by Name / Slug / SKU -->
-            <div class="lg:col-span-5 relative">
-                <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search by name, SKU (e.g. LS-...), badge, slug..." 
+            <!-- Search by Name / Slug / SKU / Tag -->
+            <div class="lg:col-span-4 relative">
+                <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search by name, SKU, tag, badge..." 
                        class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
                 <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
             </div>
@@ -56,6 +56,18 @@
                 </select>
             </div>
 
+            <!-- Filter by Tag -->
+            <div class="lg:col-span-2">
+                <select name="tag_id" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white">
+                    <option value="">All Tags</option>
+                    @foreach($tags as $t)
+                        <option value="{{ $t->id }}" {{ ($selectedTag ?? '') == $t->id ? 'selected' : '' }}>
+                            #{{ $t->name }} ({{ $t->products_count }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Filter by Status -->
             <div class="lg:col-span-2">
                 <select name="status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white">
@@ -66,12 +78,12 @@
             </div>
 
             <!-- Submit & Reset Buttons -->
-            <div class="lg:col-span-2 flex items-center gap-2">
-                <button type="submit" class="flex-1 py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition">
+            <div class="lg:col-span-1 flex items-center gap-1.5">
+                <button type="submit" class="flex-1 py-2 px-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition">
                     Filter
                 </button>
-                @if(!empty($search) || !empty($selectedCategory) || !empty($selectedStatus))
-                    <a href="{{ route('admin.products.index') }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition" title="Reset Filters">
+                @if(!empty($search) || !empty($selectedCategory) || !empty($selectedTag) || !empty($selectedStatus))
+                    <a href="{{ route('admin.products.index') }}" class="py-2 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition" title="Reset Filters">
                         ✕
                     </a>
                 @endif
@@ -161,6 +173,14 @@
                                                         {{ $product->badge }}
                                                     </span>
                                                 @endif
+                                                @foreach($product->tags as $pt)
+                                                    <a href="{{ route('admin.products.index', ['tag_id' => $pt->id]) }}" 
+                                                       class="text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-full text-white shadow-2xs hover:opacity-90 transition inline-flex items-center gap-0.5"
+                                                       style="background-color: {{ $pt->color ?? '#4F46E5' }}"
+                                                       title="Filter catalogue by tag: {{ $pt->name }}">
+                                                        <span>#{{ $pt->name }}</span>
+                                                    </a>
+                                                @endforeach
                                             </div>
                                         </div>
                                     </div>

@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductColorImage;
 use App\Models\ProductVariant;
+use App\Models\Tag;
 use App\Services\ProductImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,9 +21,10 @@ class ProductController extends Controller
     {
         $search           = trim((string) $request->query('q', ''));
         $selectedCategory = $request->query('category_id');
+        $selectedTag      = $request->query('tag_id') ?? $request->query('tag');
         $selectedStatus   = $request->query('status');
 
-        $query = Product::with(['category', 'brand', 'addons', 'colors.variants', 'colors.images'])->latest();
+        $query = Product::with(['category', 'brand', 'addons', 'tags', 'colors.variants', 'colors.images'])->latest();
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -30,6 +32,7 @@ class ProductController extends Controller
                   ->orWhere('sku', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%")
                   ->orWhere('badge', 'like', "%{$search}%")
+                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
                   ->orWhereHas('variants', fn ($v) => $v->where('sku', 'like', "%{$search}%"));
             });
         }
@@ -40,6 +43,10 @@ class ProductController extends Controller
             $query->whereIn('category_id', $catIds);
         }
 
+        if (!empty($selectedTag)) {
+            $query->withTag($selectedTag);
+        }
+
         if ($selectedStatus === 'active') {
             $query->where('is_active', true);
         } elseif ($selectedStatus === 'draft') {
@@ -48,8 +55,9 @@ class ProductController extends Controller
 
         $products   = $query->paginate(15)->withQueryString();
         $categories = Category::orderBy('sort_order')->get();
+        $tags       = Tag::withCount('products')->orderBy('name')->get();
 
-        return view('admin.products.index', compact('products', 'categories', 'search', 'selectedCategory', 'selectedStatus'));
+        return view('admin.products.index', compact('products', 'categories', 'tags', 'search', 'selectedCategory', 'selectedTag', 'selectedStatus'));
     }
 
     public function toggleStatus(Product $product)
@@ -66,7 +74,8 @@ class ProductController extends Controller
         $categories = Category::orderBy('sort_order')->get();
         $brands     = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
         $addons     = Addon::where('is_active', true)->orderBy('name')->get();
-        return view('admin.products.create', compact('categories', 'brands', 'addons'));
+        $tags       = Tag::orderBy('name')->get();
+        return view('admin.products.create', compact('categories', 'brands', 'addons', 'tags'));
     }
 
     public function edit(Product $product)
@@ -74,8 +83,9 @@ class ProductController extends Controller
         $categories = Category::orderBy('sort_order')->get();
         $brands     = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
         $addons     = Addon::where('is_active', true)->orderBy('name')->get();
-        $product->load('colors.images', 'colors.variants', 'addons', 'brand');
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'addons'));
+        $tags       = Tag::orderBy('name')->get();
+        $product->load('colors.images', 'colors.variants', 'addons', 'brand', 'tags');
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'addons', 'tags'));
     }
 
     /**
@@ -115,6 +125,9 @@ class ProductController extends Controller
             'short_description'          => 'nullable|string',
             'long_description'           => 'nullable|string',
             'badge'                      => 'nullable|string|max:30',
+            'tags'                       => 'nullable',
+            'tag_ids'                    => 'nullable|array',
+            'tag_ids.*'                  => 'integer|exists:tags,id',
             'is_active'                  => 'boolean',
             'is_featured'                => 'boolean',
             'is_bestseller'              => 'boolean',
@@ -152,6 +165,9 @@ class ProductController extends Controller
                 $product->addons()->sync($request->input('addon_ids', []));
             }
 
+            $tagInput = $request->input('tags') ?? $request->input('tag_ids');
+            $product->tags()->sync(Tag::resolveTagIds($tagInput));
+
             $this->syncColors($product, $validated['colors'], $request);
         });
 
@@ -171,6 +187,9 @@ class ProductController extends Controller
             'short_description'          => 'nullable|string',
             'long_description'           => 'nullable|string',
             'badge'                      => 'nullable|string|max:30',
+            'tags'                       => 'nullable',
+            'tag_ids'                    => 'nullable|array',
+            'tag_ids.*'                  => 'integer|exists:tags,id',
             'is_active'                  => 'boolean',
             'is_featured'                => 'boolean',
             'is_bestseller'              => 'boolean',
@@ -212,6 +231,9 @@ class ProductController extends Controller
             ]);
 
             $product->addons()->sync($request->input('addon_ids', []));
+
+            $tagInput = $request->input('tags') ?? $request->input('tag_ids');
+            $product->tags()->sync(Tag::resolveTagIds($tagInput));
 
             // Remove colors that were deleted in the form, then re-sync the rest.
             $keptColorIds = array_filter(array_column($validated['colors'], 'id'));

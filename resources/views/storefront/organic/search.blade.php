@@ -43,14 +43,16 @@
       </form>
     </div>
 
-    @if($q)
-      @php
-        $count = method_exists($results, 'total') ? $results->total() : $results->count();
-      @endphp
+    @php
+      $hasSearch = !empty($q) || !empty($tag);
+      $displayQuery = $q ?: ($tag ? '#' . $tag : '');
+      $count = method_exists($results, 'total') ? $results->total() : $results->count();
+    @endphp
 
+    @if($hasSearch)
       <div class="flex items-center justify-between pb-4 border-b border-stone-200 mb-8">
         <h1 class="text-xl sm:text-2xl font-black text-stone-900 font-display">
-          Search Results for <span class="text-organic-600">&ldquo;{{ $q }}&rdquo;</span>
+          Search Results for <span class="text-organic-600">&ldquo;{{ $displayQuery }}&rdquo;</span>
         </h1>
         <span class="text-xs font-bold text-stone-600 bg-organic-50 px-3 py-1 rounded-full border border-organic-200">
           {{ $count }} Produce Found

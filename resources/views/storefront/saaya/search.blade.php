@@ -51,15 +51,23 @@
       @if($currentSort !== 'default')
         <input type="hidden" name="sort" value="{{ $currentSort }}">
       @endif
+      @if(!empty($tag))
+        <input type="hidden" name="tag" value="{{ $tag }}">
+      @endif
     </form>
 
-    @if($q)
+    @php
+      $hasSearch = !empty($q) || !empty($tag);
+      $displayQuery = $q ?: ($tag ? '#' . $tag : '');
+    @endphp
+
+    @if($hasSearch)
       <p class="font-body text-ivory/50 text-sm text-center mt-4">
         @if($products->total())
           {{ number_format($products->total()) }} {{ Str::plural('result', $products->total()) }} for
-          <span class="text-gold">"{{ $q }}"</span>
+          <span class="text-gold">"{{ $displayQuery }}"</span>
         @else
-          No results for <span class="text-gold">"{{ $q }}"</span>
+          No results for <span class="text-gold">"{{ $displayQuery }}"</span>
         @endif
       </p>
     @endif
@@ -71,7 +79,7 @@
 {{-- ═══════════════════════════════════════════════
      STATE A — No query: popular pills + categories
 ═══════════════════════════════════════════════ --}}
-@if(!$q)
+@if(!$hasSearch)
 <section class="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16">
 
   <div class="mb-12">
@@ -111,7 +119,7 @@
 {{-- ═══════════════════════════════════════════════
      STATE B — Has query, has results
 ═══════════════════════════════════════════════ --}}
-@if($q && $products->count())
+@if($hasSearch && $products->count())
 <section class="max-w-7xl mx-auto px-6 lg:px-12 py-8 lg:py-10">
 
   {{-- Sort bar --}}
@@ -179,7 +187,7 @@
 {{-- ═══════════════════════════════════════════════
      STATE C — Has query, no results
 ═══════════════════════════════════════════════ --}}
-@if($q && !$products->count())
+@if($hasSearch && !$products->count())
 <section class="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20">
 
   <div class="text-center mb-14">

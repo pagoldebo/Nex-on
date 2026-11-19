@@ -91,7 +91,13 @@
                     $supportEmail = \App\Models\Setting::supportEmail();
                     $supportPhone = \App\Models\Setting::supportPhone();
                     $storeAddress = \App\Models\Setting::storeAddress();
-                    $gstin = \App\Models\Setting::gstin();
+                    $taxNumber = \App\Models\Setting::taxNumber();
+                    $taxNumberLabel = \App\Models\Setting::taxNumberLabel();
+                    $taxName = \App\Models\Setting::taxName();
+                    $taxRate = \App\Models\Setting::taxRate();
+                    $taxType = \App\Models\Setting::taxType();
+                    $taxEnabled = \App\Models\Setting::taxEnabled();
+                    $gstin = $taxNumber;
                     $invoiceFooter = \App\Models\Setting::invoiceFooter();
                     $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
                 @endphp
@@ -107,15 +113,17 @@
                         <span class="text-2xl font-black tracking-tight text-slate-900">{{ $storeName }}</span>
                     </div>
                 @endif
-                <p class="text-xs text-slate-500 mt-2">{{ $storeName }} Private Limited</p>
+                <p class="text-xs text-slate-500 mt-2">{{ $storeName }}</p>
                 <p class="text-xs text-slate-500">{{ $storeAddress }}</p>
-                <p class="text-xs text-slate-500">GSTIN: {{ $gstin }}</p>
+                @if(!empty($taxNumber))
+                    <p class="text-xs text-slate-500">{{ $taxNumberLabel }}: <span class="font-mono font-semibold">{{ $taxNumber }}</span></p>
+                @endif
                 <p class="text-xs text-slate-500">{{ $supportEmail }} | {{ $supportPhone }}</p>
             </div>
 
             <div class="sm:text-right">
                 <span class="inline-block px-3 py-1 bg-slate-900 text-white text-xs uppercase font-extrabold tracking-wider rounded">
-                    TAX INVOICE
+                    {{ $taxEnabled ? strtoupper($taxName) . ' INVOICE' : 'TAX INVOICE' }}
                 </span>
                 <h1 class="text-xl font-bold text-slate-900 mt-2">INV-{{ preg_replace('/^SAA-/', '', $order->reference) }}</h1>
                 <div class="text-xs text-slate-500 space-y-0.5 mt-2">
@@ -248,12 +256,35 @@
                         </div>
                     @endif
 
+                    @php
+                        $calcTax = (float) ($order->tax_amount > 0 
+                            ? $order->tax_amount 
+                            : ($taxEnabled && $taxRate > 0 
+                                ? ($taxType === 'exclusive' 
+                                    ? round((($order->subtotal - $order->discount) * $taxRate) / 100, 2)
+                                    : round((($order->subtotal - $order->discount) * $taxRate) / (100 + $taxRate), 2))
+                                : 0));
+                    @endphp
+
+                    @if($taxEnabled && $calcTax > 0 && $taxType === 'exclusive')
+                        <div class="flex justify-between text-sm text-slate-600">
+                            <span>{{ $taxName }} ({{ $taxRate }}%):</span>
+                            <span class="font-medium text-slate-900">₹{{ number_format($calcTax, 2) }}</span>
+                        </div>
+                    @endif
+
                     <div class="border-t-2 border-slate-900 pt-2.5 flex justify-between items-baseline">
                         <span class="text-base font-extrabold text-slate-900 uppercase">Grand Total:</span>
                         <span class="text-2xl font-black text-slate-900">₹{{ number_format($order->total, 2) }}</span>
                     </div>
 
-                    <p class="text-[11px] text-right text-slate-400">Inclusive of all taxes (GST 12%)</p>
+                    @if($taxEnabled && $calcTax > 0)
+                        @if($taxType === 'inclusive')
+                            <p class="text-[11px] text-right text-slate-400">Inclusive of {{ $taxName }} ({{ $taxRate }}%): ₹{{ number_format($calcTax, 2) }}</p>
+                        @else
+                            <p class="text-[11px] text-right text-slate-400">{{ $taxName }} ({{ $taxRate }}%) applied on taxable total</p>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>

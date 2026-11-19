@@ -187,7 +187,7 @@
             <div>
                 <div class="store-name">{{ $storeName }}</div>
                 <div class="store-sub">{{ $storeAddress }}</div>
-                <div class="store-sub">GSTIN: <strong>{{ $gstin }}</strong> • State: Maharashtra (Code: 27)</div>
+                <div class="store-sub">{{ \App\Models\Setting::taxNumberLabel() }}: <strong>{{ $gstin }}</strong> • State: {{ \App\Models\Setting::get('store_state', 'Maharashtra') }}</div>
                 <div class="store-sub">Email: {{ $supportEmail }} • Phone: {{ $supportPhone }}</div>
             </div>
             <div class="doc-title">

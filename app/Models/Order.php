@@ -329,10 +329,23 @@ class Order extends Model
 
             // 3. Compute verified shipping & total charges
             $shippingCharge = $verifiedSubtotal >= $freeThreshold ? 0 : $standardShip;
-            $total          = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
             $taxableGoods   = max(0, $verifiedSubtotal - $verifiedDiscount);
-            $taxRate        = (float) Setting::get('tax_percentage', 18);
-            $taxAmount      = $taxRate > 0 ? (int) round(($taxableGoods * $taxRate) / (100 + $taxRate)) : 0;
+            $taxRate        = Setting::taxRate();
+            $taxEnabled     = Setting::taxEnabled();
+            $taxType        = Setting::taxType();
+
+            if ($taxEnabled && $taxRate > 0) {
+                if ($taxType === 'exclusive') {
+                    $taxAmount = (int) round(($taxableGoods * $taxRate) / 100);
+                    $total = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount + $taxAmount);
+                } else {
+                    $taxAmount = (int) round(($taxableGoods * $taxRate) / (100 + $taxRate));
+                    $total = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
+                }
+            } else {
+                $taxAmount = 0;
+                $total = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
+            }
 
             // 4. Create the verified Order record
             $order = static::create([

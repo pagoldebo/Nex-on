@@ -120,13 +120,63 @@ class Setting extends Model
     }
 
     /**
-     * Dynamically resolve GSTIN from Database, Settings, or Config.
+     * Check if tax is enabled for store orders and invoices.
+     */
+    public static function taxEnabled(): bool
+    {
+        $val = static::get('tax_enabled', '1');
+        return $val === '1' || $val === 'true' || $val === true || $val === 1;
+    }
+
+    /**
+     * Get tax name (e.g. VAT, GST, Sales Tax, TVA, Consumption Tax, HST).
+     */
+    public static function taxName(): string
+    {
+        return static::get('tax_name') ?: 'GST';
+    }
+
+    /**
+     * Get tax rate as a float percentage (e.g. 18.0, 20.0, 8.25, 5.0).
+     */
+    public static function taxRate(): float
+    {
+        return (float) static::get('tax_percentage', 18.0);
+    }
+
+    /**
+     * Get tax registration or ID number (e.g. VAT Reg No, GSTIN, Tax ID, EIN).
+     */
+    public static function taxNumber(): string
+    {
+        return static::get('tax_number') 
+            ?: (static::get('gstin') 
+            ?: (static::get('store_gstin') 
+            ?: config('app.store_gstin', '27AABCS1429B1ZB')));
+    }
+
+    /**
+     * Get tax number label (e.g. "VAT Number", "GSTIN", "Tax ID", "Business Number").
+     */
+    public static function taxNumberLabel(): string
+    {
+        return static::get('tax_number_label') ?: (static::taxName() . ' Number');
+    }
+
+    /**
+     * Get tax calculation mode: 'inclusive' (tax included in prices) or 'exclusive' (tax added on top).
+     */
+    public static function taxType(): string
+    {
+        return static::get('tax_type', 'inclusive');
+    }
+
+    /**
+     * Dynamically resolve GSTIN / Tax ID from Database, Settings, or Config.
      */
     public static function gstin(): string
     {
-        return static::get('gstin') 
-            ?: (static::get('store_gstin') 
-            ?: config('app.store_gstin', '27AABCS1429B1ZB'));
+        return static::taxNumber();
     }
 
     /**

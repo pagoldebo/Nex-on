@@ -15,12 +15,43 @@
 @extends('admin.layout')
 
 @section('content')
+@php
+    $taxName = \App\Models\Setting::taxName();
+    $taxRate = \App\Models\Setting::taxRate();
+    $taxNumberLabel = \App\Models\Setting::taxNumberLabel();
+    $taxEnabled = \App\Models\Setting::taxEnabled();
+@endphp
 <div class="space-y-8" x-data="{
     createModalOpen: false,
     paymentModalOpen: false,
     matchModalOpen: false,
     activeInvoiceForPayment: { id: '', invoice_number: '', balance: 0 },
     activeInvoiceForMatch: null,
+
+    invSubtotal: '',
+    invTaxRate: {{ $taxRate }},
+    invTaxAmount: '0.00',
+    invTotalAmount: '',
+
+    autoCalcTax() {
+        const sub = parseFloat(this.invSubtotal) || 0;
+        const rate = parseFloat(this.invTaxRate) || 0;
+        const tax = Math.round((sub * (rate / 100)) * 100) / 100;
+        this.invTaxAmount = tax.toFixed(2);
+        this.invTotalAmount = (sub + tax).toFixed(2);
+    },
+
+    onSubtotalInput() {
+        if (this.invSubtotal !== '') {
+            this.autoCalcTax();
+        }
+    },
+
+    onTaxAmountInput() {
+        const sub = parseFloat(this.invSubtotal) || 0;
+        const tax = parseFloat(this.invTaxAmount) || 0;
+        this.invTotalAmount = (sub + tax).toFixed(2);
+    },
 
     openPayment(inv) {
         const total = parseFloat(inv.total_amount || 0);
@@ -172,7 +203,7 @@
                             </td>
                             <td class="py-3 px-4">
                                 <div class="font-bold text-slate-900">{{ $inv->supplier?->name ?? 'Unknown Supplier' }}</div>
-                                <div class="text-[10px] text-slate-400 font-mono">{{ $inv->supplier?->gst_number ?? 'No GSTIN' }}</div>
+                                <div class="text-[10px] text-slate-400 font-mono">{{ $inv->supplier?->gst_number ?? 'No ' . $taxNumberLabel }}</div>
                             </td>
                             <td class="py-3 px-4">
                                 <a href="{{ route('admin.purchase-orders.show', $inv->purchase_order_id) }}" class="font-mono font-bold text-indigo-600 hover:underline">
@@ -181,7 +212,7 @@
                             </td>
                             <td class="py-3 px-4 font-bold text-slate-900">
                                 ₹{{ number_format((float)$inv->total_amount, 2) }}
-                                <div class="text-[10px] text-slate-400 font-normal">Tax: ₹{{ number_format((float)$inv->tax_amount, 2) }}</div>
+                                <div class="text-[10px] text-slate-400 font-normal">{{ $taxName }}: ₹{{ number_format((float)$inv->tax_amount, 2) }}</div>
                             </td>
                             <td class="py-3 px-4">
                                 <div class="text-emerald-700 font-semibold">₹{{ number_format((float)$inv->amount_paid, 2) }} paid</div>
@@ -304,18 +335,21 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1">Subtotal (Excl. Tax) *</label>
-                                    <input type="number" step="0.01" name="subtotal" required placeholder="e.g. 10000.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
+                                    <input type="number" step="0.01" name="subtotal" x-model="invSubtotal" @input="onSubtotalInput()" required placeholder="e.g. 10000.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">GST Tax Amount (₹)</label>
-                                    <input type="number" step="0.01" name="tax_amount" value="0.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-xs font-bold text-slate-700">{{ $taxName }} Tax ({{ $taxRate }}%)</label>
+                                        <button type="button" @click="autoCalcTax()" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">[Auto-calc]</button>
+                                    </div>
+                                    <input type="number" step="0.01" name="tax_amount" x-model="invTaxAmount" @input="onTaxAmountInput()" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1">Total Invoiced Amount (₹) *</label>
-                                    <input type="number" step="0.01" name="total_amount" required placeholder="e.g. 11800.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold">
+                                    <input type="number" step="0.01" name="total_amount" x-model="invTotalAmount" required placeholder="e.g. 11800.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold">
                                 </div>
                             </div>
 

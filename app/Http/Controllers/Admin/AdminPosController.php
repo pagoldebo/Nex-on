@@ -303,8 +303,19 @@ class AdminPosController extends Controller
             $customerEmail = $validated['customer_email'] ?? 'walkin@pos.store';
 
             $taxableGoods = max(0, $subtotal - $discount);
-            $taxRate = (float) Setting::get('tax_percentage', 18);
-            $taxAmount = $taxRate > 0 ? (int) round(($taxableGoods * $taxRate) / (100 + $taxRate)) : 0;
+            $taxRate = Setting::taxRate();
+            $taxEnabled = Setting::taxEnabled();
+            $taxType = Setting::taxType();
+
+            if ($taxEnabled && $taxRate > 0) {
+                if ($taxType === 'exclusive') {
+                    $taxAmount = (int) round(($taxableGoods * $taxRate) / 100);
+                } else {
+                    $taxAmount = (int) round(($taxableGoods * $taxRate) / (100 + $taxRate));
+                }
+            } else {
+                $taxAmount = 0;
+            }
 
             $order = Order::create([
                 'user_id'           => $validated['customer_id'] ?? null,

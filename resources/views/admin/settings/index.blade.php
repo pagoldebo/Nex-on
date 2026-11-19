@@ -3316,34 +3316,356 @@
             </div>
         </div>
 
-        <!-- Tax & Legal Information -->
-        <div class="bg-white rounded-2xl shadow-xs border border-slate-200/80 p-6 sm:p-8 space-y-6">
-            <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                </div>
-                <div>
-                    <h2 class="text-base font-bold text-slate-900">Tax & GST Invoicing Details</h2>
-                    <p class="text-xs text-slate-500">Appears on print invoices, packing slips, and order confirmations</p>
-                </div>
-            </div>
+        <!-- Worldwide Tax & Invoicing Section -->
+        @php
+            $currentTaxEnabled = \App\Models\Setting::taxEnabled();
+            $currentTaxName = \App\Models\Setting::taxName();
+            $currentTaxRate = \App\Models\Setting::taxRate();
+            $currentTaxNumber = \App\Models\Setting::taxNumber();
+            $currentTaxNumberLabel = \App\Models\Setting::taxNumberLabel();
+            $currentTaxType = \App\Models\Setting::taxType();
+            $currentPreset = $settings['tax_country_preset'] ?? 'in';
+        @endphp
+        <div class="bg-white rounded-2xl shadow-xs border border-slate-200/80 p-6 sm:p-8 space-y-6"
+             x-data="{
+                taxEnabled: {{ $currentTaxEnabled ? 'true' : 'false' }},
+                taxName: '{{ addslashes($currentTaxName) }}',
+                taxRate: '{{ $currentTaxRate }}',
+                taxNumberLabel: '{{ addslashes($currentTaxNumberLabel) }}',
+                taxNumber: '{{ addslashes($currentTaxNumber) }}',
+                taxType: '{{ $currentTaxType }}',
+                selectedPreset: '{{ $currentPreset }}',
+                sampleAmount: 1000,
 
-            <div class="grid sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">GST / Tax Rate (%)</label>
-                    <div class="relative">
-                        <input type="number" step="0.01" name="tax_percentage" 
-                               value="{{ $settings['tax_percentage'] ?? 18 }}" 
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
-                        <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 font-semibold text-sm">%</span>
+                applyPreset(key) {
+                    this.selectedPreset = key;
+                    if (key === 'us') {
+                        this.taxName = 'Sales Tax';
+                        this.taxRate = '8.25';
+                        this.taxNumberLabel = 'Tax ID / EIN';
+                        this.taxType = 'exclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = 'XX-XXXXXXX';
+                        }
+                    } else if (key === 'uk') {
+                        this.taxName = 'VAT';
+                        this.taxRate = '20.00';
+                        this.taxNumberLabel = 'VAT Reg No';
+                        this.taxType = 'inclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = 'GB999999973';
+                        }
+                    } else if (key === 'eu') {
+                        this.taxName = 'VAT';
+                        this.taxRate = '21.00';
+                        this.taxNumberLabel = 'VAT ID';
+                        this.taxType = 'inclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = 'DE123456789';
+                        }
+                    } else if (key === 'ca') {
+                        this.taxName = 'HST / GST';
+                        this.taxRate = '13.00';
+                        this.taxNumberLabel = 'Business Number (BN)';
+                        this.taxType = 'exclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = '123456789RT0001';
+                        }
+                    } else if (key === 'au') {
+                        this.taxName = 'GST';
+                        this.taxRate = '10.00';
+                        this.taxNumberLabel = 'ABN';
+                        this.taxType = 'inclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = '51 824 753 556';
+                        }
+                    } else if (key === 'ae') {
+                        this.taxName = 'VAT';
+                        this.taxRate = '5.00';
+                        this.taxNumberLabel = 'TRN';
+                        this.taxType = 'inclusive';
+                        if (!this.taxNumber || this.taxNumber.startsWith('27AAB')) {
+                            this.taxNumber = '100XXXXXXXXX003';
+                        }
+                    } else if (key === 'in') {
+                        this.taxName = 'GST';
+                        this.taxRate = '18.00';
+                        this.taxNumberLabel = 'GSTIN';
+                        this.taxType = 'inclusive';
+                        if (!this.taxNumber || this.taxNumber === 'XX-XXXXXXX') {
+                            this.taxNumber = '27AABCS1429B1ZB';
+                        }
+                    } else if (key === 'custom') {
+                        this.taxName = 'Tax';
+                        this.taxNumberLabel = 'Tax ID';
+                    }
+                },
+
+                sampleTax() {
+                    const amt = parseFloat(this.sampleAmount) || 0;
+                    const rate = parseFloat(this.taxRate) || 0;
+                    if (!this.taxEnabled || rate <= 0) return 0;
+                    if (this.taxType === 'exclusive') {
+                        return (amt * (rate / 100));
+                    } else {
+                        return (amt * (rate / (100 + rate)));
+                    }
+                },
+
+                sampleTotal() {
+                    const amt = parseFloat(this.sampleAmount) || 0;
+                    if (!this.taxEnabled) return amt;
+                    if (this.taxType === 'exclusive') {
+                        return amt + this.sampleTax();
+                    }
+                    return amt;
+                }
+             }">
+
+            <!-- Hidden section identifier for controller -->
+            <input type="hidden" name="tax_section_submitted" value="1">
+            <input type="hidden" name="tax_country_preset" :value="selectedPreset">
+            <input type="hidden" name="gstin" :value="taxNumber">
+
+            <!-- Card Header & Status Toggle -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-bold text-slate-900">Worldwide Tax &amp; Invoicing Details</h2>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="taxEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'"
+                                  x-text="taxEnabled ? 'Tax Active' : 'Tax Disabled'"></span>
+                        </div>
+                        <p class="text-xs text-slate-500">Manual tax rate applied globally across Customer Invoices, Checkout, POS Receipts, and Supplier Bills</p>
                     </div>
                 </div>
 
+                <!-- Toggle Switch -->
+                <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input type="checkbox" name="tax_enabled" value="1" class="sr-only peer" x-model="taxEnabled">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    <span class="ml-3 text-xs font-bold text-slate-700" x-text="taxEnabled ? 'Enable Tax Calculation' : 'Disable Tax Calculation'"></span>
+                </label>
+            </div>
+
+            <!-- International 1-Click Quick Presets -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">🌍 International Tax Presets</span>
+                    <span class="text-[11px] text-slate-400">Click a country to auto-fill tax standard &amp; ID labels</span>
+                </div>
+                <div class="flex flex-wrap gap-2 pt-1">
+                    <button type="button" @click="applyPreset('us')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'us' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇺🇸 USA (Sales Tax 8.25%)
+                    </button>
+                    <button type="button" @click="applyPreset('uk')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'uk' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇬🇧 UK (VAT 20%)
+                    </button>
+                    <button type="button" @click="applyPreset('eu')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'eu' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇪🇺 EU (VAT 21%)
+                    </button>
+                    <button type="button" @click="applyPreset('ca')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'ca' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇨🇦 Canada (HST 13%)
+                    </button>
+                    <button type="button" @click="applyPreset('au')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'au' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇦🇺 Australia (GST 10%)
+                    </button>
+                    <button type="button" @click="applyPreset('ae')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'ae' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇦🇪 UAE (VAT 5%)
+                    </button>
+                    <button type="button" @click="applyPreset('in')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'in' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🇮🇳 India (GST 18%)
+                    </button>
+                    <button type="button" @click="applyPreset('custom')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            :class="selectedPreset === 'custom' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'">
+                        🌐 Custom / Other
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tax Rate & Settings Grid -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tax Name -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">GSTIN Registration Number</label>
-                    <input type="text" name="gstin" 
-                           value="{{ $settings['gstin'] ?? '27AABCS1429B1ZB' }}" 
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Tax Name / System
+                    </label>
+                    <input type="text" name="tax_name" x-model="taxName" required
+                           placeholder="e.g. VAT, GST, Sales Tax, TVA" 
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1">Printed on receipts and invoice titles (e.g. "VAT INVOICE")</p>
+                </div>
+
+                <!-- Tax Percentage -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Manual Tax Rate (%)
+                    </label>
+                    <div class="relative">
+                        <input type="number" step="0.01" min="0" max="100" name="tax_percentage" x-model="taxRate" required
+                               placeholder="e.g. 20, 18, 8.25"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none font-bold">
+                        <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 font-semibold text-sm">%</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Exact percentage applied to orders and vendor bills</p>
+                </div>
+
+                <!-- Tax Calculation Type -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Pricing Calculation Mode
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition-all"
+                               :class="taxType === 'inclusive' ? 'border-indigo-500 bg-indigo-50/50 text-indigo-900 font-bold' : 'border-slate-200 bg-white text-slate-600'">
+                            <input type="radio" name="tax_type" value="inclusive" x-model="taxType" class="sr-only">
+                            <span class="w-3 h-3 rounded-full border border-current flex items-center justify-center">
+                                <span class="w-1.5 h-1.5 rounded-full bg-current" x-show="taxType === 'inclusive'"></span>
+                            </span>
+                            <span class="text-xs">Tax Inclusive</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition-all"
+                               :class="taxType === 'exclusive' ? 'border-indigo-500 bg-indigo-50/50 text-indigo-900 font-bold' : 'border-slate-200 bg-white text-slate-600'">
+                            <input type="radio" name="tax_type" value="exclusive" x-model="taxType" class="sr-only">
+                            <span class="w-3 h-3 rounded-full border border-current flex items-center justify-center">
+                                <span class="w-1.5 h-1.5 rounded-full bg-current" x-show="taxType === 'exclusive'"></span>
+                            </span>
+                            <span class="text-xs">Tax Exclusive</span>
+                        </label>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Inclusive = Included in catalog price; Exclusive = Added on top at checkout</p>
+                </div>
+
+                <!-- Tax Number Label -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Tax ID Label
+                    </label>
+                    <input type="text" name="tax_number_label" x-model="taxNumberLabel"
+                           placeholder="e.g. VAT Reg No, GSTIN, Tax ID, ABN" 
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1">Label shown before your tax number on invoices</p>
+                </div>
+
+                <!-- Tax Registration Number / GSTIN -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Tax Registration / Identification #
+                    </label>
+                    <input type="text" name="tax_number" x-model="taxNumber"
+                           placeholder="e.g. GB999999973 or 27AABCS1429B1ZB" 
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 font-mono text-sm uppercase focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1">Appears on legal invoices, POS slips, and credit notes</p>
+                </div>
+
+                <!-- Store State / Region -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Store State / Province
+                    </label>
+                    <input type="text" name="store_state" 
+                           value="{{ $settings['store_state'] ?? 'Maharashtra' }}" 
+                           placeholder="e.g. California, London, Maharashtra" 
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1">Used for domestic vs inter-state/province tax jurisdiction</p>
+                </div>
+            </div>
+
+            <!-- Live Sample Invoice Calculator Preview -->
+            <div class="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 sm:p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-amber-200/60 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-amber-900 uppercase tracking-wider">🧾 Live Invoice Preview &amp; Calculation Simulation</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-800" x-text="taxType.toUpperCase()"></span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-amber-800">
+                        <span>Sample Subtotal:</span>
+                        <input type="number" x-model="sampleAmount" class="w-20 px-2 py-1 rounded bg-white border border-amber-300 text-xs font-bold text-slate-900 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4 text-xs">
+                    <!-- Invoice Header Preview -->
+                    <div class="bg-white p-3 rounded-lg border border-amber-100 space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Invoice Header Format</p>
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-900">{{ $settings['store_name'] ?? 'Nex-on Store' }}</span>
+                            <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold"
+                                  x-text="(taxEnabled ? (taxName || 'TAX').toUpperCase() : 'TAX') + ' INVOICE'"></span>
+                        </div>
+                        <p class="text-slate-600 font-mono text-[11px]">
+                            <span x-text="taxNumberLabel || 'Tax ID'"></span>: 
+                            <strong x-text="taxNumber || 'NOT CONFIGURED'"></strong>
+                        </p>
+                    </div>
+
+                    <!-- Invoice Totals Calculation Preview -->
+                    <div class="bg-white p-3 rounded-lg border border-amber-100 space-y-1.5">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Calculated Breakdown</p>
+                        
+                        <template x-if="!taxEnabled">
+                            <div class="text-slate-500 py-1">
+                                Tax calculation is currently <strong>disabled</strong>. Orders will have ₹0.00 tax applied.
+                            </div>
+                        </template>
+
+                        <template x-if="taxEnabled && taxType === 'exclusive'">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Subtotal:</span>
+                                    <span class="font-mono">₹<span x-text="parseFloat(sampleAmount || 0).toFixed(2)"></span></span>
+                                </div>
+                                <div class="flex justify-between text-indigo-700 font-semibold">
+                                    <span><span x-text="taxName"></span> (<span x-text="taxRate"></span>% added):</span>
+                                    <span class="font-mono">+₹<span x-text="sampleTax().toFixed(2)"></span></span>
+                                </div>
+                                <div class="border-t border-slate-200 pt-1 flex justify-between font-bold text-slate-900">
+                                    <span>Grand Total:</span>
+                                    <span class="font-mono text-sm">₹<span x-text="sampleTotal().toFixed(2)"></span></span>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="taxEnabled && taxType === 'inclusive'">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Catalog Total (Inclusive):</span>
+                                    <span class="font-mono">₹<span x-text="parseFloat(sampleAmount || 0).toFixed(2)"></span></span>
+                                </div>
+                                <div class="flex justify-between text-slate-500 text-[11px]">
+                                    <span>Net Taxable Base:</span>
+                                    <span class="font-mono">₹<span x-text="(parseFloat(sampleAmount || 0) - sampleTax()).toFixed(2)"></span></span>
+                                </div>
+                                <div class="flex justify-between text-emerald-700 font-semibold">
+                                    <span>Includes <span x-text="taxName"></span> (<span x-text="taxRate"></span>%):</span>
+                                    <span class="font-mono">₹<span x-text="sampleTax().toFixed(2)"></span></span>
+                                </div>
+                                <div class="border-t border-slate-200 pt-1 flex justify-between font-bold text-slate-900">
+                                    <span>Grand Total:</span>
+                                    <span class="font-mono text-sm">₹<span x-text="parseFloat(sampleAmount || 0).toFixed(2)"></span></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>

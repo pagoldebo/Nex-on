@@ -226,7 +226,7 @@
             <div class="store-sub">{{ $storeInfo['address'] }}</div>
             <div class="store-sub">Phone: {{ $storeInfo['phone'] }}</div>
             @if(!empty($storeInfo['gstin']))
-                <div class="store-sub font-bold">GSTIN: {{ $storeInfo['gstin'] }}</div>
+                <div class="store-sub font-bold">{{ \App\Models\Setting::taxNumberLabel() }}: {{ $storeInfo['gstin'] }}</div>
             @endif
         </div>
 
@@ -315,16 +315,20 @@
 
         <div class="divider"></div>
 
-        <!-- Tax breakdown note (Inclusive GST) -->
+        <!-- Tax breakdown note -->
         @php
-            // Estimated GST @ 18% embedded in total
-            $taxable = round($order->total / 1.18, 2);
-            $cgst = round(($order->total - $taxable) / 2, 2);
-            $sgst = $cgst;
+            $taxEnabled = \App\Models\Setting::taxEnabled();
+            $taxName = \App\Models\Setting::taxName();
+            $taxRate = \App\Models\Setting::taxRate();
+            $taxType = \App\Models\Setting::taxType();
+            $taxable = $taxRate > 0 ? round($order->total / (1 + ($taxRate / 100)), 2) : $order->total;
+            $taxVal = round($order->total - $taxable, 2);
         @endphp
-        <div style="font-size: 10px; line-height: 1.3;" class="text-center">
-            [Tax Breakdown: Taxable ₹{{ number_format($taxable, 2) }} | CGST(9%) ₹{{ number_format($cgst, 2) }} | SGST(9%) ₹{{ number_format($sgst, 2) }}]
-        </div>
+        @if($taxEnabled && $taxRate > 0)
+            <div style="font-size: 10px; line-height: 1.3;" class="text-center">
+                [{{ $taxName }} ({{ $taxRate }}%): Taxable ₹{{ number_format($taxable, 2) }} | Tax ₹{{ number_format($taxVal, 2) }}]
+            </div>
+        @endif
 
         <!-- Barcode -->
         <div class="barcode-container">

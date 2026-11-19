@@ -105,6 +105,12 @@ class AdminSettingController extends Controller
             'organic_ad2_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
             'organic_ad3_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
             'hero_banner_image'       => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
+            'tax_percentage'          => 'nullable|numeric|min:0|max:100',
+            'tax_name'                => 'nullable|string|max:50',
+            'tax_number'              => 'nullable|string|max:100',
+            'tax_number_label'        => 'nullable|string|max:100',
+            'tax_type'                => 'nullable|string|in:inclusive,exclusive',
+            'tax_country_preset'      => 'nullable|string|max:50',
         ]);
 
         // Validate webhook URLs against SSRF (mitigates internal network scanning & cloud metadata access)
@@ -291,18 +297,28 @@ class AdminSettingController extends Controller
             'vyra_', 'buttercup_', 'lumiere_', 'saaya_', 'organic_',
             'shipping_', 'return_', 'privacy_', 'terms_', 'about_', 'contact_',
             'sizeguide_', 'pwa_prompt_', 'hero_', 'footer_', 'ticker_', 'faq_',
+            'tax_',
         ];
 
         $allowedSettingKeys = [
             'store_name', 'support_email', 'support_phone', 'support_whatsapp', 'store_address',
             'gstin', 'store_state', 'invoice_footer', 'free_shipping_threshold', 'shipping_cost',
             'enable_cod', 'cod_charge', 'tax_percentage', 'announcement_bar', 'ticker_enabled',
+            'tax_enabled', 'tax_name', 'tax_number', 'tax_number_label', 'tax_type', 'tax_country_preset',
             'pwa_prompt_enabled', 'pwa_prompt_title', 'pwa_prompt_description', 'pwa_prompt_delay',
             'footer_bio', 'footer_badge1', 'footer_badge2',
             'product_delivery_info', 'product_returns_info', 'organic_delivery_info', 'organic_returns_info',
             'return_custom_content', 'shipping_custom_content',
             'order_webhook_urls', 'tally_sales_ledger',
         ];
+
+        // Ensure tax_enabled checkbox state is handled
+        if ($request->has('tax_section_submitted')) {
+            $data['tax_enabled'] = $request->has('tax_enabled') ? '1' : '0';
+        }
+        if (isset($data['tax_number']) && !empty($data['tax_number'])) {
+            $data['gstin'] = $data['tax_number'];
+        }
 
         $isSuperAdmin = \Illuminate\Support\Facades\Auth::user()?->isSuperAdmin();
 

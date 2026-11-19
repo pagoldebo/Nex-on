@@ -72,6 +72,14 @@
            alt="{{ $product->name }}"
            loading="lazy">
     </a>
+
+    {{-- Floating Quick View Button on Image Hover --}}
+    <button type="button"
+            onclick="event.preventDefault(); event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
+            class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-white/95 backdrop-blur-md text-stone-800 hover:bg-organic-500 hover:text-white text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+      <svg class="w-3.5 h-3.5 text-organic-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+      <span>Quick View</span>
+    </button>
   </div>
 
   {{-- Card Details --}}
@@ -99,16 +107,25 @@
     </div>
 
     <div class="mt-4 pt-3 border-t border-stone-100">
-      {{-- Price Container --}}
-      <div class="product-card-price flex items-baseline gap-2">
-        <span class="price-current text-lg font-black text-organic-900 font-display">
-          ₹{{ number_format($cardData['startingPrice'], 2) }}
-        </span>
-        @if($cardData['startingCompareAt'])
-          <span class="price-compare text-xs text-stone-400 line-through">
-            ₹{{ number_format($cardData['startingCompareAt'], 2) }}
+      {{-- Price & Quick View Row --}}
+      <div class="flex items-center justify-between">
+        <div class="product-card-price flex items-baseline gap-2">
+          <span class="price-current text-lg font-black text-organic-900 font-display">
+            ₹{{ number_format($cardData['startingPrice'], 2) }}
           </span>
-        @endif
+          @if($cardData['startingCompareAt'])
+            <span class="price-compare text-xs text-stone-400 line-through">
+              ₹{{ number_format($cardData['startingCompareAt'], 2) }}
+            </span>
+          @endif
+        </div>
+        <button type="button"
+                onclick="event.preventDefault(); event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
+                title="Quick View"
+                class="text-[10px] font-bold text-organic-600 hover:text-organic-700 bg-organic-50 hover:bg-organic-100 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 cursor-pointer">
+          <svg class="w-3 h-3 text-organic-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <span>Quick View</span>
+        </button>
       </div>
 
       {{-- Color / Variety Swatches (if multiple) --}}

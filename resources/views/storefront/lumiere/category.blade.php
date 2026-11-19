@@ -96,7 +96,4 @@
   @endif
 </div>
 
-{{-- Quick-view modal for the cards --}}
-@include('storefront.lumiere.partials.quick-view')
-
 </x-storefront-layout>

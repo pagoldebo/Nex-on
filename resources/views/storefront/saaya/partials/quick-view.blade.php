@@ -7,21 +7,26 @@
     Responsibility: Interactive luxury modal popup for rapid product inspection and cart add
     Features:
       - Deep maroon velvet canvas, antique gold foil accents & Cormorant Garamond typography
-      - Live color swatch selector & dynamic size availability mapping
+      - Live color swatch selector with image gallery switcher
+      - Variant size selector with live inventory scarcity alerts
       - Direct reactive Add to Bag handler synced with storefront cart store
       - Full bridal dossier link redirecting to standalone product page
 --}}
 <div id="quickViewModal" class="hidden fixed inset-0 z-[220] bg-maroon-dark/60 backdrop-blur-md items-end sm:items-center justify-center sm:p-4 transition-all duration-300"
      onclick="if(event.target===this) closeQuickView()">
     <div class="bg-[#F7F1E6] text-maroon w-full sm:max-w-3xl rounded-t-[32px] sm:rounded-[28px] overflow-hidden shadow-2xl border border-gold/40 max-h-[92vh] overflow-y-auto relative animate-fade">
-        <button onclick="closeQuickView()" class="absolute top-4 right-5 z-20 text-3xl font-light text-maroon/60 hover:text-maroon hover:rotate-90 transition-all cursor-pointer leading-none" aria-label="Close">&times;</button>
+        <button onclick="closeQuickView()" class="absolute top-4 right-5 z-20 w-9 h-9 rounded-full bg-ivory/80 hover:bg-maroon hover:text-gold text-maroon/60 text-2xl font-light flex items-center justify-center transition-all cursor-pointer leading-none shadow-xs border border-gold/30" aria-label="Close">&times;</button>
         
         <div class="grid sm:grid-cols-2">
-            {{-- Left column: Product Image --}}
-            <div class="relative aspect-[4/5] sm:aspect-auto bg-blush/20 overflow-hidden border-b sm:border-b-0 sm:border-r border-gold/20">
-                <img id="qvImage" src="" alt="" class="w-full h-full object-cover transition-transform duration-700">
-                <span id="qvBadge" class="absolute top-4 left-4 z-10 bg-gold text-maroon text-[9px] font-bold px-2.5 py-1 tracking-widest uppercase shadow-sm hidden">
-                </span>
+            {{-- Left column: Image & Gallery --}}
+            <div class="relative bg-blush/20 p-4 flex flex-col justify-between border-b sm:border-b-0 sm:border-r border-gold/20">
+                <div class="relative aspect-[4/5] rounded-2xl overflow-hidden bg-white/40 shadow-xs border border-gold/10">
+                    <img id="qvImage" src="" alt="" class="w-full h-full object-cover transition-transform duration-700">
+                    <span id="qvBadge" class="absolute top-3 left-3 z-10 bg-gold text-maroon text-[9px] font-bold px-2.5 py-1 tracking-widest uppercase shadow-xs hidden">
+                    </span>
+                </div>
+                {{-- Thumbnails strip --}}
+                <div id="qvThumbnails" class="flex gap-2 mt-3 overflow-x-auto pb-1 empty:hidden"></div>
             </div>
 
             {{-- Right column: Dossier Details --}}
@@ -41,7 +46,7 @@
                 </div>
 
                 {{-- Color Swatches --}}
-                <div>
+                <div id="qvColorSection">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-[10px] uppercase tracking-widest font-bold text-maroon/60 font-body">
                             Shade: <span id="qvColorName" class="text-gold font-semibold"></span>
@@ -79,7 +84,6 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
 (function() {
     let qvProduct = null, qvColorIdx = 0, qvSize = null;
@@ -113,7 +117,9 @@
         if (viewDetailsEl) viewDetailsEl.href = '{{ url('/products') }}/' + encodeURIComponent(product.slug);
 
         const colorsContainer = document.getElementById('colorOptions');
+        const colorSection = document.getElementById('qvColorSection');
         if (colorsContainer && product.colors && product.colors.length) {
+            if (colorSection) colorSection.classList.remove('hidden');
             colorsContainer.innerHTML = '';
             product.colors.forEach((c, i) => {
                 const btn = document.createElement('button');
@@ -125,6 +131,8 @@
                 btn.onclick = function() { qvSelectColor(i); };
                 colorsContainer.appendChild(btn);
             });
+        } else if (colorSection) {
+            colorSection.classList.add('hidden');
         }
 
         qvSelectColor(0);
@@ -147,16 +155,40 @@
     };
 
     window.qvSelectColor = function(idx) {
-        if (!qvProduct || !qvProduct.colors || !qvProduct.colors[idx]) return;
+        if (!qvProduct) return;
         qvColorIdx = idx;
         qvSize = null;
-        const c = qvProduct.colors[idx];
+        const colors = qvProduct.colors || [];
+        const c = colors[idx] || null;
 
         const colorNameEl = document.getElementById('qvColorName');
-        if (colorNameEl) colorNameEl.textContent = c.name || '';
+        if (colorNameEl) colorNameEl.textContent = c ? (c.name || '') : '';
 
+        const initialImg = (c && c.images && c.images[0]) || qvProduct.coverImage || '';
         const imgEl = document.getElementById('qvImage');
-        if (imgEl) imgEl.src = (c.images && c.images[0]) || qvProduct.coverImage || '';
+        if (imgEl) imgEl.src = initialImg;
+
+        // Render thumbnails if multiple images exist
+        const thumbContainer = document.getElementById('qvThumbnails');
+        if (thumbContainer) {
+            thumbContainer.innerHTML = '';
+            const images = (c && c.images && c.images.length) ? c.images : (qvProduct.coverImage ? [qvProduct.coverImage] : []);
+            if (images.length > 1) {
+                images.forEach((imgUrl, imgIdx) => {
+                    const thumb = document.createElement('button');
+                    thumb.type = 'button';
+                    thumb.className = `w-10 h-12 rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${imgIdx === 0 ? 'border-maroon scale-105' : 'border-gold/20 opacity-70 hover:opacity-100'}`;
+                    thumb.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover">`;
+                    thumb.onclick = function() {
+                        if (imgEl) imgEl.src = imgUrl;
+                        thumbContainer.querySelectorAll('button').forEach((b, k) => {
+                            b.className = `w-10 h-12 rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${k === imgIdx ? 'border-maroon scale-105' : 'border-gold/20 opacity-70 hover:opacity-100'}`;
+                        });
+                    };
+                    thumbContainer.appendChild(thumb);
+                });
+            }
+        }
 
         document.querySelectorAll('.qv-swatch').forEach((b, i) => {
             const active = i === idx;
@@ -167,32 +199,44 @@
         });
 
         const sizeContainer = document.getElementById('sizeOptions');
-        if (sizeContainer && c.sizes) {
+        if (sizeContainer) {
             sizeContainer.innerHTML = '';
-            c.sizes.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.dataset.size = s.size || '';
-                btn.disabled = !s.inStock;
-                btn.className = `qv-size px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${s.inStock ? 'border-gold/40 text-maroon hover:border-maroon hover:bg-gold/10 cursor-pointer' : 'border-maroon/10 text-maroon/20 cursor-not-allowed'}`;
-                btn.textContent = (s.size || '') + (s.inStock ? '' : ' (Out)');
-                btn.onclick = function() { qvSelectSize(s.size); };
-                sizeContainer.appendChild(btn);
-            });
+            const sizes = (c && c.sizes) ? c.sizes : [];
+            if (sizes.length) {
+                sizes.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.dataset.size = s.size || '';
+                    btn.disabled = !s.inStock;
+                    btn.className = `qv-size px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${s.inStock ? 'border-gold/40 text-maroon hover:border-maroon hover:bg-gold/10 cursor-pointer' : 'border-maroon/10 text-maroon/20 cursor-not-allowed'}`;
+                    btn.textContent = (s.size || '') + (s.inStock ? '' : ' (Out)');
+                    btn.onclick = function() { qvSelectSize(s.size); };
+                    sizeContainer.appendChild(btn);
+                });
+
+                // Auto select first in-stock variant
+                const firstInStock = sizes.find(s => s.inStock);
+                if (firstInStock) {
+                    qvSelectSize(firstInStock.size);
+                }
+            } else {
+                qvShowPrice(qvProduct.startingPrice, qvProduct.startingCompareAt);
+                qvUpdateBtn();
+            }
         }
 
         qvShowPrice(qvProduct.startingPrice, qvProduct.startingCompareAt);
-
         const stockWarning = document.getElementById('qvStockWarning');
         if (stockWarning) stockWarning.classList.add('hidden');
-
         qvUpdateBtn();
     };
 
     window.qvSelectSize = function(size) {
-        if (!qvProduct || !qvProduct.colors || !qvProduct.colors[qvColorIdx]) return;
+        if (!qvProduct) return;
         qvSize = size;
-        const v = qvProduct.colors[qvColorIdx].sizes.find(s => s.size === size);
+        const colors = qvProduct.colors || [];
+        const c = colors[qvColorIdx] || null;
+        const v = (c && c.sizes) ? c.sizes.find(s => s.size === size) : null;
 
         document.querySelectorAll('.qv-size').forEach(b => {
             const on = b.dataset.size === size;
@@ -237,24 +281,34 @@
         const b = document.getElementById('qvAddBtn');
         const t = document.getElementById('qvAddBtnText');
         if (!b) return;
-        b.disabled = !qvSize;
-        if (t) t.textContent = qvSize ? 'ADD TO BAG' : 'SELECT A SIZE';
+        const hasSizes = qvProduct && qvProduct.colors && qvProduct.colors[qvColorIdx] && qvProduct.colors[qvColorIdx].sizes && qvProduct.colors[qvColorIdx].sizes.length > 0;
+        b.disabled = hasSizes ? !qvSize : false;
+        if (t) t.textContent = (!hasSizes || qvSize) ? 'ADD TO BAG' : 'SELECT A SIZE';
     }
 
     window.qvAddToBag = function() {
-        if (!qvSize || !qvProduct) return;
-        const c = qvProduct.colors[qvColorIdx];
-        const v = c.sizes.find(s => s.size === qvSize);
+        if (!qvProduct) return;
+        const colors = qvProduct.colors || [];
+        const c = colors[qvColorIdx] || null;
+        const v = (c && c.sizes && qvSize) ? c.sizes.find(s => s.size === qvSize) : (c && c.sizes ? c.sizes[0] : null);
+        
         if (typeof addToCart === 'function') {
-            addToCart(qvProduct.id, qvProduct.name, c.name, qvSize, v.price, (c.images && c.images[0]) || qvProduct.coverImage, v.id || null, v.sku || null);
+            addToCart(
+                qvProduct.id,
+                qvProduct.name,
+                c ? c.name : 'Default',
+                qvSize || 'Standard',
+                v ? v.price : (qvProduct.startingPrice || 0),
+                (c && c.images && c.images[0]) || qvProduct.coverImage || '',
+                v ? (v.variantId || v.id) : null,
+                v ? v.sku : null
+            );
         }
         closeQuickView();
     };
 
-    // Close on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeQuickView();
     });
 })();
 </script>
-@endpush

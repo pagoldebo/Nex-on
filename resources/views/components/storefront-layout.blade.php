@@ -285,7 +285,11 @@
     @include("storefront.{$theme->key}.components.cart-drawer")
     @include("storefront.{$theme->key}.components.login-modal")
     @include("storefront.{$theme->key}.components.search-overlay")
-    @includeIf("storefront.{$theme->key}.partials.quick-view")
+    @if(view()->exists("storefront.{$theme->key}.partials.quick-view"))
+        @include("storefront.{$theme->key}.partials.quick-view")
+    @else
+        @include("storefront.common.quick-view")
+    @endif
 
     <script>
         // ── Cart state (shared across all pages via sessionStorage) ────────

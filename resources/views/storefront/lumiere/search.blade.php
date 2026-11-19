@@ -122,7 +122,4 @@
   @endif
 </div>
 
-{{-- Quick-view modal for the lustre cards --}}
-@include('storefront.lumiere.partials.quick-view')
-
 </x-storefront-layout>

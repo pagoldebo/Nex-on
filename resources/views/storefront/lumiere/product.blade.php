@@ -389,9 +389,6 @@
   @endif
 </div>
 
-{{-- Quick-view modal for the related cards --}}
-@include('storefront.lumiere.partials.quick-view')
-
 @push('scripts')
 <script>
 const pd = @json($product->toCardArray());

@@ -31,25 +31,35 @@
          data-pill-inactive-class="border-rose/40 text-ink/70 hover:border-rose hover:text-rose"
          data-pill-active-class="bg-rose text-cream border-rose shadow-xs">
 
-    <a href="{{ route('product.show', $product->slug) }}" class="card-img-wrap block relative aspect-[3/4] bg-blush-deep/50 overflow-hidden rounded-t-[28px] md:rounded-t-[32px] cursor-pointer shadow-xs">
-        @if(!empty($product->badge))
-            <span class="absolute top-3 left-3 z-10 bg-sage text-cream text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
-                {{ strtoupper($product->badge) }}
-            </span>
-        @elseif($discountPercent > 0)
-            <span class="absolute top-3 left-3 z-10 bg-[#B97680] text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
-                -{{ $discountPercent }}% OFF
-            </span>
-        @else
-            <span class="absolute top-3 left-3 z-10 bg-sage text-cream text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
-                SALE
-            </span>
-        @endif
+    <div class="card-img-wrap block relative aspect-[3/4] bg-blush-deep/50 overflow-hidden rounded-t-[28px] md:rounded-t-[32px] cursor-pointer shadow-xs group">
+        <a href="{{ route('product.show', $product->slug) }}" class="block w-full h-full">
+            @if(!empty($product->badge))
+                <span class="absolute top-3 left-3 z-10 bg-sage text-cream text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
+                    {{ strtoupper($product->badge) }}
+                </span>
+            @elseif($discountPercent > 0)
+                <span class="absolute top-3 left-3 z-10 bg-[#B97680] text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
+                    -{{ $discountPercent }}% OFF
+                </span>
+            @else
+                <span class="absolute top-3 left-3 z-10 bg-sage text-cream text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest shadow-xs">
+                    SALE
+                </span>
+            @endif
 
-        <img class="product-card-img card-img-zoom w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-             src="{{ $cardData['coverImage'] }}"
-             alt="{{ $product->name }}">
-    </a>
+            <img class="product-card-img card-img-zoom w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                 src="{{ $cardData['coverImage'] }}"
+                 alt="{{ $product->name }}">
+        </a>
+
+        {{-- Quick View Floating Button on Hover --}}
+        <button type="button"
+                onclick="event.preventDefault(); event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
+                class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-cream/95 backdrop-blur-md text-ink hover:bg-[#B97680] hover:text-white text-[10px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-[#B97680] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>Quick View</span>
+        </button>
+    </div>
 
     <div class="pt-3 pb-2 px-1">
         <p class="text-[10px] font-bold text-sage-dark uppercase tracking-wide mb-1">{{ $product->category->name ?? 'Collection' }}</p>
@@ -59,12 +69,21 @@
             </a>
         </h3>
 
-        <p class="product-card-price text-rose-dark font-bold text-sm mt-1 mb-2.5 flex items-center gap-1.5 flex-wrap">
-            <span class="price-current">₹{{ number_format($cardData['startingPrice'], 0) }}</span>
-            @if($cardData['startingCompareAt'])
-                <span class="price-compare text-ink/30 line-through text-xs font-normal">₹{{ number_format($cardData['startingCompareAt'], 0) }}</span>
-            @endif
-        </p>
+        <div class="flex items-center justify-between mt-1 mb-2.5">
+            <p class="product-card-price text-rose-dark font-bold text-sm flex items-center gap-1.5 flex-wrap">
+                <span class="price-current">₹{{ number_format($cardData['startingPrice'], 0) }}</span>
+                @if($cardData['startingCompareAt'])
+                    <span class="price-compare text-ink/30 line-through text-xs font-normal">₹{{ number_format($cardData['startingCompareAt'], 0) }}</span>
+                @endif
+            </p>
+            <button type="button"
+                    onclick="event.preventDefault(); event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
+                    title="Quick View"
+                    class="text-[10px] font-bold text-[#B97680] hover:text-ink bg-rose/10 hover:bg-rose/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 cursor-pointer">
+                <svg class="w-3 h-3 text-[#B97680]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <span>Quick View</span>
+            </button>
+        </div>
 
         @if(count($cardData['colors']))
             <div class="color-swatches flex gap-1.5 mb-2">

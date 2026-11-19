@@ -69,9 +69,6 @@
   </div>
 </div>
 
-{{-- Quick-view modal for the cards --}}
-@include('storefront.lumiere.partials.quick-view')
-
 @push('scripts')
 <script>
 function wishStored() {

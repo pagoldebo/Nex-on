@@ -130,7 +130,4 @@
   @endif
 </div>
 
-{{-- Quick-view modal (used by the Quick View button in each product header) --}}
-@include('storefront.lumiere.partials.quick-view')
-
 </x-storefront-layout>

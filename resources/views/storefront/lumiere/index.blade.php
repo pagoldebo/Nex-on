@@ -496,9 +496,6 @@
   </div>
 </section>
 
-{{-- Quick-view modal used by card clicks --}}
-@include('storefront.lumiere.partials.quick-view')
-
 @push('scripts')
 <script src="{{ asset('js/product-card.js') }}"></script>
 <script>

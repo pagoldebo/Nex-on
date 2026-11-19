@@ -35,6 +35,14 @@
              style="background-image: url('{{ $cardData['colors'][0]['images'][0] ?? $cardData['coverImage'] }}')"></div>
         <div class="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100"
              style="background-image: url('{{ $cardData['colors'][0]['images'][1] ?? $cardData['colors'][0]['images'][0] ?? $cardData['coverImage'] }}')"></div>
+
+        {{-- Floating Quick View Button on Hover --}}
+        <button type="button"
+                onclick="event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
+                class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-white/95 backdrop-blur-md text-gray-900 hover:bg-pink-600 hover:text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+            <svg class="w-3 h-3 text-pink-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>Quick View</span>
+        </button>
     </div>
 
     <div class="px-2">

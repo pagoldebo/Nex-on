@@ -10,15 +10,15 @@
       - Platform attribution & copyright notices
 --}}
 @php
-    $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
+    $footerLogo = $footerLogo ?? \App\Models\Setting::get('footer_logo') ?: ($siteLogo ?? \App\Models\Setting::get('site_logo'));
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'VYRA');
 @endphp
 <footer class="bg-[#1A1A1D] text-[#F2F0EC]/60 py-16 px-6 lg:px-10 border-t border-[#FF3D5A]/20">
     <div class="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
-            @if(!empty($siteLogo))
+            @if(!empty($footerLogo))
                 <div class="mb-4">
-                    <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
+                    <img src="{{ \App\Models\Setting::imageUrl($footerLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
                 </div>
             @else
                 <p class="font-display text-xl text-[#F2F0EC] mb-4">VY<span class="text-[#FF3D5A]">RA</span></p>

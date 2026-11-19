@@ -10,15 +10,15 @@
       - AJAX newsletter subscription endpoint with real-time feedback
 --}}
 @php
-    $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
+    $footerLogo = $footerLogo ?? \App\Models\Setting::get('footer_logo') ?: ($siteLogo ?? \App\Models\Setting::get('site_logo'));
     $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Lumière');
 @endphp
 <footer class="bg-pink-600 text-white/80 py-16 px-6 lg:px-10">
     <div class="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
-            @if(!empty($siteLogo))
+            @if(!empty($footerLogo))
                 <div class="mb-4">
-                    <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
+                    <img src="{{ \App\Models\Setting::imageUrl($footerLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
                 </div>
             @else
                 <p class="font-display italic text-2xl font-black text-white mb-4 tracking-tighter">Lumière.</p>

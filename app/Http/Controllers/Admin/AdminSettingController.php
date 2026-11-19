@@ -51,6 +51,7 @@ class AdminSettingController extends Controller
     {
         $allowedImageKeys = [
             'site_logo',
+            'footer_logo',
             'vyra_hero_image',
             'buttercup_hero_image',
             'buttercup_slide_1_image',
@@ -79,6 +80,7 @@ class AdminSettingController extends Controller
 
         $request->validate([
             'site_logo'               => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:5120',
+            'footer_logo'             => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:5120',
             'vyra_hero_image'         => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif,mp4,webm,mov,ogg|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/quicktime,video/ogg|max:20480',
             'buttercup_hero_image'    => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
             'buttercup_slide_1_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:10240',
@@ -169,9 +171,12 @@ class AdminSettingController extends Controller
                 $oldImg = Setting::get($fileKey);
                 $uploadedFile = $request->file($fileKey);
 
-                if ($fileKey === 'site_logo') {
-                    // Logo is stored as branding/logo.png, converted to safe raster PNG (rejects SVG per M-01)
-                    if ($oldImg && $oldImg !== 'branding/logo.png' && Storage::disk('public')->exists($oldImg)) {
+                if ($fileKey === 'site_logo' || $fileKey === 'footer_logo') {
+                    // Logo is stored as branding/logo.png or branding/footer_logo.png, converted to safe raster PNG (rejects SVG per M-01)
+                    $targetFilename = $fileKey === 'site_logo' ? 'logo.png' : 'footer_logo.png';
+                    $targetPath = 'branding/' . $targetFilename;
+
+                    if ($oldImg && $oldImg !== $targetPath && Storage::disk('public')->exists($oldImg)) {
                         Storage::disk('public')->delete($oldImg);
                     }
 
@@ -188,15 +193,15 @@ class AdminSettingController extends Controller
                             $pngData = ob_get_clean();
                             imagedestroy($im);
                             if ($pngData !== false && strlen($pngData) > 0) {
-                                Storage::disk('public')->put('branding/logo.png', $pngData);
+                                Storage::disk('public')->put($targetPath, $pngData);
                                 $saved = true;
                             }
                         }
                     }
                     if (!$saved) {
-                        $uploadedFile->storeAs('branding', 'logo.png', 'public');
+                        $uploadedFile->storeAs('branding', $targetFilename, 'public');
                     }
-                    Setting::set('site_logo', 'branding/logo.png');
+                    Setting::set($fileKey, $targetPath);
                 } else {
                     if ($oldImg) {
                         $cleanOld = ltrim($oldImg, '/');

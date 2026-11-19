@@ -18,13 +18,13 @@
 
     {{-- Brand --}}
     @php
-        $siteLogo = $siteLogo ?? \App\Models\Setting::get('site_logo');
+        $footerLogo = $footerLogo ?? \App\Models\Setting::get('footer_logo') ?: ($siteLogo ?? \App\Models\Setting::get('site_logo'));
         $storeName = $storeName ?? \App\Models\Setting::get('store_name', 'Saaya');
     @endphp
     <div>
-      @if(!empty($siteLogo))
+      @if(!empty($footerLogo))
         <div class="mb-4">
-          <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
+          <img src="{{ \App\Models\Setting::imageUrl($footerLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
         </div>
       @else
         <p class="font-display text-2xl text-ivory">Sa<span class="text-gold">a</span>ya</p>

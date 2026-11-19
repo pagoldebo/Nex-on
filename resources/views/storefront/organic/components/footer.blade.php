@@ -82,10 +82,13 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
     {{-- Col 1: About Organic --}}
+    @php
+      $footerLogo = $footerLogo ?? \App\Models\Setting::get('footer_logo') ?: ($siteLogo ?? \App\Models\Setting::get('site_logo'));
+    @endphp
     <div class="space-y-4">
       <div class="flex items-center gap-2">
-        @if(!empty($siteLogo))
-          <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-8 md:h-10 w-auto max-w-[180px] object-contain">
+        @if(!empty($footerLogo))
+          <img src="{{ \App\Models\Setting::imageUrl($footerLogo) }}" alt="{{ $storeName }}" class="h-8 md:h-10 w-auto max-w-[180px] object-contain">
         @else
           <div class="w-8 h-8 rounded-lg bg-organic-500 text-white flex items-center justify-center">
             <svg class="w-5 h-5" viewBox="0 0 24 24"><use xlink:href="#organic-leaf"></use></svg>

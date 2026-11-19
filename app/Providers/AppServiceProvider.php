@@ -63,6 +63,12 @@ class AppServiceProvider extends ServiceProvider
             if (!array_key_exists('siteLogoUrl', $data)) {
                 $view->with('siteLogoUrl', Setting::siteLogoUrl());
             }
+            if (!array_key_exists('footerLogo', $data)) {
+                $view->with('footerLogo', Setting::get('footer_logo') ?: Setting::get('site_logo'));
+            }
+            if (!array_key_exists('footerLogoUrl', $data)) {
+                $view->with('footerLogoUrl', Setting::footerLogoUrl());
+            }
             if (!array_key_exists('storeName', $data)) {
                 $view->with('storeName', Setting::get('store_name', config('app.name', 'Nexon')));
             }

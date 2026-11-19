@@ -236,6 +236,24 @@ class Setting extends Model
     }
 
     /**
+     * Get footer logo URL with fallback to site logo or custom fallback.
+     */
+    public static function footerLogoUrl(?string $fallback = null): ?string
+    {
+        $path = static::get('footer_logo');
+
+        if (!empty($path)) {
+            return static::imageUrl($path, $fallback);
+        }
+
+        if (file_exists(public_path('images/branding/footer_logo.png'))) {
+            return asset('images/branding/footer_logo.png');
+        }
+
+        return static::siteLogoUrl($fallback);
+    }
+
+    /**
      * Clear all setting caches.
      */
     public static function clearCache(): void

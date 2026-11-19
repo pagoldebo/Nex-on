@@ -142,34 +142,88 @@
                 </div>
 
                 <!-- Financial Totals Summary -->
+                @php
+                    $taxName = \App\Models\Setting::taxName();
+                    $taxRate = \App\Models\Setting::taxRate();
+                    $taxType = \App\Models\Setting::taxType();
+                    $taxEnabled = \App\Models\Setting::taxEnabled();
+                    $orderDiscounted = max(0, (float)($order->subtotal - $order->discount));
+                    $taxableBase = ($taxEnabled && $taxRate > 0)
+                        ? ($taxType === 'inclusive' 
+                            ? round($orderDiscounted / (1 + ($taxRate / 100)), 2) 
+                            : $orderDiscounted)
+                        : $orderDiscounted;
+                    $orderTax = (float) ($order->tax_amount > 0 
+                        ? $order->tax_amount 
+                        : ($taxEnabled && $taxRate > 0 
+                            ? ($taxType === 'exclusive' 
+                                ? round(($orderDiscounted * $taxRate) / 100, 2) 
+                                : round($orderDiscounted - $taxableBase, 2)) 
+                            : 0));
+                    $isGst = str_contains(strtoupper($taxName), 'GST');
+                @endphp
                 <div class="p-5 bg-slate-50/70 border-t border-slate-100 flex justify-end">
-                    <div class="w-72 space-y-2 text-xs">
+                    <div class="w-80 space-y-2 text-xs">
                         <div class="flex justify-between text-slate-600">
                             <span>Items Subtotal:</span>
-                            <span class="font-semibold text-slate-900">₹{{ number_format($order->subtotal, 0) }}</span>
+                            <span class="font-semibold text-slate-900">₹{{ number_format($order->subtotal, 2) }}</span>
                         </div>
+                        @if($order->discount > 0)
+                            <div class="flex justify-between text-emerald-600 font-semibold">
+                                <span>Coupon / Discount:</span>
+                                <span>-₹{{ number_format($order->discount, 2) }}</span>
+                            </div>
+                        @endif
+
+                        @if($taxEnabled && $orderTax > 0)
+                            <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 space-y-1 my-1">
+                                <div class="flex justify-between text-slate-500 text-[11px]">
+                                    <span>Taxable Amount (Excl. Tax):</span>
+                                    <span class="font-mono text-slate-800">₹{{ number_format($taxableBase, 2) }}</span>
+                                </div>
+                                @if($isGst)
+                                    <div class="flex justify-between text-[11px] text-slate-600">
+                                        <span>CGST ({{ round($taxRate / 2, 2) }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($orderTax / 2, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px] text-slate-600">
+                                        <span>SGST ({{ round($taxRate / 2, 2) }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($orderTax / 2, 2) }}</span>
+                                    </div>
+                                @else
+                                    <div class="flex justify-between text-[11px] text-slate-600">
+                                        <span>{{ $taxName }} ({{ $taxRate }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($orderTax, 2) }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex justify-between text-indigo-700 font-bold text-xs pt-1 border-t border-slate-100">
+                                    <span>Tax Breakup ({{ $taxType === 'inclusive' ? 'incl.' : 'added' }}):</span>
+                                    <span class="font-mono">₹{{ number_format($orderTax, 2) }}</span>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="flex justify-between text-slate-600">
                             <span>Shipping Charge:</span>
                             <span class="font-semibold text-slate-900">
-                                {{ $order->shipping_charge > 0 ? '₹' . number_format($order->shipping_charge, 0) : 'Free Shipping' }}
+                                {{ $order->shipping_charge > 0 ? '₹' . number_format($order->shipping_charge, 2) : 'Free Shipping' }}
                             </span>
                         </div>
                         @if($order->cod_charge > 0)
                             <div class="flex justify-between text-slate-600">
                                 <span>COD Handling Fee:</span>
-                                <span class="font-semibold text-slate-900">₹{{ number_format($order->cod_charge, 0) }}</span>
-                            </div>
-                        @endif
-                        @if($order->discount > 0)
-                            <div class="flex justify-between text-emerald-600 font-semibold">
-                                <span>Coupon / Discount:</span>
-                                <span>-₹{{ number_format($order->discount, 0) }}</span>
+                                <span class="font-semibold text-slate-900">₹{{ number_format($order->cod_charge, 2) }}</span>
                             </div>
                         @endif
                         <div class="pt-2 border-t border-slate-200 flex justify-between text-sm font-extrabold text-slate-900">
                             <span>Grand Total:</span>
-                            <span class="text-indigo-600 text-base">₹{{ number_format($order->total, 0) }}</span>
+                            <span class="text-indigo-600 text-base font-black">₹{{ number_format($order->total, 2) }}</span>
                         </div>
+                        @if($taxEnabled && $orderTax > 0)
+                            <p class="text-[10px] text-right text-slate-400">
+                                {{ $taxType === 'inclusive' ? 'Inclusive of all taxes (' . $taxName . ' ' . $taxRate . '%)' : $taxName . ' (' . $taxRate . '%) applied' }}
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>

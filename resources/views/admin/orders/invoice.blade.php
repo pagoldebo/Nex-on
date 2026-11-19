@@ -186,6 +186,14 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($order->items as $idx => $item)
+                        @php
+                            $itemLine = (float) $item->line_total;
+                            $itemTax = ($taxEnabled && $taxRate > 0) 
+                                ? ($taxType === 'inclusive' 
+                                    ? round($itemLine - ($itemLine / (1 + ($taxRate / 100))), 2) 
+                                    : round(($itemLine * $taxRate) / 100, 2))
+                                : 0;
+                        @endphp
                         <tr class="align-middle">
                             <td class="py-3.5 pr-2 text-xs text-slate-400 font-mono">{{ $idx + 1 }}</td>
                             <td class="py-3.5 px-4">
@@ -203,7 +211,14 @@
                             <td class="py-3.5 px-3 text-center font-bold text-slate-800">{{ $item->size ?? '—' }}</td>
                             <td class="py-3.5 px-3 text-right font-medium text-slate-700">₹{{ number_format($item->price, 2) }}</td>
                             <td class="py-3.5 px-3 text-center font-bold text-slate-900">{{ $item->qty }}</td>
-                            <td class="py-3.5 pl-3 text-right font-bold text-slate-900">₹{{ number_format($item->line_total, 2) }}</td>
+                            <td class="py-3.5 pl-3 text-right font-bold text-slate-900">
+                                <div>₹{{ number_format($item->line_total, 2) }}</div>
+                                @if($taxEnabled && $itemTax > 0)
+                                    <div class="text-[10px] text-slate-400 font-normal">
+                                        {{ $taxType === 'inclusive' ? 'Incl. ' . $taxName : '+' . $taxName }}: ₹{{ number_format($itemTax, 2) }}
+                                    </div>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
@@ -213,6 +228,114 @@
                 </tbody>
             </table>
         </div>
+
+        @php
+            $orderDiscounted = max(0, (float)($order->subtotal - $order->discount));
+            $taxableBase = ($taxEnabled && $taxRate > 0)
+                ? ($taxType === 'inclusive' 
+                    ? round($orderDiscounted / (1 + ($taxRate / 100)), 2) 
+                    : $orderDiscounted)
+                : $orderDiscounted;
+
+            $calcTax = (float) ($order->tax_amount > 0 
+                ? $order->tax_amount 
+                : ($taxEnabled && $taxRate > 0 
+                    ? ($taxType === 'exclusive' 
+                        ? round(($orderDiscounted * $taxRate) / 100, 2)
+                        : round($orderDiscounted - $taxableBase, 2))
+                    : 0));
+
+            $isGst = str_contains(strtoupper($taxName), 'GST');
+            $storeState = \App\Models\Setting::get('store_state', 'Maharashtra');
+            $shippingState = $order->shipping_state ?? '';
+            $isInterstate = !empty($shippingState) && strcasecmp(trim($shippingState), trim($storeState)) !== 0;
+
+            $halfRate = round($taxRate / 2, 2);
+            $halfTax = round($calcTax / 2, 2);
+            $remTax = round($calcTax - $halfTax, 2);
+        @endphp
+
+        <!-- Dedicated Tax Breakup Table -->
+        @if($taxEnabled && $calcTax > 0)
+            <div class="mb-6 rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
+                <div class="bg-slate-100/80 px-4 py-2 border-b border-slate-200 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                        Tax Breakup &amp; Calculation Summary
+                    </span>
+                    <span class="text-[11px] text-slate-500 font-mono">
+                        Mode: <strong class="text-slate-800">{{ strtoupper($taxType) }}</strong> &bull; Total Rate: <strong class="text-indigo-700">{{ $taxRate }}%</strong>
+                    </span>
+                </div>
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
+                        <tr>
+                            <th class="py-2.5 px-4">Tax Description</th>
+                            <th class="py-2.5 px-4 text-right">Taxable Value</th>
+                            @if($isGst)
+                                @if($isInterstate)
+                                    <th class="py-2.5 px-4 text-right">IGST ({{ $taxRate }}%)</th>
+                                @else
+                                    <th class="py-2.5 px-4 text-right">CGST ({{ $halfRate }}%)</th>
+                                    <th class="py-2.5 px-4 text-right">SGST ({{ $halfRate }}%)</th>
+                                @endif
+                            @else
+                                <th class="py-2.5 px-4 text-right">{{ $taxName }} Rate</th>
+                            @endif
+                            <th class="py-2.5 px-4 text-right">Total Tax Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        <tr>
+                            <td class="py-2.5 px-4 font-semibold text-slate-800">
+                                {{ $taxName }} ({{ $taxRate }}%) — {{ $taxType === 'inclusive' ? 'Included in Product Price' : 'Applied on Subtotal' }}
+                            </td>
+                            <td class="py-2.5 px-4 text-right font-mono text-slate-700">
+                                ₹{{ number_format($taxableBase, 2) }}
+                            </td>
+                            @if($isGst)
+                                @if($isInterstate)
+                                    <td class="py-2.5 px-4 text-right font-mono text-slate-700">
+                                        ₹{{ number_format($calcTax, 2) }}
+                                    </td>
+                                @else
+                                    <td class="py-2.5 px-4 text-right font-mono text-slate-700">
+                                        ₹{{ number_format($halfTax, 2) }}
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right font-mono text-slate-700">
+                                        ₹{{ number_format($remTax, 2) }}
+                                    </td>
+                                @endif
+                            @else
+                                <td class="py-2.5 px-4 text-right font-mono text-slate-700">
+                                    {{ $taxRate }}%
+                                </td>
+                            @endif
+                            <td class="py-2.5 px-4 text-right font-mono font-bold text-slate-900">
+                                ₹{{ number_format($calcTax, 2) }}
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-slate-50/75 font-bold border-t border-slate-200 text-slate-900">
+                        <tr>
+                            <td class="py-2.5 px-4 uppercase text-[10px] tracking-wider text-slate-600">Total Tax:</td>
+                            <td class="py-2.5 px-4 text-right font-mono">₹{{ number_format($taxableBase, 2) }}</td>
+                            @if($isGst)
+                                @if($isInterstate)
+                                    <td class="py-2.5 px-4 text-right font-mono">₹{{ number_format($calcTax, 2) }}</td>
+                                @else
+                                    <td class="py-2.5 px-4 text-right font-mono">₹{{ number_format($halfTax, 2) }}</td>
+                                    <td class="py-2.5 px-4 text-right font-mono">₹{{ number_format($remTax, 2) }}</td>
+                                @endif
+                            @else
+                                <td class="py-2.5 px-4 text-right font-mono">—</td>
+                            @endif
+                            <td class="py-2.5 px-4 text-right font-mono text-indigo-700 font-extrabold">₹{{ number_format($calcTax, 2) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        @endif
 
         <!-- Totals & Summary -->
         <div class="pt-4 pb-8 border-t border-slate-200">
@@ -225,14 +348,56 @@
                 </div>
 
                 <!-- Financial Calculation -->
-                <div class="w-full sm:w-72 space-y-2">
+                <div class="w-full sm:w-80 space-y-2">
                     <div class="flex justify-between text-sm text-slate-600">
-                        <span>Subtotal:</span>
+                        <span>Items Subtotal:</span>
                         <span class="font-medium text-slate-900">₹{{ number_format($order->subtotal, 2) }}</span>
                     </div>
 
+                    @if($order->discount > 0)
+                        <div class="flex justify-between text-sm text-rose-600">
+                            <span>Discount Applied:</span>
+                            <span class="font-medium">-₹{{ number_format($order->discount, 2) }}</span>
+                        </div>
+                    @endif
+
+                    @if($taxEnabled && $calcTax > 0)
+                        <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1 my-1">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>Taxable Amount (Excl. Tax):</span>
+                                <span class="font-mono text-slate-800 font-medium">₹{{ number_format($taxableBase, 2) }}</span>
+                            </div>
+                            @if($isGst)
+                                @if($isInterstate)
+                                    <div class="flex justify-between text-xs text-slate-600">
+                                        <span>IGST ({{ $taxRate }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($calcTax, 2) }}</span>
+                                    </div>
+                                @else
+                                    <div class="flex justify-between text-xs text-slate-600">
+                                        <span>CGST ({{ $halfRate }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($halfTax, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-slate-600">
+                                        <span>SGST ({{ $halfRate }}%):</span>
+                                        <span class="font-mono text-slate-800">₹{{ number_format($remTax, 2) }}</span>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="flex justify-between text-xs text-slate-600">
+                                    <span>{{ $taxName }} ({{ $taxRate }}%):</span>
+                                    <span class="font-mono text-slate-800">₹{{ number_format($calcTax, 2) }}</span>
+                                </div>
+                            @endif
+                            <div class="flex justify-between text-xs font-bold text-indigo-700 pt-1 border-t border-slate-200">
+                                <span>Tax Breakup Total ({{ $taxType === 'inclusive' ? 'incl.' : 'added' }}):</span>
+                                <span class="font-mono">₹{{ number_format($calcTax, 2) }}</span>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="flex justify-between text-sm text-slate-600">
-                        <span>Shipping:</span>
+                        <span>Shipping Charge:</span>
                         <span class="font-medium text-slate-900">
                             @if($order->shipping_charge > 0)
                                 ₹{{ number_format($order->shipping_charge, 2) }}
@@ -246,30 +411,6 @@
                         <div class="flex justify-between text-sm text-slate-600">
                             <span>COD Convenience:</span>
                             <span class="font-medium text-slate-900">₹{{ number_format($order->cod_charge, 2) }}</span>
-                        </div>
-                    @endif
-
-                    @if($order->discount > 0)
-                        <div class="flex justify-between text-sm text-rose-600">
-                            <span>Discount Applied:</span>
-                            <span class="font-medium">-₹{{ number_format($order->discount, 2) }}</span>
-                        </div>
-                    @endif
-
-                    @php
-                        $calcTax = (float) ($order->tax_amount > 0 
-                            ? $order->tax_amount 
-                            : ($taxEnabled && $taxRate > 0 
-                                ? ($taxType === 'exclusive' 
-                                    ? round((($order->subtotal - $order->discount) * $taxRate) / 100, 2)
-                                    : round((($order->subtotal - $order->discount) * $taxRate) / (100 + $taxRate), 2))
-                                : 0));
-                    @endphp
-
-                    @if($taxEnabled && $calcTax > 0 && $taxType === 'exclusive')
-                        <div class="flex justify-between text-sm text-slate-600">
-                            <span>{{ $taxName }} ({{ $taxRate }}%):</span>
-                            <span class="font-medium text-slate-900">₹{{ number_format($calcTax, 2) }}</span>
                         </div>
                     @endif
 

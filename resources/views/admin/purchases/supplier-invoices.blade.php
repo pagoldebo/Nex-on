@@ -29,9 +29,14 @@
     activeInvoiceForMatch: null,
 
     invSubtotal: '',
-    invTaxRate: {{ $taxRate }},
+    invTaxRate: '{{ $taxRate }}',
     invTaxAmount: '0.00',
     invTotalAmount: '',
+
+    setTaxRate(val) {
+        this.invTaxRate = val;
+        this.autoCalcTax();
+    },
 
     autoCalcTax() {
         const sub = parseFloat(this.invSubtotal) || 0;
@@ -47,10 +52,17 @@
         }
     },
 
+    onTaxRateInput() {
+        this.autoCalcTax();
+    },
+
     onTaxAmountInput() {
         const sub = parseFloat(this.invSubtotal) || 0;
         const tax = parseFloat(this.invTaxAmount) || 0;
         this.invTotalAmount = (sub + tax).toFixed(2);
+        if (sub > 0) {
+            this.invTaxRate = ((tax / sub) * 100).toFixed(2);
+        }
     },
 
     openPayment(inv) {
@@ -183,7 +195,7 @@
                         <th class="py-3 px-4">Invoice # &amp; Date</th>
                         <th class="py-3 px-4">Supplier</th>
                         <th class="py-3 px-4">PO Reference</th>
-                        <th class="py-3 px-4">Amount Billed</th>
+                        <th class="py-3 px-4">Amount Billed &amp; Tax Input</th>
                         <th class="py-3 px-4">Paid / Balance</th>
                         <th class="py-3 px-4 text-center">Payment Status</th>
                         <th class="py-3 px-4 text-center">3-Way Match</th>
@@ -211,8 +223,12 @@
                                 </a>
                             </td>
                             <td class="py-3 px-4 font-bold text-slate-900">
-                                ₹{{ number_format((float)$inv->total_amount, 2) }}
-                                <div class="text-[10px] text-slate-400 font-normal">{{ $taxName }}: ₹{{ number_format((float)$inv->tax_amount, 2) }}</div>
+                                <div class="text-xs font-bold text-slate-900">₹{{ number_format((float)$inv->total_amount, 2) }}</div>
+                                <div class="text-[10px] text-indigo-700 font-semibold">
+                                    Tax Input: ₹{{ number_format((float)$inv->tax_amount, 2) }}
+                                    <span class="text-slate-400">({{ number_format((float)($inv->tax_rate ?? $taxRate), 1) }}%)</span>
+                                </div>
+                                <div class="text-[10px] text-slate-400 font-normal">Subtotal: ₹{{ number_format((float)$inv->subtotal, 2) }}</div>
                             </td>
                             <td class="py-3 px-4">
                                 <div class="text-emerald-700 font-semibold">₹{{ number_format((float)$inv->amount_paid, 2) }} paid</div>
@@ -339,18 +355,48 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <div class="flex items-center justify-between mb-1">
-                                        <label class="block text-xs font-bold text-slate-700">{{ $taxName }} Tax ({{ $taxRate }}%)</label>
-                                        <button type="button" @click="autoCalcTax()" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">[Auto-calc]</button>
+                            <!-- Supplier Tax Input (ITC) Section -->
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                                        {{ $taxName }} Tax ({{ $taxRate }}%) Input (ITC)
+                                    </label>
+                                    <span class="text-[10px] text-slate-400">Input Tax Credit on purchase</span>
+                                </div>
+
+                                <!-- Quick Tax % Selector Pills -->
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-[10px] text-slate-500 font-medium">Quick %:</span>
+                                    <button type="button" @click="setTaxRate(0)" class="px-2 py-0.5 rounded text-[10px] font-bold border transition" :class="invTaxRate == 0 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">0%</button>
+                                    <button type="button" @click="setTaxRate(5)" class="px-2 py-0.5 rounded text-[10px] font-bold border transition" :class="invTaxRate == 5 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">5%</button>
+                                    <button type="button" @click="setTaxRate(12)" class="px-2 py-0.5 rounded text-[10px] font-bold border transition" :class="invTaxRate == 12 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">12%</button>
+                                    <button type="button" @click="setTaxRate(18)" class="px-2 py-0.5 rounded text-[10px] font-bold border transition" :class="invTaxRate == 18 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">18%</button>
+                                    <button type="button" @click="setTaxRate(28)" class="px-2 py-0.5 rounded text-[10px] font-bold border transition" :class="invTaxRate == 28 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">28%</button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 pt-1">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Tax Rate (%) *</label>
+                                        <div class="relative">
+                                            <input type="number" step="0.01" min="0" max="100" name="tax_rate" x-model="invTaxRate" @input="onTaxRateInput()" placeholder="e.g. 18" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold">
+                                            <span class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 font-semibold text-xs">%</span>
+                                        </div>
                                     </div>
-                                    <input type="number" step="0.01" name="tax_amount" x-model="invTaxAmount" @input="onTaxAmountInput()" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="block text-[11px] font-bold text-slate-700">Tax Amount (₹)</label>
+                                            <button type="button" @click="autoCalcTax()" class="text-[9px] font-bold text-indigo-600 hover:text-indigo-800">[Auto-calc]</button>
+                                        </div>
+                                        <input type="number" step="0.01" name="tax_amount" x-model="invTaxAmount" @input="onTaxAmountInput()" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium">
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">Total Invoiced Amount (₹) *</label>
-                                    <input type="number" step="0.01" name="total_amount" x-model="invTotalAmount" required placeholder="e.g. 11800.00" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-bold">
-                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Total Invoiced Amount (₹) *</label>
+                                <input type="number" step="0.01" name="total_amount" x-model="invTotalAmount" required placeholder="e.g. 11800.00" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-black text-slate-900 bg-indigo-50/20">
+                                <p class="text-[10px] text-slate-400 mt-1">Total = Subtotal (Excl. Tax) + Tax Input Amount</p>
                             </div>
 
                             <div>
@@ -447,6 +493,14 @@
                                 <div class="flex justify-between text-xs">
                                     <span class="text-slate-500">2. Invoiced Billed Total:</span>
                                     <span class="font-bold text-slate-900" x-text="'₹' + parseFloat(activeInvoiceForMatch.total_amount).toFixed(2)"></span>
+                                </div>
+                                <div class="flex justify-between text-xs text-indigo-700 font-medium">
+                                    <span class="text-slate-500">&bull; Supplier Tax Input (ITC):</span>
+                                    <span x-text="'₹' + parseFloat(activeInvoiceForMatch.tax_amount || 0).toFixed(2) + ' (' + (activeInvoiceForMatch.tax_rate ? parseFloat(activeInvoiceForMatch.tax_rate).toFixed(1) + '%' : '{{ $taxRate }}%') + ')'"></span>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>&bull; Net Subtotal (Excl. Tax):</span>
+                                    <span class="font-mono text-slate-700" x-text="'₹' + parseFloat(activeInvoiceForMatch.subtotal || 0).toFixed(2)"></span>
                                 </div>
                                 <div class="flex justify-between text-xs border-t border-slate-200 pt-2 font-bold">
                                     <span class="text-slate-700">Calculated Variance:</span>

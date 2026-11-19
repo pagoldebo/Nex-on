@@ -88,6 +88,7 @@ class SupplierInvoiceMatchingTest extends TestCase
             'invoice_date'      => now()->toDateString(),
             'due_date'          => now()->addDays(30)->toDateString(),
             'subtotal'          => 42372.88,
+            'tax_rate'          => 18.00,
             'tax_amount'        => 7627.12,
             'total_amount'      => 50000.00, // Matches PO total exactly!
             'notes'             => 'Received with consignment slip',
@@ -96,6 +97,8 @@ class SupplierInvoiceMatchingTest extends TestCase
         $response->assertRedirect(route('admin.supplier-invoices.index'));
         $this->assertDatabaseHas('supplier_invoices', [
             'invoice_number'  => 'VNS-INV-101',
+            'tax_rate'        => 18.00,
+            'tax_amount'      => 7627.12,
             'matching_status' => 'matched',
             'po_variance'     => 0.00,
             'payment_status'  => 'unpaid',

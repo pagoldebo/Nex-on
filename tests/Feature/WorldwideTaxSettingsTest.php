@@ -234,6 +234,8 @@ class WorldwideTaxSettingsTest extends TestCase
         $response->assertOk();
         $response->assertSee('VAT INVOICE');
         $response->assertSee('VAT Reg No: <span class="font-mono font-semibold">GB999999973</span>', false);
+        $response->assertSee('Tax Breakup &amp; Calculation Summary', false);
+        $response->assertSee('Taxable Amount (Excl. Tax)');
         $response->assertSee('Inclusive of VAT (20%)', false);
     }
 

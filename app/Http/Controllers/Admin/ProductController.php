@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductColorImage;
@@ -19,12 +20,13 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $search           = trim((string) $request->query('q', ''));
-        $selectedCategory = $request->query('category_id');
-        $selectedTag      = $request->query('tag_id') ?? $request->query('tag');
-        $selectedStatus   = $request->query('status');
+        $search             = trim((string) $request->query('q', ''));
+        $selectedCategory   = $request->query('category_id');
+        $selectedTag        = $request->query('tag_id') ?? $request->query('tag');
+        $selectedCollection = $request->query('collection_id') ?? $request->query('collection');
+        $selectedStatus     = $request->query('status');
 
-        $query = Product::with(['category', 'brand', 'addons', 'tags', 'colors.variants', 'colors.images'])->latest();
+        $query = Product::with(['category', 'brand', 'addons', 'tags', 'collections', 'colors.variants', 'colors.images'])->latest();
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -33,6 +35,7 @@ class ProductController extends Controller
                   ->orWhere('slug', 'like', "%{$search}%")
                   ->orWhere('badge', 'like', "%{$search}%")
                   ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
+                  ->orWhereHas('collections', fn ($col) => $col->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
                   ->orWhereHas('variants', fn ($v) => $v->where('sku', 'like', "%{$search}%"));
             });
         }
@@ -47,17 +50,22 @@ class ProductController extends Controller
             $query->withTag($selectedTag);
         }
 
+        if (!empty($selectedCollection)) {
+            $query->withCollection($selectedCollection);
+        }
+
         if ($selectedStatus === 'active') {
             $query->where('is_active', true);
         } elseif ($selectedStatus === 'draft') {
             $query->where('is_active', false);
         }
 
-        $products   = $query->paginate(15)->withQueryString();
-        $categories = Category::orderBy('sort_order')->get();
-        $tags       = Tag::withCount('products')->orderBy('name')->get();
+        $products    = $query->paginate(15)->withQueryString();
+        $categories  = Category::orderBy('sort_order')->get();
+        $tags        = Tag::withCount('products')->orderBy('name')->get();
+        $collections = Collection::withCount('products')->orderBy('name')->get();
 
-        return view('admin.products.index', compact('products', 'categories', 'tags', 'search', 'selectedCategory', 'selectedTag', 'selectedStatus'));
+        return view('admin.products.index', compact('products', 'categories', 'tags', 'collections', 'search', 'selectedCategory', 'selectedTag', 'selectedCollection', 'selectedStatus'));
     }
 
     public function toggleStatus(Product $product)
@@ -71,21 +79,23 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::orderBy('sort_order')->get();
-        $brands     = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
-        $addons     = Addon::where('is_active', true)->orderBy('name')->get();
-        $tags       = Tag::orderBy('name')->get();
-        return view('admin.products.create', compact('categories', 'brands', 'addons', 'tags'));
+        $categories  = Category::orderBy('sort_order')->get();
+        $brands      = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $addons      = Addon::where('is_active', true)->orderBy('name')->get();
+        $tags        = Tag::orderBy('name')->get();
+        $collections = Collection::where('is_active', true)->orderBy('name')->get();
+        return view('admin.products.create', compact('categories', 'brands', 'addons', 'tags', 'collections'));
     }
 
     public function edit(Product $product)
     {
-        $categories = Category::orderBy('sort_order')->get();
-        $brands     = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
-        $addons     = Addon::where('is_active', true)->orderBy('name')->get();
-        $tags       = Tag::orderBy('name')->get();
-        $product->load('colors.images', 'colors.variants', 'addons', 'brand', 'tags');
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'addons', 'tags'));
+        $categories  = Category::orderBy('sort_order')->get();
+        $brands      = Brand::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $addons      = Addon::where('is_active', true)->orderBy('name')->get();
+        $tags        = Tag::orderBy('name')->get();
+        $collections = Collection::where('is_active', true)->orderBy('name')->get();
+        $product->load('colors.images', 'colors.variants', 'addons', 'brand', 'tags', 'collections');
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'addons', 'tags', 'collections'));
     }
 
     /**
@@ -168,6 +178,9 @@ class ProductController extends Controller
             $tagInput = $request->input('tags') ?? $request->input('tag_ids');
             $product->tags()->sync(Tag::resolveTagIds($tagInput));
 
+            $colInput = $request->input('collections') ?? $request->input('collection_ids');
+            $product->collections()->sync(Collection::resolveCollectionIds($colInput));
+
             $this->syncColors($product, $validated['colors'], $request);
         });
 
@@ -234,6 +247,9 @@ class ProductController extends Controller
 
             $tagInput = $request->input('tags') ?? $request->input('tag_ids');
             $product->tags()->sync(Tag::resolveTagIds($tagInput));
+
+            $colInput = $request->input('collections') ?? $request->input('collection_ids');
+            $product->collections()->sync(Collection::resolveCollectionIds($colInput));
 
             // Remove colors that were deleted in the form, then re-sync the rest.
             $keptColorIds = array_filter(array_column($validated['colors'], 'id'));

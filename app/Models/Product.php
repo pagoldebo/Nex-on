@@ -87,6 +87,29 @@ class Product extends Model
         });
     }
 
+    public function collections()
+    {
+        return $this->belongsToMany(Collection::class, 'collection_product')->withTimestamps();
+    }
+
+    public function getCollectionsStringAttribute(): string
+    {
+        return $this->collections->pluck('name')->implode(', ');
+    }
+
+    public function scopeWithCollection($query, mixed $collection)
+    {
+        return $query->whereHas('collections', function ($q) use ($collection) {
+            if (is_numeric($collection)) {
+                $q->where('collections.id', (int) $collection);
+            } else {
+                $clean = trim((string) $collection);
+                $q->where('collections.slug', $clean)
+                  ->orWhereRaw('LOWER(collections.name) = ?', [strtolower($clean)]);
+            }
+        });
+    }
+
     /**
      * Return all category slugs for this product including all ancestor categories up to the root.
      * e.g. ['bralettes', 'women-bra', 'lingerie', 'women']

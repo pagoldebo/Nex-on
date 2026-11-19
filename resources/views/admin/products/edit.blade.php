@@ -213,6 +213,107 @@
             </div>
         </div>
 
+        {{-- ===== Curated Collections ===== --}}
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4"
+             x-data="{
+                allCollections: {{ \Illuminate\Support\Js::from($collections->map(fn($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])) }},
+                selectedCollectionIds: {{ \Illuminate\Support\Js::from($product->collections->pluck('id')->values()) }},
+                customCollections: [],
+                customCollectionInput: '',
+                toggleCollection(id) {
+                    if (this.selectedCollectionIds.includes(id)) {
+                        this.selectedCollectionIds = this.selectedCollectionIds.filter(x => x !== id);
+                    } else {
+                        this.selectedCollectionIds.push(id);
+                    }
+                },
+                addCustomCollection() {
+                    const raw = this.customCollectionInput.trim();
+                    if (!raw) return;
+                    const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+                    for (const part of parts) {
+                        const existing = this.allCollections.find(c => c.name.toLowerCase() === part.toLowerCase());
+                        if (existing) {
+                            if (!this.selectedCollectionIds.includes(existing.id)) {
+                                this.selectedCollectionIds.push(existing.id);
+                            }
+                        } else if (!this.customCollections.includes(part)) {
+                            this.customCollections.push(part);
+                        }
+                    }
+                    this.customCollectionInput = '';
+                },
+                removeCustomCollection(name) {
+                    this.customCollections = this.customCollections.filter(c => c !== name);
+                }
+             }">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span>Curated Collections</span>
+                    </h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Group this product into luxury seasonal drops, bridal curations, or thematic storefront collections.</p>
+                </div>
+                <a href="{{ route('admin.addons.index', ['tab' => 'collections']) }}" target="_blank" class="text-xs font-semibold text-violet-600 hover:text-violet-800 transition">
+                    + Manage All Collections ↗
+                </a>
+            </div>
+
+            <!-- Active Selected Collection Badges -->
+            <div class="flex flex-wrap items-center gap-2 min-h-[38px] p-2.5 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <template x-if="selectedCollectionIds.length === 0 && customCollections.length === 0">
+                    <span class="text-xs text-slate-400 italic">No collections selected. Click from registered collections below or type new ones.</span>
+                </template>
+
+                <!-- Existing Collection Chips -->
+                <template x-for="id in selectedCollectionIds" :key="'col-' + id">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs bg-violet-600 text-white transition animate-fade-in">
+                        <svg class="w-3 h-3 text-violet-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span x-text="allCollections.find(c => c.id === id)?.name || id"></span>
+                        <button type="button" @click="toggleCollection(id)" class="text-white/80 hover:text-white transition cursor-pointer">✕</button>
+                        <input type="hidden" name="collection_ids[]" :value="id">
+                    </span>
+                </template>
+
+                <!-- Custom New Collection Chips -->
+                <template x-for="name in customCollections" :key="'custom-col-' + name">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs bg-purple-700 text-white transition animate-fade-in">
+                        <span x-text="name + ' (New)'"></span>
+                        <button type="button" @click="removeCustomCollection(name)" class="text-white/80 hover:text-white transition cursor-pointer">✕</button>
+                        <input type="hidden" name="collections[]" :value="name">
+                    </span>
+                </template>
+            </div>
+
+            <!-- Type / Add New Collection Input -->
+            <div class="flex items-center gap-2">
+                <input type="text" x-model="customCollectionInput" @keydown.enter.prevent="addCustomCollection()" @keydown.,.prevent="addCustomCollection()"
+                       placeholder="Type a collection name and press Enter (e.g. Royal Bridal Trousseau, Winter Velvet)..."
+                       class="flex-1 border border-slate-200 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition bg-white">
+                <button type="button" @click="addCustomCollection()"
+                        class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer">
+                    + Add Collection
+                </button>
+            </div>
+
+            <!-- Quick-Pick Registered Collections -->
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Available Collections (Click to toggle):</label>
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="col in allCollections" :key="'avail-col-' + col.id">
+                        <button type="button" @click="toggleCollection(col.id)"
+                                :class="selectedCollectionIds.includes(col.id) ? 'border-violet-600 bg-violet-50 text-violet-900 ring-2 ring-violet-500/30 font-bold' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'"
+                                class="px-2.5 py-1 rounded-lg text-xs font-medium border transition flex items-center gap-1.5 cursor-pointer">
+                            <svg class="w-3 h-3 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                            <span x-text="col.name"></span>
+                            <span x-show="selectedCollectionIds.includes(col.id)" class="text-violet-700 font-bold">✓</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
         {{-- ===== Available Add-ons ===== --}}
         <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">

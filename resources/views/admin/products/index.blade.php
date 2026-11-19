@@ -37,20 +37,32 @@
     <!-- Filters & Search Bar -->
     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
         <form method="GET" action="{{ route('admin.products.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-            <!-- Search by Name / Slug / SKU / Tag -->
-            <div class="lg:col-span-4 relative">
-                <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search by name, SKU, tag, badge..." 
+            <!-- Search by Name / Slug / SKU / Tag / Collection -->
+            <div class="lg:col-span-3 relative">
+                <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search by name, SKU, tag, collection..." 
                        class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
                 <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
             </div>
 
             <!-- Filter by Category -->
-            <div class="lg:col-span-3">
+            <div class="lg:col-span-2">
                 <select name="category_id" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white">
                     <option value="">All Categories</option>
                     @foreach(\App\Models\Category::getFlatTree() as $item)
                         <option value="{{ data_get($item, 'id') }}" {{ ($selectedCategory ?? '') == data_get($item, 'id') ? 'selected' : '' }}>
                             {!! data_get($item, 'indent_name') !!}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Filter by Collection -->
+            <div class="lg:col-span-2">
+                <select name="collection_id" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white">
+                    <option value="">All Collections</option>
+                    @foreach($collections as $col)
+                        <option value="{{ $col->id }}" {{ ($selectedCollection ?? '') == $col->id ? 'selected' : '' }}>
+                            {{ $col->name }} ({{ $col->products_count }})
                         </option>
                     @endforeach
                 </select>
@@ -82,7 +94,7 @@
                 <button type="submit" class="flex-1 py-2 px-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition">
                     Filter
                 </button>
-                @if(!empty($search) || !empty($selectedCategory) || !empty($selectedTag) || !empty($selectedStatus))
+                @if(!empty($search) || !empty($selectedCategory) || !empty($selectedCollection) || !empty($selectedTag) || !empty($selectedStatus))
                     <a href="{{ route('admin.products.index') }}" class="py-2 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition" title="Reset Filters">
                         ✕
                     </a>
@@ -179,6 +191,14 @@
                                                        style="background-color: {{ $pt->color ?? '#4F46E5' }}"
                                                        title="Filter catalogue by tag: {{ $pt->name }}">
                                                         <span>#{{ $pt->name }}</span>
+                                                    </a>
+                                                @endforeach
+                                                @foreach($product->collections as $pcol)
+                                                    <a href="{{ route('admin.products.index', ['collection_id' => $pcol->id]) }}" 
+                                                       class="text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 hover:bg-violet-200 transition inline-flex items-center gap-1"
+                                                       title="Filter catalogue by collection: {{ $pcol->name }}">
+                                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                                        <span>{{ $pcol->name }}</span>
                                                     </a>
                                                 @endforeach
                                             </div>

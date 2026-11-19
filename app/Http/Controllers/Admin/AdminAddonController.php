@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\Brand;
+use App\Models\Collection;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,9 +20,10 @@ class AdminAddonController extends Controller
         $search = trim((string) $request->input('q', ''));
         $tab    = $request->input('tab', 'brands');
 
-        $addonQuery = Addon::latest();
-        $brandQuery = Brand::withCount('products')->orderBy('sort_order')->orderBy('name');
-        $tagQuery   = Tag::withCount('products')->orderBy('name');
+        $addonQuery      = Addon::latest();
+        $brandQuery      = Brand::withCount('products')->orderBy('sort_order')->orderBy('name');
+        $tagQuery        = Tag::withCount('products')->orderBy('name');
+        $collectionQuery = Collection::withCount('products')->orderBy('sort_order')->orderBy('name');
 
         if ($search !== '') {
             $addonQuery->where(function ($q) use ($search) {
@@ -40,13 +42,20 @@ class AdminAddonController extends Controller
                   ->orWhere('description', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%");
             });
+
+            $collectionQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+            });
         }
 
-        $addons = $addonQuery->paginate(15, ['*'], 'addons_page')->withQueryString();
-        $brands = $brandQuery->get();
-        $tags   = $tagQuery->get();
+        $addons      = $addonQuery->paginate(15, ['*'], 'addons_page')->withQueryString();
+        $brands      = $brandQuery->get();
+        $tags        = $tagQuery->get();
+        $collections = $collectionQuery->get();
 
-        return view('admin.addons.index', compact('addons', 'brands', 'tags', 'search', 'tab'));
+        return view('admin.addons.index', compact('addons', 'brands', 'tags', 'collections', 'search', 'tab'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -189,5 +198,55 @@ class AdminAddonController extends Controller
     {
         $tag->delete();
         return redirect()->route('admin.addons.index', ['tab' => 'tags'])->with('success', 'Product Tag removed successfully.');
+    }
+
+    public function storeCollection(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:120',
+            'slug'        => 'nullable|string|max:150|unique:collections,slug',
+            'description' => 'nullable|string|max:500',
+            'is_active'   => 'nullable|boolean',
+            'sort_order'  => 'nullable|integer',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Collection::generateUniqueSlug($validated['name']);
+        }
+
+        $validated['is_active']  = $request->boolean('is_active', true);
+        $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
+
+        Collection::create($validated);
+
+        return redirect()->route('admin.addons.index', ['tab' => 'collections'])->with('success', 'Collection created successfully.');
+    }
+
+    public function updateCollection(Request $request, Collection $collection): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:120',
+            'slug'        => 'nullable|string|max:150|unique:collections,slug,' . $collection->id,
+            'description' => 'nullable|string|max:500',
+            'is_active'   => 'nullable|boolean',
+            'sort_order'  => 'nullable|integer',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Collection::generateUniqueSlug($validated['name'], $collection->id);
+        }
+
+        $validated['is_active']  = $request->boolean('is_active', true);
+        $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
+
+        $collection->update($validated);
+
+        return redirect()->route('admin.addons.index', ['tab' => 'collections'])->with('success', 'Collection updated successfully.');
+    }
+
+    public function destroyCollection(Collection $collection): RedirectResponse
+    {
+        $collection->delete();
+        return redirect()->route('admin.addons.index', ['tab' => 'collections'])->with('success', 'Collection removed successfully.');
     }
 }

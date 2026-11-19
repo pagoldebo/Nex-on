@@ -900,7 +900,7 @@
                     </a>
                     <a href="{{ route('admin.addons.index') }}" 
                        class="block px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all {{ request()->routeIs('admin.addons*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50' }}">
-                        Brands, Tags &amp; Add-ons
+                        Brands, Tags, Collections &amp; Add-ons
                     </a>
                     <a href="{{ route('admin.attributes.index') }}" class="block px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all {{ request()->routeIs('admin.attributes*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50' }}">Attributes</a>
                     <a href="{{ route('admin.reviews.index') }}" 

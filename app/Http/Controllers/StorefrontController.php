@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Coupon;
 use App\Models\CustomerAddress;
 use App\Models\Order;
@@ -223,21 +224,50 @@ class StorefrontController extends Controller
      */
     public function collectionBySlug(Request $request, string $slug)
     {
-        return match (strtolower($slug)) {
-            'sale', 'deals', 'special-offers' => $this->saleProductsList($request),
-            'featured-products', 'featured'   => $this->featuredProducts($request),
-            'new-arrivals', 'new-launches', 'new' => $this->newArrivalsList($request),
-            'all'                             => $this->renderCollectionPage(
+        $normalized = strtolower($slug);
+
+        if (in_array($normalized, ['sale', 'deals', 'special-offers'], true)) {
+            return $this->saleProductsList($request);
+        }
+        if (in_array($normalized, ['featured-products', 'featured'], true)) {
+            return $this->featuredProducts($request);
+        }
+        if (in_array($normalized, ['new-arrivals', 'new-launches', 'new'], true)) {
+            return $this->newArrivalsList($request);
+        }
+        if ($normalized === 'all') {
+            return $this->renderCollectionPage(
                 $request,
                 $this->productQuery(),
                 'All Products',
                 'collections/all',
                 'Explore our complete catalog of signature pieces.'
-            ),
-            default                           => Category::where('slug', $slug)->first()
-                                                    ? $this->category($request, Category::where('slug', $slug)->firstOrFail())
-                                                    : abort(404),
-        };
+            );
+        }
+
+        // Custom Curated Collection
+        $customCollection = Collection::where('slug', $slug)->where('is_active', true)->first();
+        if ($customCollection) {
+            $query = $this->productQuery()->whereHas('collections', function ($q) use ($customCollection) {
+                $q->where('collections.id', $customCollection->id);
+            });
+
+            return $this->renderCollectionPage(
+                $request,
+                $query,
+                $customCollection->name,
+                "collections/{$customCollection->slug}",
+                $customCollection->description ?: "Curated {$customCollection->name} collection."
+            );
+        }
+
+        // Fallback to Category
+        $category = Category::where('slug', $slug)->first();
+        if ($category) {
+            return $this->category($request, $category);
+        }
+
+        abort(404);
     }
 
     /**
@@ -1054,6 +1084,10 @@ class StorefrontController extends Controller
             'new-arrivals'      => 0.8,
             'new-launches'      => 0.8,
         ];
+
+        foreach (Collection::where('is_active', true)->pluck('slug') as $cSlug) {
+            $curatedCollections[$cSlug] = 0.8;
+        }
 
         $staticPages = [
             'about'           => ['changefreq' => 'monthly', 'priority' => 0.7],

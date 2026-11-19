@@ -195,8 +195,6 @@
                             <p class="text-[11px] text-slate-400 mt-1">Second badge below footer bio.</p>
                         </div>
                     </div>
-                </div>
-            </div>
         </div>
 
         <!-- Homepage Hero Banners & Visual Identity -->        <div id="hero-banners" class="bg-white rounded-2xl shadow-xs border border-slate-200/80 p-6 sm:p-8 space-y-6" 

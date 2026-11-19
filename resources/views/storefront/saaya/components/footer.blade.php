@@ -24,7 +24,7 @@
     <div>
       @if(!empty($siteLogo))
         <div class="mb-4">
-          <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain bg-white/10 backdrop-blur-xs p-1.5 rounded-xl">
+          <img src="{{ \App\Models\Setting::imageUrl($siteLogo) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[180px] object-contain">
         </div>
       @else
         <p class="font-display text-2xl text-ivory">Sa<span class="text-gold">a</span>ya</p>

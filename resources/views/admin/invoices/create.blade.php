@@ -15,7 +15,67 @@
 @extends('admin.layout')
 
 @section('content')
-<div x-data="invoiceBuilder()" class="space-y-6">
+<div x-data="{
+    type: 'tax_invoice',
+    clientName: '',
+    companyName: '',
+    clientGstin: '',
+    clientEmail: '',
+    clientPhone: '',
+    billingAddress: '',
+    shippingAddress: '',
+    placeOfSupply: 'Maharashtra',
+    items: [
+        {
+            description: 'Mulberry Silk Slip Dress - Noir / M',
+            hsn_code: '621210',
+            quantity: 10,
+            unit: 'pcs',
+            unit_price: 3499.00,
+            discount_amount: 0,
+            tax_rate: 18,
+        }
+    ],
+    addItem() {
+        this.items.push({
+            description: '',
+            hsn_code: '621210',
+            quantity: 1,
+            unit: 'pcs',
+            unit_price: 0,
+            discount_amount: 0,
+            tax_rate: 18,
+        });
+    },
+    removeItem(index) {
+        if (this.items.length > 1) {
+            this.items.splice(index, 1);
+        }
+    },
+    calculateRowTotal(item) {
+        const net = Math.max(0, ((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)) - (parseFloat(item.discount_amount) || 0));
+        const tax = net * ((parseFloat(item.tax_rate) || 0) / 100);
+        return net + tax;
+    },
+    computedSubtotal() {
+        return this.items.reduce((sum, item) => sum + ((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)), 0);
+    },
+    computedTotalDiscount() {
+        return this.items.reduce((sum, item) => sum + (parseFloat(item.discount_amount) || 0), 0);
+    },
+    computedTax() {
+        return this.items.reduce((sum, item) => {
+            const net = Math.max(0, ((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)) - (parseFloat(item.discount_amount) || 0));
+            return sum + (net * ((parseFloat(item.tax_rate) || 0) / 100));
+        }, 0);
+    },
+    computedGrandTotal() {
+        return (this.computedSubtotal() - this.computedTotalDiscount()) + this.computedTax();
+    },
+    isLocalState() {
+        return (this.placeOfSupply || '').trim().toLowerCase() === 'maharashtra';
+    }
+}" class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
@@ -280,7 +340,7 @@
     </form>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function invoiceBuilder() {
     return {
         type: 'tax_invoice',
@@ -344,6 +404,7 @@ function invoiceBuilder() {
         }
     }
 }
+window.invoiceBuilder = invoiceBuilder;
 </script>
 @endsection
 

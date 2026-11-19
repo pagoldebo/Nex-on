@@ -1145,7 +1145,7 @@
                        class="block px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all {{ request()->routeIs('admin.invoices.index') || request()->routeIs('admin.invoices.show') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50' }}">
                         Commercial Invoices
                     </a>
-                    <a href="{{ route('admin.invoices.create') }}" 
+                    <a href="{{ route('admin.invoices.create') }}" data-no-pjax="true"
                        class="block px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all {{ request()->routeIs('admin.invoices.create') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50' }}">
                         Create B2B Invoice
                     </a>

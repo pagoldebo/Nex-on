@@ -12,10 +12,9 @@
       - Direct reactive Add to Bag handler synced with storefront cart store
       - Full dossier details link redirecting to standalone product page
 --}}
-<div id="quickViewModal" class="hidden fixed inset-0 z-[220] bg-black/80 backdrop-blur-md items-end sm:items-center justify-center sm:p-4 transition-all duration-300"
-     onclick="if(event.target===this) closeQuickView()">
+<div id="quickViewModal" style="display: none;" class="fixed inset-0 z-[220] bg-black/80 backdrop-blur-md items-end sm:items-center justify-center sm:p-4 transition-all duration-300">
     <div class="bg-[#16161A] text-[#F5F5F7] w-full sm:max-w-3xl rounded-t-[28px] sm:rounded-[24px] overflow-hidden shadow-2xl border border-[#282830] max-h-[92vh] overflow-y-auto relative animate-fade">
-        <button onclick="closeQuickView()" class="absolute top-4 right-5 z-20 w-9 h-9 rounded-lg bg-[#222228] hover:bg-lime hover:text-black text-[#F5F5F7]/70 text-2xl font-light flex items-center justify-center transition-all cursor-pointer leading-none shadow-xs border border-white/10" aria-label="Close">&times;</button>
+        <button type="button" data-qv-close="true" onclick="closeQuickView()" class="absolute top-4 right-5 z-20 w-9 h-9 rounded-lg bg-[#222228] hover:bg-lime hover:text-black text-[#F5F5F7]/70 text-2xl font-light flex items-center justify-center transition-all cursor-pointer leading-none shadow-xs border border-white/10" aria-label="Close">&times;</button>
         
         <div class="grid sm:grid-cols-2">
             {{-- Left column: Image & Gallery --}}
@@ -84,7 +83,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 (function() {
     let qvProduct = null, qvColorIdx = 0, qvSize = null;
 
@@ -139,6 +138,7 @@
 
         const m = document.getElementById('quickViewModal');
         if (m) {
+            m.style.setProperty('display', 'flex', 'important');
             m.classList.remove('hidden');
             m.classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -148,6 +148,7 @@
     window.closeQuickView = function() {
         const m = document.getElementById('quickViewModal');
         if (m) {
+            m.style.setProperty('display', 'none', 'important');
             m.classList.add('hidden');
             m.classList.remove('flex');
             document.body.style.overflow = '';
@@ -312,5 +313,21 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeQuickView();
     });
+
+    const modal = document.getElementById('quickViewModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal || e.target.closest('[data-qv-close]')) {
+                closeQuickView();
+            }
+        });
+    }
+
+    const addBtn = document.getElementById('qvAddBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            qvAddToBag();
+        });
+    }
 })();
 </script>

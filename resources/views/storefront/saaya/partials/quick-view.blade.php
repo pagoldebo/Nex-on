@@ -12,10 +12,9 @@
       - Direct reactive Add to Bag handler synced with storefront cart store
       - Full bridal dossier link redirecting to standalone product page
 --}}
-<div id="quickViewModal" class="hidden fixed inset-0 z-[220] bg-maroon-dark/60 backdrop-blur-md items-end sm:items-center justify-center sm:p-4 transition-all duration-300"
-     onclick="if(event.target===this) closeQuickView()">
+<div id="quickViewModal" style="display: none;" class="fixed inset-0 z-[220] bg-maroon-dark/60 backdrop-blur-md items-end sm:items-center justify-center sm:p-4 transition-all duration-300">
     <div class="bg-[#F7F1E6] text-maroon w-full sm:max-w-3xl rounded-t-[32px] sm:rounded-[28px] overflow-hidden shadow-2xl border border-gold/40 max-h-[92vh] overflow-y-auto relative animate-fade">
-        <button onclick="closeQuickView()" class="absolute top-4 right-5 z-20 w-9 h-9 rounded-full bg-ivory/80 hover:bg-maroon hover:text-gold text-maroon/60 text-2xl font-light flex items-center justify-center transition-all cursor-pointer leading-none shadow-xs border border-gold/30" aria-label="Close">&times;</button>
+        <button type="button" data-qv-close="true" onclick="closeQuickView()" class="absolute top-4 right-5 z-20 w-9 h-9 rounded-full bg-ivory/80 hover:bg-maroon hover:text-gold text-maroon/60 text-2xl font-light flex items-center justify-center transition-all cursor-pointer leading-none shadow-xs border border-gold/30" aria-label="Close">&times;</button>
         
         <div class="grid sm:grid-cols-2">
             {{-- Left column: Image & Gallery --}}
@@ -74,7 +73,7 @@
 
                     <div class="text-center pt-1 border-t border-gold/10">
                         <a id="qvViewDetails" href="#" class="inline-flex items-center gap-1.5 text-xs font-semibold text-maroon/70 hover:text-gold transition-colors py-1">
-                            <span>Explore Full Bridal Dossier</span>
+                            <span>Explore Full</span>
                             <span class="text-gold">→</span>
                         </a>
                     </div>
@@ -84,7 +83,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 (function() {
     let qvProduct = null, qvColorIdx = 0, qvSize = null;
 
@@ -139,6 +138,7 @@
 
         const m = document.getElementById('quickViewModal');
         if (m) {
+            m.style.setProperty('display', 'flex', 'important');
             m.classList.remove('hidden');
             m.classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -148,6 +148,7 @@
     window.closeQuickView = function() {
         const m = document.getElementById('quickViewModal');
         if (m) {
+            m.style.setProperty('display', 'none', 'important');
             m.classList.add('hidden');
             m.classList.remove('flex');
             document.body.style.overflow = '';

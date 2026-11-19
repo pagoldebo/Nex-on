@@ -46,7 +46,7 @@ class SecurityHeadersMiddleware
         
         $scriptSrcDirectives = $isTesting
             ? "'self' 'nonce-{$nonce}' 'strict-dynamic' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net"
-            : "'self' 'unsafe-inline' 'unsafe-eval' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net";
+            : "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net";
 
         $csp = "default-src 'self'; " .
             "script-src {$scriptSrcDirectives}; " .

@@ -462,6 +462,34 @@
             updateCartUI();
             document.querySelectorAll('.reveal:not(.in-view)').forEach(el => revealIO.observe(el));
         });
+
+        // Global Quick View Event Delegation (Works across all themes and cards)
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-quick-view], .quick-view-btn, .btn-quick-view, [data-action="quick-view"]');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            let product = null;
+            if (btn.hasAttribute('data-product')) {
+                try {
+                    const raw = btn.getAttribute('data-product');
+                    product = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                } catch(err) {}
+            }
+            if (!product) {
+                const card = btn.closest('[data-product]');
+                if (card) {
+                    try {
+                        const raw = card.getAttribute('data-product');
+                        product = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                    } catch(err) {}
+                }
+            }
+            if (product && typeof window.openQuickView === 'function') {
+                window.openQuickView(product);
+            }
+        });
     </script>
 
     @include('storefront.common.cookie-consent')

@@ -178,7 +178,19 @@ class ProductBrandAndAddonsTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('admin.addons.index'));
         $response->assertOk();
         $response->assertSee('Brands &amp; Labels', false);
+        $response->assertSee('Collections');
+        $response->assertSee('Product Tags');
+        $response->assertSee('Add-ons &amp; Packaging', false);
         $response->assertSee('Royal Heritage Atelier');
+
+        // Test tabs query parameters render without error
+        $tagsTabResponse = $this->actingAs($this->admin)->get(route('admin.addons.index', ['tab' => 'tags']));
+        $tagsTabResponse->assertOk();
+        $tagsTabResponse->assertSee('Product Tags');
+
+        $colsTabResponse = $this->actingAs($this->admin)->get(route('admin.addons.index', ['tab' => 'collections']));
+        $colsTabResponse->assertOk();
+        $colsTabResponse->assertSee('Collections');
 
         $storeResponse = $this->actingAs($this->admin)->post(route('admin.brands.store'), [
             'name'        => 'Zari Emporium',

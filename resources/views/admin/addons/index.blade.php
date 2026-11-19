@@ -177,22 +177,6 @@
             </template>
         </div>
     </div>
-                </button>
-            </template>
-            <template x-if="activeTab === 'tags'">
-                <button @click="openCreateTag()" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold shadow-md shadow-amber-600/20 transition flex items-center gap-2 cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Create Tag</span>
-                </button>
-            </template>
-            <template x-if="activeTab === 'addons'">
-                <button @click="openCreateAddon()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold shadow-md shadow-rose-600/20 transition flex items-center gap-2 cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Create Add-on</span>
-                </button>
-            </template>
-        </div>
-    </div>
 
     <!-- Navigation Tabs -->
     <div class="flex items-center gap-2 border-b border-slate-200">

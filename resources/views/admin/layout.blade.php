@@ -1950,7 +1950,7 @@
             }, { passive: true });
         })();
     </script>
-    {{-- Client-Side AVIF Converter: Converts JPG/PNG/WebP to ultra-compressed AVIF on uploader machine --}}
+    {{-- Client-Side AVIF Converter: Converts JPG/PNG to ultra-compressed AVIF on uploader machine --}}
     <script src="{{ asset('js/avif-converter.js') }}"></script>
     {{-- Rich WYSIWYG & HTML Editor Studio --}}
     <script src="{{ asset('js/rich-editor.js') }}"></script>

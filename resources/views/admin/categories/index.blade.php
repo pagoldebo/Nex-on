@@ -238,9 +238,9 @@
                             </div>
                         </template>
                         <div class="flex-1 min-w-0">
-                            <input type="file" id="new_image" name="image" accept="image/jpeg,image/png,image/webp,image/svg+xml,image/gif" x-ref="newFileInput" @change="handleNewImage"
+                            <input type="file" id="new_image" name="image" accept="image/jpeg,image/png,image/avif,image/svg+xml,image/gif" x-ref="newFileInput" @change="handleNewImage"
                                    class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer">
-                            <p class="text-[11px] text-slate-400 mt-1">PNG, JPG, WEBP, SVG up to 5MB.</p>
+                            <p class="text-[11px] text-slate-400 mt-1">PNG, JPG, AVIF, SVG up to 5MB.</p>
                         </div>
                     </div>
                 </div>
@@ -583,9 +583,9 @@
                                 </div>
                             </template>
                             <div class="flex-1 min-w-0">
-                                <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/svg+xml,image/gif" x-ref="editFileInput" @change="handleEditImage"
+                                <input type="file" name="image" accept="image/jpeg,image/png,image/avif,image/svg+xml,image/gif" x-ref="editFileInput" @change="handleEditImage"
                                        class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer">
-                                <p class="text-[11px] text-slate-400 mt-1">Upload a new image to replace current (PNG, JPG, WEBP, SVG up to 5MB).</p>
+                                <p class="text-[11px] text-slate-400 mt-1">Upload a new image to replace current (PNG, JPG, AVIF, SVG up to 5MB).</p>
                             </div>
                         </div>
                     </div>

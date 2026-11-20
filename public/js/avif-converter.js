@@ -405,7 +405,6 @@
 
     // Expose optimizer globally
     window.optimizeImageToAvif = optimizeImage;
-    window.optimizeImageToWebP = optimizeImage; // alias for compatibility
 
     /* ================= FILE INPUT HANDLER ================= */
     async function handleFileInput(input) {
@@ -455,17 +454,9 @@
             });
             input.dispatchEvent(customEvt);
 
-            // Backward compatible event for any webp:converted listeners
-            const legacyEvt = new CustomEvent('webp:converted', {
-                bubbles: true,
-                detail: { files: optimizedFiles }
-            });
-            input.dispatchEvent(legacyEvt);
-
             // Re-fire a change event marked as already converted so listeners can re-run previews
             const changeEvt = new Event('change', { bubbles: true });
             changeEvt._isAvifConverted = true;
-            changeEvt._isWebpConverted = true;
             input.dispatchEvent(changeEvt);
 
         } catch (error) {
@@ -481,11 +472,11 @@
     /* ================= EVENT LISTENERS ================= */
     document.addEventListener('change', function (e) {
         // Prevent infinite loop from our synthetic change event
-        if (e._isAvifConverted || e._isWebpConverted) return;
+        if (e._isAvifConverted) return;
 
         const input = e.target;
         if (input.tagName !== 'INPUT' || input.type !== 'file') return;
-        if (input.name === 'site_logo' || input.id === 'siteLogoInput' || input.hasAttribute('data-no-avif') || input.hasAttribute('data-no-webp') || input.hasAttribute('data-manual-optimize')) {
+        if (input.name === 'site_logo' || input.id === 'siteLogoInput' || input.hasAttribute('data-no-avif') || input.hasAttribute('data-manual-optimize')) {
             console.log('[Nexon AVIF Converter] Skipping site logo input to preserve PNG vector/format');
             return;
         }

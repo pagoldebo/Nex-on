@@ -434,7 +434,7 @@
                         <button type="button" onclick="clearCoverImage(this)" class="cover-clear-btn hidden text-[11px] font-semibold text-rose-600 hover:underline">
                             ✕ Remove Cover Image
                         </button>
-                        <span class="text-[11px] text-slate-400">Accepted formats: AVIF, WEBP, JPG, PNG, GIF (Max 4MB)</span>
+                        <span class="text-[11px] text-slate-400">Accepted formats: AVIF, JPG, PNG, GIF (Max 4MB)</span>
                     </div>
                 </div>
             </div>
@@ -743,14 +743,6 @@
     });
 
     document.addEventListener('avif:converted', function(e) {
-        if (e.target && e.target.matches('.cover-file-input')) {
-            handleCoverImageSelect(e.target);
-        } else if (e.target && e.target.matches('.gallery-file-input')) {
-            handleGalleryImagesSelect(e.target);
-        }
-    });
-
-    document.addEventListener('webp:converted', function(e) {
         if (e.target && e.target.matches('.cover-file-input')) {
             handleCoverImageSelect(e.target);
         } else if (e.target && e.target.matches('.gallery-file-input')) {

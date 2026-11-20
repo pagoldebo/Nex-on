@@ -133,7 +133,7 @@ class FileUploadSecurityTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        ProductImageService::saveRawAsWebp('INVALID_NON_IMAGE_RAW_BINARY_DATA', 'products/test/image.webp', false);
+        ProductImageService::saveRawAsAvif('INVALID_NON_IMAGE_RAW_BINARY_DATA', 'products/test/image.avif', false);
     }
 
     /**

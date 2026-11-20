@@ -54,7 +54,7 @@ class ProductImageUploadNamingTest extends TestCase
         ]);
     }
 
-    public function test_product_image_stored_in_main_category_folder_with_webp_and_random_suffix(): void
+    public function test_product_image_stored_in_main_category_folder_with_avif_and_random_suffix(): void
     {
         $fakeImage = UploadedFile::fake()->image('test_shirt.jpg', 600, 600);
 

@@ -99,7 +99,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Upload New Project Logo (Primary)</label>
-                        <input type="file" name="site_logo" id="siteLogoInput" data-no-webp="true" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                        <input type="file" name="site_logo" id="siteLogoInput" data-no-avif="true" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
                                class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
                         <p class="text-[11px] text-slate-400 mt-1">Saved as PNG (<code>branding/logo.png</code>) to preserve transparent raster quality.</p>
                     </div>
@@ -152,7 +152,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Upload Separate Footer Logo</label>
-                        <input type="file" name="footer_logo" id="footerLogoInput" data-no-webp="true" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                        <input type="file" name="footer_logo" id="footerLogoInput" data-no-avif="true" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
                                class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
                         <p class="text-[11px] text-slate-400 mt-1">Recommended for inverted/white monochrome logos on dark footers (Vyra, Saaya, Buttercup, Lumière).</p>
                     </div>

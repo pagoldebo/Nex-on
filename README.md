@@ -4,9 +4,10 @@
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
-[![Tests Passing](https://img.shields.io/badge/Tests-411%20Passed-brightgreen?style=for-the-badge)](tests)
+[![Tests Passing](https://img.shields.io/badge/Tests-470%20Passed-brightgreen?style=for-the-badge)](tests)
+[![Release](https://img.shields.io/badge/Release-v0.10-blue?style=for-the-badge)](https://github.com/pagoldebo/Nex-on/releases/tag/v0.10)
 
-**Nex-on** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, GST accounting, HRM, and patron security).
+**Nex-on** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, worldwide tax & GST accounting, HRM, and patron security).
 
 ---
 
@@ -15,46 +16,58 @@
 ### 1. Five Interchangeable Storefront Themes
 Switch between five fully realized lifestyle brand aesthetics in one click without altering database records or business logic:
 * **Vyra**: High-impact modern noir & streetwear aesthetic (dark mode `#0E0E10`, electric coral `#FF3D5A`, lime `#D4FF3D`, video hero sliders).
-* **Buttercup**: Cloud-soft, pastel comfort intimates (blush `#FBE7E4`, rose, sage `#A8B89A`).
+* **Buttercup**: Cloud-soft, pastel comfort intimates (blush `#FBE7E4`, rose `#B97680`, sage `#A8B89A`).
 * **Saaya**: Royal Indian trousseau & heritage silk (deep burgundy `#4A0E17`, antique gold `#D4AF37`, silk cream `#fdfbf7`).
 * **Lumière**: Minimalist, French-inspired pure silk atelier (`#FAFAFA`, deep pine `#405549`, editorial typography).
-* **Verdia**: Botanical luxury & clean living marketplace (signature cream `#F9F8F3`, forest sage `#699E4B`, sunlit amber `#F1B927`).
+* **Organic**: Farm-to-fork raw living, artisanal wellness & cold-pressed pantry (`#F9F8F3`, forest sage `#2D6A4F`, sunlit amber `#F1B927`).
 
-### 2. Patron Security & Two-Factor Email OTP
+### 2. Universal Product Quick View
+* Interactive quick view modal integrated seamlessly across all 5 themes.
+* Customers can preview product image galleries, switch color swatches, select sizes, view real-time inventory stock indicators, and add items directly to their shopping cart without leaving catalog or category feeds.
+
+### 3. Worldwide Tax Configuration & Invoicing
+* **Configurable Global Tax Settings**: Set custom tax name (e.g. VAT, GST, Sales Tax, IVA), tax percentage rate, and tax registration number directly in Admin Settings, with full toggle control.
+* **Customer Invoices**: Detailed tax break-up (Subtotal, Tax Rate %, Shipping, and Grand Total) displayed on customer order summaries, receipts, and downloadable PDF invoices.
+* **Over-the-Counter POS**: Real-time tax computation on cash/card terminal checkouts and thermal receipts.
+* **B2B Commercial Invoices**: Interactive line-item repeater with automated tax breakdowns (CGST/SGST/IGST or single global VAT/sales tax percentage) and one-click PDF printing.
+* **Supplier Procurement**: Supplier invoices and purchase orders support per-line tax rates and discount inputs.
+
+### 4. 100% Next-Gen AVIF Image Pipeline & Direct Public Media
+* **Automated AVIF Storage**: Raster uploads (JPG, PNG, GIF) are automatically converted into next-generation **`.avif`** format via native PHP 8.5 `imageavif()`, delivering up to 50% smaller file sizes than WebP and 80% smaller than JPEG with pristine alpha channel preservation.
+* **Client-Side Pre-Conversion (`public/js/avif-converter.js`)**: Converts images directly in the user's browser before upload using HTML5 Canvas, displaying an interactive overlay progress spinner (*"Converting Image to AVIF..."*) for ultra-fast uploads.
+* **Zero Legacy WebP Dependencies**: Fully purged legacy WebP converter scripts and listeners across admin and storefront forms.
+* **Direct Media Storage**: Media assets (`banners/`, `branding/`, `categories/`, `products/`, `slider/`) are stored directly inside `public/images/`, removing any symlink dependencies (`php artisan storage:link` is obsolete) and protected by Apache `.htaccess` script execution prevention.
+* **Brand Logo Fidelity**: Primary header and dedicated footer logos are preserved in their native lossless format (`branding/logo.png`), preventing unwanted lossy compression.
+
+### 5. Patron Security & Centered Two-Factor Authentication
+* **Centered Modal Dialogs**: Universal horizontal and vertical centering for login modals, register forms, and account dialogues across all 5 themes and mobile viewports.
 * **Email Verification OTP**: Secure 4-digit numeric code dispatched on every sign-in attempt.
-* **OTP Verification View**: Set against the `#F9F8F3` background with a solid jet-black (`#000000`) Maison Privilege card.
 * **Auto-Submit & Resend Cooldown**: Auto-submits on 4 digits typed/pasted, paired with a 60-second AJAX resend timer.
 * **Responsive HTML Mail Theme**: Polished email template with prominent code block, expiration countdown, and security warnings. Preview available at `/preview-mail/otp`.
 
-### 3. Next-Gen AVIF Image Conversion & Direct Public Media
-* Automatic conversion transforms uploaded product, category, and banner images into next-generation **`.avif`** format (PHP 8.5 native `imageavif` with alpha transparency, quality 75, speed 6), delivering up to 50% smaller payloads than WebP and 80% smaller than JPEG.
-* Client-side canvas converter (`webp-converter.js`) auto-detects browser AVIF encoding support before upload to optimize client-side where possible.
-* Direct `public/images/` storage architecture eliminates symlink dependencies (`php artisan storage:link` is obsolete) and features `.htaccess` execution protection.
-* Strict brand logo retention: The store logo is preserved directly as `branding/logo.png` (or `.svg`), never converted or hashed. Vector SVGs remain intact with strict SVG sanitization.
-
-### 4. Hierarchical Category Management
+### 6. Hierarchical Category Management
 * Multi-level parent-child tree navigation with accordion auto-collapse in the admin dashboard.
 * Storefront filter tabs automatically include ancestor and subcategory products for seamless browsing.
 
-### 5. Omnichannel Retail & Point of Sale (POS)
+### 7. Omnichannel Retail & Point of Sale (POS)
 * Shift management, cash float tracking, drawer opening/closing.
 * Pure-PHP Code128 thermal barcode label printing (vector SVG generation).
 
-### 6. Multi-Outlet Warehousing & Batch Tracking
+### 8. Multi-Outlet Warehousing & Batch Tracking
 * Outlets and inter-branch stock transfers.
 * FIFO batch allocation, expiration date tracking, and recall traceability.
 
-### 7. Procurement & Commercial GST Invoicing
+### 9. Procurement & Commercial Invoicing
 * Supplier directory, Purchase Orders (PO), and 3-way invoice matching.
-* B2B Commercial Invoices with automatic CGST, SGST, and IGST tax splits.
+* B2B Commercial Invoices with automatic tax splits and printable PDF format.
 * One-click Tally ERP XML accounting voucher export.
 
-### 8. HRM, Staff Performance & Payroll
+### 10. HRM, Staff Performance & Payroll
 * Employee directory, department allocation, and shift management.
 * Daily clock-in/out attendance tracking and monthly salary slip generation.
 * 360-degree peer feedback wall and quarterly OKR / appraisal scoring matrices (30/50/20 composite).
 
-### 9. Customer Support & Growth Marketing
+### 11. Customer Support & Growth Marketing
 * Support ticket helpdesk with SLA tracking, private agent notes, and customer replies.
 * Knowledge Base article publisher and storefront FAQ builder.
 * Multi-SMS gateway drivers (Twilio, MSG91, Fast2SMS, Log driver).
@@ -68,7 +81,8 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Backend Framework**: Laravel 12 (PHP 8.2+)
 * **Database**: MySQL 8.x / MariaDB
 * **Frontend**: Blade Components, Tailwind CSS, Alpine.js, HTML5 Canvas
-* **Testing**: PHPUnit / Pest (411 tests, 2,245 assertions)
+* **Image Engine**: GD / native `imageavif` (PHP 8.5) & Client-side HTML5 Canvas AVIF
+* **Testing**: PHPUnit / Pest (470 tests, 2,677 assertions)
 * **Auth**: Custom Patron Auth with Two-Factor Email OTP
 * **PWA**: Web App Manifest & service worker readiness
 
@@ -77,7 +91,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 ## 🚀 Getting Started
 
 ### Prerequisites
-* PHP >= 8.2 with `pdo_mysql`, `mbstring`, `openssl`, `gd` / `imagick` extensions.
+* PHP >= 8.2 with `pdo_mysql`, `mbstring`, `openssl`, `gd` (with AVIF support).
 * Composer 2.x
 * MySQL 8.0+ or MariaDB 10.4+ (XAMPP / Laragon / Native)
 
@@ -119,10 +133,11 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
    php artisan key:generate
    ```
 
-5. **Run Migrations & Seeders**:
+5. **Run Migrations & Seeders (or import fresh production database)**:
    ```bash
    php artisan migrate --seed
    ```
+   *Alternatively, import `database/nexon_fresh_production.sql` directly into MySQL for a production-ready store with 0 test orders.*
 
 6. **Direct Media Assets (No Symlink Needed)**:
    Media assets (`banners/`, `branding/`, `categories/`, `products/`, `slider/`) are stored directly inside `public/images/`. No symbolic link (`php artisan storage:link`) is needed.
@@ -131,6 +146,16 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
    ```bash
    php artisan serve
    ```
+
+---
+
+## 💾 Production Database Snapshots
+
+Pre-packaged database snapshots are available inside the `database/` directory:
+* **`database/nexon_fresh_production.sql`**: Production launch DB with **0 test orders**, active themes, default worldwide tax configurations, and super admin accounts.
+* **`database/nexon_demo_production.sql`**: Comprehensive demo database loaded with sample apparel products, categories, tags, and reviews across all themes.
+
+Production release zip: **[nexon-production.zip (GitHub Release v0.10)](https://github.com/pagoldebo/Nex-on/releases/download/v0.10/nexon-production.zip)**
 
 ---
 
@@ -154,7 +179,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 
 ## 🧪 Testing
 
-Nex-on includes a comprehensive test suite covering all storefront themes, authentication, ERP workflows, and APIs:
+Nex-on includes a comprehensive automated test suite covering all storefront themes, authentication, ERP workflows, tax calculation, and APIs:
 
 ```bash
 php artisan test
@@ -163,6 +188,16 @@ php artisan test
 To run only the Email OTP authentication tests:
 ```bash
 php artisan test --filter=LoginEmailOtpTest
+```
+
+To run the Worldwide Tax tests:
+```bash
+php artisan test --filter=WorldwideTaxSettingsTest
+```
+
+To run the Storefront Login Modal tests:
+```bash
+php artisan test --filter=StorefrontLoginModalTest
 ```
 
 ---
@@ -175,10 +210,12 @@ Nexon/
 │   ├── Http/Controllers/     # Storefront, Admin, POS, HRM, Invoicing Controllers
 │   ├── Models/               # Eloquent Models (Product, Order, Batch, User, etc.)
 │   ├── Notifications/        # TwoFactorOTP and System Notifications
-│   └── Services/             # BarcodeService, SmsService, RecommendationService
+│   └── Services/             # ProductImageService, BarcodeService, SmsService
 ├── database/
 │   ├── migrations/           # Database Schema Migrations (52 migrations)
-│   └── seeders/              # Initial Seeders (Admin, Categories, Products, Themes)
+│   ├── seeders/              # Initial Seeders (Admin, Categories, Products, Themes)
+│   ├── nexon_fresh_production.sql  # Clean DB with 0 test orders
+│   └── nexon_demo_production.sql   # Full demo catalog DB
 ├── resources/
 │   └── views/
 │       ├── auth/             # Login, Register, Two-Factor OTP views
@@ -190,7 +227,7 @@ Nexon/
 │   ├── web.php               # Storefront & Admin ERP Routes
 │   └── auth.php              # Login, Registration & OTP Verification Routes
 └── tests/
-    └── Feature/              # 411 Automated Feature & Integration Tests (2,245 assertions)
+    └── Feature/              # 470 Automated Feature & Integration Tests (2,677 assertions)
 ```
 
 ---
@@ -204,4 +241,3 @@ Nexon/
 
 ## 📄 License
 This project is open-source software licensed under the [MIT License](LICENSE).
-

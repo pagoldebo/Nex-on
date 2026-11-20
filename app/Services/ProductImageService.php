@@ -60,13 +60,6 @@ class ProductImageService
         return $fileName;
     }
 
-    /**
-     * Backward-compatible alias for generateAvifFilename.
-     */
-    public static function generateWebpFilename(Product $product, string $categoryFolder): string
-    {
-        return static::generateAvifFilename($product, $categoryFolder);
-    }
 
     /**
      * Store an uploaded image in a specified folder on the public disk.
@@ -240,14 +233,6 @@ class ProductImageService
     }
 
     /**
-     * Backward-compatible alias for saveAsAvif.
-     */
-    public static function saveAsWebp(UploadedFile $file, string $targetPath): void
-    {
-        static::saveAsAvif($file, $targetPath);
-    }
-
-    /**
      * Save raw image bytes as AVIF to the specified disk path.
      */
     public static function saveRawAsAvif(string $rawContent, string $targetPath, bool $isAlreadyAvif = false): void
@@ -278,33 +263,6 @@ class ProductImageService
             }
         }
 
-        // Secondary fallback to WebP if imageavif is not present in runtime GD
-        if (function_exists('imagecreatefromstring') && function_exists('imagewebp')) {
-            $image = @imagecreatefromstring($rawContent);
-            if ($image !== false) {
-                imagepalettetotruecolor($image);
-                imagealphablending($image, true);
-                imagesavealpha($image, true);
-
-                ob_start();
-                imagewebp($image, null, 82);
-                $webpBytes = ob_get_clean();
-
-                if ($webpBytes !== false && strlen($webpBytes) > 0) {
-                    Storage::disk('public')->put($targetPath, $webpBytes);
-                    return;
-                }
-            }
-        }
-
         throw new \InvalidArgumentException('Uploaded file is not a valid or decodable image.');
-    }
-
-    /**
-     * Backward-compatible alias for saveRawAsAvif.
-     */
-    public static function saveRawAsWebp(string $rawContent, string $targetPath, bool $isAlreadyWebp = false): void
-    {
-        static::saveRawAsAvif($rawContent, $targetPath, $isAlreadyWebp);
     }
 }

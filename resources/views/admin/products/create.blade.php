@@ -12,7 +12,7 @@
     Features:
       - Title, slug generator, SKU, barcode, and rich HTML description
       - Pricing engine: Regular price, sale price, cost price, and GST tax rate
-      - Multi-image drag-and-drop uploader with client-side WebP conversion
+      - Multi-image drag-and-drop uploader with client-side AVIF conversion
       - SEO meta title and OpenGraph description fields
     Security: Guarded by 'products.manage' permission
 --}}

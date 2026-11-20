@@ -364,7 +364,7 @@
                                            previewVyraIsVideo = f.type.startsWith('video/') || /\.(mp4|webm|mov|ogg)$/i.test(f.name);
                                        }"
                                        class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                                <p class="text-[11px] text-slate-400 mt-1.5">Upload a full-width background video (MP4/WEBM up to 50MB) or photo (JPG/PNG/WEBP/AVIF up to 10MB). Runs full-width in the hero slider.</p>
+                                <p class="text-[11px] text-slate-400 mt-1.5">Upload a full-width background video (MP4/WEBM up to 50MB) or photo (JPG/PNG/AVIF up to 10MB). Runs full-width in the hero slider.</p>
                             </div>
                         </div>
 
@@ -1138,7 +1138,7 @@
                                     <input type="file" name="saaya_slide_{{ $s }}_image" accept="image/*"
                                            @change="{{ $previewVar }} = URL.createObjectURL($event.target.files[0])"
                                            class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#3D0C11] file:text-[#C9A24B] border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                                    <p class="text-[11px] text-slate-400 mt-1">Recommended ratio: 16:9 (e.g. 1920×1080px). JPG, PNG, WEBP or AVIF up to 10MB.</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">Recommended ratio: 16:9 (e.g. 1920×1080px). JPG, PNG, or AVIF up to 10MB.</p>
                                 </div>
 
                                 {{-- Slide Copy & CTA --}}
@@ -1526,7 +1526,7 @@
                                     <input type="file" name="organic_ad1_image" accept="image/*"
                                            @change="previewOrganicAd1 = URL.createObjectURL($event.target.files[0])"
                                            class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
-                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, AVIF</span>
                                 </div>
                             </div>
 
@@ -1602,7 +1602,7 @@
                                     <input type="file" name="organic_ad2_image" accept="image/*"
                                            @change="previewOrganicAd2 = URL.createObjectURL($event.target.files[0])"
                                            class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
-                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, AVIF</span>
                                 </div>
                             </div>
 
@@ -1678,7 +1678,7 @@
                                     <input type="file" name="organic_ad3_image" accept="image/*"
                                            @change="previewOrganicAd3 = URL.createObjectURL($event.target.files[0])"
                                            class="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded cursor-pointer bg-slate-50">
-                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, WEBP</span>
+                                    <span class="text-[10px] text-slate-400 block">Recommended: 600×360px JPG, PNG, AVIF</span>
                                 </div>
                             </div>
 
@@ -2097,10 +2097,10 @@
                             @endif
                         </div>
                         <div>
-                            <input type="file" name="vyra_story_image" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            <input type="file" name="vyra_story_image" accept="image/png,image/jpeg,image/avif,image/svg+xml"
                                    @change="previewVyraStory = URL.createObjectURL($event.target.files[0])"
                                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-[#FF3D5A] border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4 (e.g. 768×1024px). JPG, PNG, or WEBP.</p>
+                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4 (e.g. 768×1024px). JPG, PNG, or AVIF.</p>
                         </div>
                     </div>
 
@@ -2250,10 +2250,10 @@
                             @endif
                         </div>
                         <div>
-                            <input type="file" name="buttercup_story_image" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            <input type="file" name="buttercup_story_image" accept="image/png,image/jpeg,image/avif,image/svg+xml"
                                    @change="previewButtercupStory = URL.createObjectURL($event.target.files[0])"
                                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-[#B97680] border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or WEBP.</p>
+                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or AVIF.</p>
                         </div>
                     </div>
 
@@ -2409,10 +2409,10 @@
                             @endif
                         </div>
                         <div>
-                            <input type="file" name="saaya_story_image" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            <input type="file" name="saaya_story_image" accept="image/png,image/jpeg,image/avif,image/svg+xml"
                                    @change="previewSaayaStory = URL.createObjectURL($event.target.files[0])"
                                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#3D0C11] file:text-[#C9A24B] hover:file:bg-[#52131a] border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or WEBP.</p>
+                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or AVIF.</p>
                         </div>
                     </div>
 
@@ -2568,10 +2568,10 @@
                             @endif
                         </div>
                         <div>
-                            <input type="file" name="lumiere_story_image" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            <input type="file" name="lumiere_story_image" accept="image/png,image/jpeg,image/avif,image/svg+xml"
                                    @change="previewLumiereStory = URL.createObjectURL($event.target.files[0])"
                                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-600 border border-slate-200 rounded-xl cursor-pointer bg-white transition">
-                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or WEBP.</p>
+                            <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 3:4. JPG, PNG, or AVIF.</p>
                         </div>
                     </div>
 
@@ -2730,7 +2730,7 @@
                         <input type="file" name="organic_story_image" accept="image/*"
                                @change="previewOrganicStory = URL.createObjectURL($event.target.files[0])"
                                class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-700 file:text-white border border-slate-200 rounded-xl cursor-pointer bg-white">
-                        <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 4:3 (e.g. 800×600px). JPG, PNG, or WEBP.</p>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Recommended ratio: 4:3 (e.g. 800×600px). JPG, PNG, or AVIF.</p>
                     </div>
 
                     <!-- Story Narrative -->

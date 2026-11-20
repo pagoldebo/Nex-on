@@ -225,7 +225,7 @@ class ProductImageService
                     if (function_exists('imagecreatetruecolor') && function_exists('imageavif')) {
                         $stub = imagecreatetruecolor(10, 10);
                         ob_start();
-                        imageavif($stub, null, 75, 6);
+                        imageavif($stub, null, 80);
                         $stubBytes = ob_get_clean();
                         if ($stubBytes !== false) {
                             Storage::disk('public')->put($targetPath, $stubBytes);
@@ -253,8 +253,8 @@ class ProductImageService
     public static function saveRawAsAvif(string $rawContent, string $targetPath, bool $isAlreadyAvif = false): void
     {
         if ($isAlreadyAvif) {
-            // Verify AVIF magic bytes: ftypavif or ftypavis in the first 16 bytes
-            if (strlen($rawContent) >= 12 && (str_contains(substr($rawContent, 4, 8), 'avif') || str_contains(substr($rawContent, 4, 8), 'avis'))) {
+            // Verify AVIF magic bytes: 'ftyp' at offset 4 followed by 'avif' or 'avis'
+            if (strlen($rawContent) >= 12 && substr($rawContent, 4, 4) === 'ftyp' && in_array(substr($rawContent, 8, 4), ['avif', 'avis'], true)) {
                 Storage::disk('public')->put($targetPath, $rawContent);
                 return;
             }
@@ -268,11 +268,30 @@ class ProductImageService
                 imagesavealpha($image, true);
 
                 ob_start();
-                imageavif($image, null, 75, 6);
+                imageavif($image, null, 80);
                 $avifBytes = ob_get_clean();
 
                 if ($avifBytes !== false && strlen($avifBytes) > 0) {
                     Storage::disk('public')->put($targetPath, $avifBytes);
+                    return;
+                }
+            }
+        }
+
+        // Secondary fallback to WebP if imageavif is not present in runtime GD
+        if (function_exists('imagecreatefromstring') && function_exists('imagewebp')) {
+            $image = @imagecreatefromstring($rawContent);
+            if ($image !== false) {
+                imagepalettetotruecolor($image);
+                imagealphablending($image, true);
+                imagesavealpha($image, true);
+
+                ob_start();
+                imagewebp($image, null, 82);
+                $webpBytes = ob_get_clean();
+
+                if ($webpBytes !== false && strlen($webpBytes) > 0) {
+                    Storage::disk('public')->put($targetPath, $webpBytes);
                     return;
                 }
             }

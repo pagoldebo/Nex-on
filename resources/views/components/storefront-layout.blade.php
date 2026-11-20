@@ -511,8 +511,8 @@
     </script>
     <script src="{{ asset('js/pwa-install.js') }}?v=1"></script>
     <script src="{{ asset('js/product-card.js') }}"></script>
-    {{-- Client-Side WebP Converter: Converts JPG/PNG to WebP on uploader machine --}}
-    <script src="{{ asset('js/webp-converter.js') }}"></script>
+    {{-- Client-Side AVIF Converter: Converts JPG/PNG/WebP to ultra-compressed AVIF on uploader machine --}}
+    <script src="{{ asset('js/avif-converter.js') }}"></script>
 
     @stack('scripts')
     {{ $scripts ?? '' }}

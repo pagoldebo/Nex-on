@@ -1,21 +1,20 @@
 /**
- * Client-Side WebP Image Converter & Optimizer for Nex-on
+ * Client-Side AVIF Image Converter & Optimizer for Nex-on
  * 
- * Automatically converts all uploaded images (JPEG, JPG, PNG, etc.) to WebP format
+ * Automatically converts all uploaded images (JPEG, JPG, PNG, WebP, etc.) to AVIF format
  * directly on the uploader's device (client machine) before transmitting to the server.
- * This eliminates server CPU spikes and keeps server memory clean and lightning fast.
- * 
- * Client-Side WebP converter and image optimizer.
+ * This delivers state-of-the-art compression (up to 50% smaller than WebP/JPEG) while
+ * completely eliminating server CPU/memory overhead.
  * 
  * Features:
  * - Auto-detects all file inputs containing images
- * - Converts ANY image (JPG, PNG, BMP, TIFF) to WebP client-side via HTML5 Canvas
+ * - Converts ANY image to next-gen AVIF client-side via HTML5 Canvas
  * - Targets optimal size range (150-250KB) using binary search quality tuning
- * - Safari/iOS compatible: tests WebP support and falls back gracefully
+ * - Progressive browser detection: tests AVIF support and falls back gracefully
  * - Blocks form submission during processing to prevent premature upload
  * - Works with single and multiple file inputs
  * - Modern DataTransfer API with FormData fallback
- * - Dispatches 'webp:converted' custom event for reactive frameworks (Alpine.js)
+ * - Dispatches 'avif:converted' custom event for reactive frameworks (Alpine.js)
  */
 (function () {
     'use strict';
@@ -35,8 +34,8 @@
 
     /* ================= STATE ================= */
     let processingCount = 0;
-    let avifSupported = null; // null = not tested, true/false after test
-    let webpSupported = null; // null = not tested yet, true/false after test
+    let avifSupported = null;   // null = not tested yet, true/false after test
+    let webpSupported = null;
     const originalButtonStates = new WeakMap();
 
     /* ================= FORMAT SUPPORT DETECTION ================= */
@@ -47,14 +46,18 @@
                 canvas.width = 1;
                 canvas.height = 1;
                 canvas.toBlob(function (blob) {
-                    avifSupported = (blob && blob.type === 'image/avif' && blob.size > 0);
-                    if (avifSupported) {
-                        console.log('[Nexon Image Optimizer] ✅ Client-side AVIF encoding supported on this device');
+                    if (blob && blob.type === 'image/avif' && blob.size > 0) {
+                        avifSupported = true;
+                        console.log('[Nexon AVIF Converter] ✅ Client-side AVIF encoding supported on this browser');
+                    } else {
+                        avifSupported = false;
+                        console.log('[Nexon AVIF Converter] ⚠️ AVIF canvas encoding not supported, using WebP/JPEG fallback');
                     }
                     resolve(avifSupported);
                 }, 'image/avif', 0.5);
             } catch (e) {
                 avifSupported = false;
+                console.log('[Nexon AVIF Converter] ⚠️ AVIF encoding test failed, falling back');
                 resolve(false);
             }
         });
@@ -67,24 +70,17 @@
                 canvas.width = 1;
                 canvas.height = 1;
                 canvas.toBlob(function (blob) {
-                    if (blob && blob.type === 'image/webp' && blob.size > 0) {
-                        webpSupported = true;
-                        console.log('[Nexon Image Optimizer] ✅ Client-side WebP encoding supported on this device');
-                    } else {
-                        webpSupported = false;
-                        console.log('[Nexon Image Optimizer] ⚠️ WebP encoding not supported on this browser, using optimized JPEG');
-                    }
+                    webpSupported = !!(blob && blob.type === 'image/webp' && blob.size > 0);
                     resolve(webpSupported);
                 }, 'image/webp', 0.5);
             } catch (e) {
                 webpSupported = false;
-                console.log('[Nexon Image Optimizer] ⚠️ WebP encoding test failed, using JPEG fallback');
                 resolve(false);
             }
         });
     }
 
-    // Run detections immediately
+    // Run detection immediately
     detectAvifSupport();
     detectWebPSupport();
 
@@ -95,7 +91,7 @@
         dataTransferSupported = typeof dt.items !== 'undefined' && typeof dt.items.add === 'function';
     } catch (e) {
         dataTransferSupported = false;
-        console.log('[Nexon WebP Converter] ⚠️ DataTransfer API not supported, using FormData fallback');
+        console.log('[Nexon AVIF Converter] ⚠️ DataTransfer API not supported, using FormData fallback');
     }
 
     /* ================= FULL-PAGE LOADER OVERLAY ================= */
@@ -105,7 +101,7 @@
     // Inject loader CSS once
     const loaderStyle = document.createElement('style');
     loaderStyle.textContent = `
-        .webp-fullpage-overlay {
+        .avif-fullpage-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(15, 23, 42, 0.65);
@@ -118,7 +114,7 @@
             -webkit-backdrop-filter: blur(6px);
             transition: opacity 0.2s ease;
         }
-        .webp-fullpage-box {
+        .avif-fullpage-box {
             background: white;
             border-radius: 20px;
             padding: 32px 48px;
@@ -132,25 +128,25 @@
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             max-width: 90vw;
         }
-        .webp-fullpage-spinner {
+        .avif-fullpage-spinner {
             width: 44px; height: 44px;
             border: 4px solid #f1f5f9;
             border-top: 4px solid #e11d48;
             border-radius: 50%;
-            animation: webpSpin 0.7s linear infinite;
+            animation: avifSpin 0.7s linear infinite;
         }
-        .webp-fullpage-text {
+        .avif-fullpage-text {
             font-size: 15px;
             font-weight: 700;
             color: #0f172a;
             margin: 0;
         }
-        .webp-fullpage-sub {
+        .avif-fullpage-sub {
             font-size: 12px;
             color: #64748b;
             margin: 0;
         }
-        @keyframes webpSpin {
+        @keyframes avifSpin {
             0%   { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -162,12 +158,12 @@
         if (fullPageOverlay) return;
 
         fullPageOverlay = document.createElement('div');
-        fullPageOverlay.className = 'webp-fullpage-overlay';
+        fullPageOverlay.className = 'avif-fullpage-overlay';
         fullPageOverlay.innerHTML = `
-            <div class="webp-fullpage-box">
-                <div class="webp-fullpage-spinner"></div>
-                <div class="webp-fullpage-text">Converting Image to WebP…</div>
-                <div class="webp-fullpage-sub">Processing directly on your machine for lightning-fast upload</div>
+            <div class="avif-fullpage-box">
+                <div class="avif-fullpage-spinner"></div>
+                <div class="avif-fullpage-text">Converting Image to AVIF…</div>
+                <div class="avif-fullpage-sub">Processing directly on your machine for ultra-fast, next-gen image upload</div>
             </div>
         `;
         document.body.appendChild(fullPageOverlay);
@@ -198,7 +194,7 @@
             }
             btn.disabled = true;
             if (btn.tagName === 'BUTTON') {
-                btn.innerHTML = `<span class="inline-flex items-center gap-2"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-current inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Optimizing to WebP...</span>`;
+                btn.innerHTML = `<span class="inline-flex items-center gap-2"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-current inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Optimizing to AVIF...</span>`;
             }
         });
     }
@@ -281,7 +277,7 @@
 
     async function optimizeImage(file) {
         // Skip non-image files (e.g. videos, documents, PDFs)
-        if (!file.type.startsWith('image/') && !/\.(jpe?g|png|webp|gif|bmp|tiff)$/i.test(file.name)) {
+        if (!file.type.startsWith('image/') && !/\.(jpe?g|png|webp|avif|gif|bmp|tiff)$/i.test(file.name)) {
             return file;
         }
 
@@ -290,9 +286,9 @@
             return file;
         }
 
-        // If already AVIF or WebP and within max size, return as-is
-        if ((file.type === 'image/avif' || file.type === 'image/webp') && file.size <= CONFIG.TARGET_MAX) {
-            console.log(`[Nexon Image Optimizer] ${file.name} is already optimal (${(file.size / 1024).toFixed(1)} KB)`);
+        // If already AVIF and within target size, return as-is
+        if (file.type === 'image/avif' && file.size <= CONFIG.TARGET_MAX) {
+            console.log(`[Nexon AVIF Converter] ${file.name} is already optimal AVIF (${(file.size / 1024).toFixed(1)} KB)`);
             return file;
         }
 
@@ -336,7 +332,7 @@
                         formats.push({ mime: 'image/jpeg', ext: 'jpg' });
 
                         let finalBlob = null;
-                        let finalExt = 'jpg';
+                        let finalExt = 'avif';
 
                         for (const format of formats) {
                             const result = await findOptimalQuality(canvas, format.mime);
@@ -362,12 +358,12 @@
                         }
 
                         if (!finalBlob) {
-                            console.warn('[Nexon WebP Converter] Fallback to original file for:', file.name);
+                            console.warn('[Nexon AVIF Converter] Fallback to original file for:', file.name);
                             resolve(file);
                             return;
                         }
 
-                        // Create new file with .webp extension
+                        // Create new file with .avif extension
                         const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                         const newFileName = baseName + '.' + finalExt;
                         const optimizedFile = new File([finalBlob], newFileName, {
@@ -377,11 +373,11 @@
 
                         const originalKB = (file.size / 1024).toFixed(1);
                         const optimizedKB = (optimizedFile.size / 1024).toFixed(1);
-                        console.log(`[Nexon WebP Converter] Converted on uploader machine: ${file.name} (${originalKB} KB) ➔ ${newFileName} (${optimizedKB} KB)`);
+                        console.log(`[Nexon AVIF Converter] Converted on uploader machine: ${file.name} (${originalKB} KB) ➔ ${newFileName} (${optimizedKB} KB)`);
                         resolve(optimizedFile);
 
                     } catch (error) {
-                        console.error('[Nexon WebP Converter] Conversion error for', file.name, error);
+                        console.error('[Nexon AVIF Converter] Conversion error for', file.name, error);
                         resolve(file);
                     } finally {
                         hideFullPageLoader();
@@ -389,7 +385,7 @@
                 };
 
                 img.onerror = () => {
-                    console.warn('[Nexon WebP Converter] Failed to load image:', file.name);
+                    console.warn('[Nexon AVIF Converter] Failed to load image:', file.name);
                     hideFullPageLoader();
                     resolve(file);
                 };
@@ -398,7 +394,7 @@
             };
 
             reader.onerror = () => {
-                console.warn('[Nexon WebP Converter] Failed to read file:', file.name);
+                console.warn('[Nexon AVIF Converter] Failed to read file:', file.name);
                 hideFullPageLoader();
                 resolve(file);
             };
@@ -408,14 +404,15 @@
     }
 
     // Expose optimizer globally
-    window.optimizeImageToWebP = optimizeImage;
+    window.optimizeImageToAvif = optimizeImage;
+    window.optimizeImageToWebP = optimizeImage; // alias for compatibility
 
     /* ================= FILE INPUT HANDLER ================= */
     async function handleFileInput(input) {
         const files = Array.from(input.files || []);
         if (!files.length) return;
 
-        const hasImages = files.some(f => f.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|tiff)$/i.test(f.name));
+        const hasImages = files.some(f => f.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|gif|bmp|tiff)$/i.test(f.name));
         if (!hasImages) return;
 
         const form = input.closest('form');
@@ -427,7 +424,7 @@
             const optimizedFiles = [];
 
             for (const file of files) {
-                if (file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|tiff)$/i.test(file.name)) {
+                if (file.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|gif|bmp|tiff)$/i.test(file.name)) {
                     const optimized = await optimizeImage(file);
                     optimizedFiles.push(optimized);
                 } else {
@@ -443,7 +440,7 @@
                     }
                     input.files = dt.files;
                 } catch (e) {
-                    console.warn('[Nexon WebP Converter] DataTransfer assignment failed, using FormData fallback');
+                    console.warn('[Nexon AVIF Converter] DataTransfer assignment failed, using FormData fallback');
                     input._optimizedFiles = optimizedFiles;
                     dataTransferSupported = false;
                 }
@@ -452,19 +449,27 @@
             }
 
             // Dispatch event for Alpine.js or custom preview listeners to update
-            const customEvt = new CustomEvent('webp:converted', {
+            const customEvt = new CustomEvent('avif:converted', {
                 bubbles: true,
                 detail: { files: optimizedFiles }
             });
             input.dispatchEvent(customEvt);
 
+            // Backward compatible event for any webp:converted listeners
+            const legacyEvt = new CustomEvent('webp:converted', {
+                bubbles: true,
+                detail: { files: optimizedFiles }
+            });
+            input.dispatchEvent(legacyEvt);
+
             // Re-fire a change event marked as already converted so listeners can re-run previews
             const changeEvt = new Event('change', { bubbles: true });
+            changeEvt._isAvifConverted = true;
             changeEvt._isWebpConverted = true;
             input.dispatchEvent(changeEvt);
 
         } catch (error) {
-            console.error('[Nexon WebP Converter] Handler error:', error);
+            console.error('[Nexon AVIF Converter] Handler error:', error);
         } finally {
             processingCount--;
             if (processingCount === 0) {
@@ -476,12 +481,12 @@
     /* ================= EVENT LISTENERS ================= */
     document.addEventListener('change', function (e) {
         // Prevent infinite loop from our synthetic change event
-        if (e._isWebpConverted) return;
+        if (e._isAvifConverted || e._isWebpConverted) return;
 
         const input = e.target;
         if (input.tagName !== 'INPUT' || input.type !== 'file') return;
-        if (input.name === 'site_logo' || input.id === 'siteLogoInput' || input.hasAttribute('data-no-webp') || input.hasAttribute('data-manual-optimize')) {
-            console.log('[Nexon WebP Converter] Skipping site logo input to preserve PNG vector/format');
+        if (input.name === 'site_logo' || input.id === 'siteLogoInput' || input.hasAttribute('data-no-avif') || input.hasAttribute('data-no-webp') || input.hasAttribute('data-manual-optimize')) {
+            console.log('[Nexon AVIF Converter] Skipping site logo input to preserve PNG vector/format');
             return;
         }
 
@@ -494,14 +499,15 @@
                         accept.includes('.jpg') || 
                         accept.includes('.jpeg') || 
                         accept.includes('.webp') ||
-                        files.some(f => f.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|tiff)$/i.test(f.name));
+                        accept.includes('.avif') ||
+                        files.some(f => f.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|gif|bmp|tiff)$/i.test(f.name));
 
         if (!isImage) return;
 
-        // Skip if all files are already WebP or SVG, and within target size
+        // Skip if all files are already AVIF or SVG, and within target size
         const allAlreadyOptimal = files.every(f => 
             (f.type === 'image/svg+xml' || f.name.toLowerCase().endsWith('.svg')) ||
-            ((f.type === 'image/webp' || f.name.toLowerCase().endsWith('.webp')) && f.size <= CONFIG.TARGET_MAX)
+            ((f.type === 'image/avif' || f.name.toLowerCase().endsWith('.avif')) && f.size <= CONFIG.TARGET_MAX)
         );
         if (allAlreadyOptimal) return;
 
@@ -513,7 +519,7 @@
         if (processingCount > 0) {
             e.preventDefault();
             e.stopPropagation();
-            alert('Please wait while images are being converted to WebP on your device...');
+            alert('Please wait while images are being converted to AVIF on your device...');
             return false;
         }
 
@@ -555,12 +561,12 @@
                         alert('Upload failed. Please try again.');
                     }
                 }).catch(err => {
-                    console.error('[Nexon WebP Converter] FormData submit error:', err);
+                    console.error('[Nexon AVIF Converter] FormData submit error:', err);
                     alert('Upload failed. Please try again.');
                 });
             }
         }
     }, true);
 
-    console.log('[Nexon WebP Converter] Initialized - Auto-converting all image uploads to WebP on uploader machine');
+    console.log('[Nexon AVIF Converter] Initialized - Auto-converting all image uploads to AVIF on uploader machine');
 })();

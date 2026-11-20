@@ -1,5 +1,7 @@
 *.log
 *.sql
+!database/nexon_fresh_production.sql
+!database/nexon_demo_production.sql
 .DS_Store
 .env
 .env.backup

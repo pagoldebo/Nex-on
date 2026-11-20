@@ -434,7 +434,7 @@
                         <button type="button" onclick="clearCoverImage(this)" class="cover-clear-btn hidden text-[11px] font-semibold text-rose-600 hover:underline">
                             ✕ Remove Cover Image
                         </button>
-                        <span class="text-[11px] text-slate-400">Accepted formats: WEBP, JPG, PNG, GIF (Max 4MB)</span>
+                        <span class="text-[11px] text-slate-400">Accepted formats: AVIF, WEBP, JPG, PNG, GIF (Max 4MB)</span>
                     </div>
                 </div>
             </div>
@@ -518,7 +518,7 @@
     </div>
 </template>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
     let colorIndex = 0;
 
     function addColorBlock() {
@@ -591,36 +591,35 @@
     // ===== Gallery Images Handling & Rearranging =====
     function handleGalleryImagesSelect(input) {
         const block = input.closest('.color-block');
-        if (!block._galleryFiles) {
-            block._galleryFiles = [];
-        }
+        if (!block) return;
 
-        const newFiles = Array.from(input.files);
         const maxAllowed = 8;
-        const availableSlots = maxAllowed - block._galleryFiles.length;
-
-        if (availableSlots <= 0) {
-            alert(`You have already selected the maximum of ${maxAllowed} images for this color.`);
-            syncGalleryFilesToInput(block);
+        const incomingFiles = Array.from(input.files || []);
+        if (!incomingFiles.length) {
+            block._galleryFiles = [];
+            renderGalleryPreviews(block);
+            const badge = block.querySelector('.gallery-count-badge');
+            if (badge) badge.textContent = `0 / 8 images`;
             return;
         }
 
-        if (newFiles.length > availableSlots) {
-            alert(`You can only add ${availableSlots} more image(s). Only the first ${availableSlots} will be added.`);
-        }
-
-        const filesToAdd = newFiles.slice(0, availableSlots);
-        block._galleryFiles = block._galleryFiles.concat(filesToAdd);
-
+        block._galleryFiles = incomingFiles.slice(0, maxAllowed);
         renderGalleryPreviews(block);
-        syncGalleryFilesToInput(block);
+
+        const badge = block.querySelector('.gallery-count-badge');
+        if (badge) {
+            badge.textContent = `${block._galleryFiles.length} / 8 images`;
+        }
     }
 
     function syncGalleryFilesToInput(block) {
         const input = block.querySelector('.gallery-file-input');
-        const dt = new DataTransfer();
-        (block._galleryFiles || []).forEach(file => dt.items.add(file));
-        input.files = dt.files;
+        if (!input) return;
+        try {
+            const dt = new DataTransfer();
+            (block._galleryFiles || []).forEach(file => dt.items.add(file));
+            input.files = dt.files;
+        } catch (e) {}
 
         const badge = block.querySelector('.gallery-count-badge');
         if (badge) {
@@ -734,5 +733,29 @@
 
     // Start with one color block pre-added so the form isn't empty on load
     document.addEventListener('DOMContentLoaded', () => addColorBlock());
+
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
+    });
+
+    document.addEventListener('avif:converted', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
+    });
+
+    document.addEventListener('webp:converted', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
+    });
 </script>
 @endsection

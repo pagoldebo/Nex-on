@@ -404,12 +404,10 @@
                             {{-- Preview Container --}}
                             @php
                                 $rawCover = $color->getRawOriginal('cover_image');
-                                $currentCoverUrl = $rawCover 
-                                    ? (\Illuminate\Support\Str::startsWith($rawCover, ['http://', 'https://']) ? $rawCover : asset('images/' . ltrim($rawCover, '/')))
-                                    : ($color->images->first() ? $color->images->first()->url : null);
+                                $currentCoverUrl = $color->cover_image;
                             @endphp
                             <div class="cover-preview-wrapper relative w-24 h-28 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-                                <img src="{{ $currentCoverUrl ?? '' }}" class="cover-preview-img {{ $currentCoverUrl ? '' : 'hidden' }} w-full h-full object-cover" alt="Cover preview">
+                                <img src="{{ $currentCoverUrl ?? '' }}" class="cover-preview-img {{ $currentCoverUrl ? '' : 'hidden' }} w-full h-full object-cover" alt="Cover preview" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
                                 <div class="cover-placeholder-icon {{ $currentCoverUrl ? 'hidden' : 'flex' }} flex-col items-center justify-center text-slate-400 p-2 text-center">
                                     <svg class="w-6 h-6 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     <span class="text-[10px] font-semibold text-slate-400">No cover</span>
@@ -434,7 +432,7 @@
                                     <button type="button" onclick="clearCoverImage(this)" class="cover-clear-btn hidden text-[11px] font-semibold text-slate-500 hover:underline">
                                         ✕ Reset Selected File
                                     </button>
-                                    <span class="text-[11px] text-slate-400">Accepted formats: WEBP, JPG, PNG, GIF (Max 4MB)</span>
+                                    <span class="text-[11px] text-slate-400">Accepted formats: AVIF, WEBP, JPG, PNG, GIF (Max 4MB)</span>
                                 </div>
                             </div>
                         </div>
@@ -467,7 +465,7 @@
                                             </span>
                                         </div>
 
-                                        <img src="{{ $image->url }}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Product image">
+                                        <img src="{{ $image->url }}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Product image" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
 
                                         {{-- Bottom Controls Overlay --}}
                                         <div class="relative z-10 p-1 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 opacity-95 sm:opacity-0 group-hover:opacity-100 transition">
@@ -643,7 +641,7 @@
                         <button type="button" onclick="clearCoverImage(this)" class="cover-clear-btn hidden text-[11px] font-semibold text-rose-600 hover:underline">
                             ✕ Remove Cover Image
                         </button>
-                        <span class="text-[11px] text-slate-400">Accepted formats: WEBP, JPG, PNG, GIF (Max 4MB)</span>
+                        <span class="text-[11px] text-slate-400">Accepted formats: AVIF, WEBP, JPG, PNG, GIF (Max 4MB)</span>
                     </div>
                 </div>
             </div>
@@ -725,7 +723,7 @@
     </div>
 </template>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
     let newColorCounter = 0;
     let newSizeCounters = {};
 
@@ -917,36 +915,35 @@
     // ===== New Gallery Images Handling & Rearranging (for edit page) =====
     function handleGalleryImagesSelect(input) {
         const block = input.closest('.color-block');
-        if (!block._galleryFiles) {
-            block._galleryFiles = [];
-        }
+        if (!block) return;
 
         const maxAllowed = parseInt(input.dataset.maxAllowed || '8', 10);
-        const availableSlots = maxAllowed - block._galleryFiles.length;
-
-        if (availableSlots <= 0) {
-            alert(`You have reached the maximum allowed images for this color.`);
-            syncGalleryFilesToInput(block, maxAllowed);
+        const incomingFiles = Array.from(input.files || []);
+        if (!incomingFiles.length) {
+            block._galleryFiles = [];
+            renderGalleryPreviews(block, maxAllowed);
+            const badge = block.querySelector('.gallery-count-badge');
+            if (badge) badge.textContent = `0 / ${maxAllowed} new`;
             return;
         }
 
-        const newFiles = Array.from(input.files);
-        if (newFiles.length > availableSlots) {
-            alert(`You can only add ${availableSlots} more image(s). Only the first ${availableSlots} will be added.`);
-        }
-
-        const filesToAdd = newFiles.slice(0, availableSlots);
-        block._galleryFiles = block._galleryFiles.concat(filesToAdd);
-
+        block._galleryFiles = incomingFiles.slice(0, maxAllowed);
         renderGalleryPreviews(block, maxAllowed);
-        syncGalleryFilesToInput(block, maxAllowed);
+
+        const badge = block.querySelector('.gallery-count-badge');
+        if (badge) {
+            badge.textContent = `${block._galleryFiles.length} / ${maxAllowed} new`;
+        }
     }
 
     function syncGalleryFilesToInput(block, maxAllowed) {
         const input = block.querySelector('.gallery-file-input');
-        const dt = new DataTransfer();
-        (block._galleryFiles || []).forEach(file => dt.items.add(file));
-        input.files = dt.files;
+        if (!input) return;
+        try {
+            const dt = new DataTransfer();
+            (block._galleryFiles || []).forEach(file => dt.items.add(file));
+            input.files = dt.files;
+        } catch (e) {}
 
         const badge = block.querySelector('.gallery-count-badge');
         if (badge) {
@@ -1074,6 +1071,30 @@
                 img.dataset.origSrc = img.getAttribute('src');
             }
         });
+    });
+
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
+    });
+
+    document.addEventListener('avif:converted', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
+    });
+
+    document.addEventListener('webp:converted', function(e) {
+        if (e.target && e.target.matches('.cover-file-input')) {
+            handleCoverImageSelect(e.target);
+        } else if (e.target && e.target.matches('.gallery-file-input')) {
+            handleGalleryImagesSelect(e.target);
+        }
     });
 </script>
 @endsection

@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ClientSideWebpConversionTest extends TestCase
+class ClientSideAvifConversionTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -30,31 +30,31 @@ class ClientSideWebpConversionTest extends TestCase
         Template::create(['key' => 'organic',   'name' => 'Organic',   'is_active' => false]);
     }
 
-    public function test_webp_converter_script_exists_and_contains_canvas_conversion_logic()
+    public function test_avif_converter_script_exists_and_contains_canvas_conversion_logic()
     {
-        $scriptPath = public_path('js/webp-converter.js');
+        $scriptPath = public_path('js/avif-converter.js');
         $this->assertFileExists($scriptPath);
 
         $content = file_get_contents($scriptPath);
         $this->assertStringContainsString('canvas.toBlob', $content);
-        $this->assertStringContainsString('image/webp', $content);
+        $this->assertStringContainsString('image/avif', $content);
         $this->assertStringContainsString('findOptimalQuality', $content);
         $this->assertStringContainsString('lockFormSubmission', $content);
         $this->assertStringContainsString('DataTransfer', $content);
     }
 
-    public function test_admin_pages_load_client_side_webp_converter_script()
+    public function test_admin_pages_load_client_side_avif_converter_script()
     {
         $response = $this->actingAs($this->admin)->get(route('admin.settings.index'));
         $response->assertStatus(200);
-        $response->assertSee(asset('js/webp-converter.js'));
+        $response->assertSee(asset('js/avif-converter.js'));
 
         $dashboard = $this->actingAs($this->admin)->get(route('admin.dashboard'));
         $dashboard->assertStatus(200);
-        $dashboard->assertSee(asset('js/webp-converter.js'));
+        $dashboard->assertSee(asset('js/avif-converter.js'));
     }
 
-    public function test_storefront_pages_load_client_side_webp_converter_across_themes()
+    public function test_storefront_pages_load_client_side_avif_converter_across_themes()
     {
         foreach (['saaya', 'buttercup', 'vyra', 'lumiere', 'organic'] as $themeKey) {
             Template::query()->update(['is_active' => false]);
@@ -63,8 +63,7 @@ class ClientSideWebpConversionTest extends TestCase
 
             $response = $this->get(route('home'));
             $response->assertStatus(200);
-            $response->assertSee(asset('js/webp-converter.js'));
+            $response->assertSee(asset('js/avif-converter.js'));
         }
     }
 }
-

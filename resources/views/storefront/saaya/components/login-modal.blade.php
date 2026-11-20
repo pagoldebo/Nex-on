@@ -16,10 +16,11 @@
       - Automatically reloads active cart upon authentication
 --}}
 <div id="loginModal"
-     class="hidden fixed inset-0 z-[60] bg-maroon-dark/80 backdrop-blur-sm items-center justify-center p-6"
-     role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+     class="hidden fixed inset-0 z-[210] bg-maroon-dark/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+     role="dialog" aria-modal="true" aria-labelledby="loginModalTitle"
+     style="display: none;">
 
-  <div class="bg-ivory max-w-md w-full p-10 relative foil-frame">
+  <div class="bg-ivory max-w-md w-full p-8 sm:p-10 relative foil-frame m-auto shadow-2xl">
     {{-- Gold foil tracing border --}}
     <svg class="frame-line" viewBox="0 0 100 100" preserveAspectRatio="none">
       <rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke"/>
@@ -57,13 +58,24 @@
   </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 (function () {
   const modal = document.getElementById('loginModal');
   if (!modal) return;
 
-  function openLoginModal()  { modal.classList.remove('hidden'); modal.classList.add('flex'); modal.querySelector('input')?.focus(); }
-  function closeLoginModal() { modal.classList.add('hidden');    modal.classList.remove('flex'); }
+  function openLoginModal()  {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modal.style.setProperty('display', 'flex', 'important');
+    document.body.style.overflow = 'hidden';
+    modal.querySelector('input')?.focus();
+  }
+  function closeLoginModal() {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    modal.style.setProperty('display', 'none', 'important');
+    document.body.style.overflow = '';
+  }
 
   document.getElementById('loginModalClose')?.addEventListener('click', closeLoginModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeLoginModal(); });
@@ -71,5 +83,6 @@
 
   // Expose so header + tab-bar can call it
   window.openLoginModal = openLoginModal;
+  window.closeLoginModal = closeLoginModal;
 })();
 </script>

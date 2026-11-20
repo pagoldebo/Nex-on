@@ -236,6 +236,17 @@
             margin-top: 0.75rem !important;
             margin-bottom: 0.35rem !important;
         }
+
+        /* Universal Center Alignment for Login Modal across all Storefront Themes */
+        #loginModal:not(.hidden) {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        #loginModal > div,
+        #loginModal > form > div {
+            margin: auto !important;
+        }
     </style>
 
     @includeIf("storefront.{$theme->key}.components.theme-css")
@@ -392,15 +403,41 @@
         }
 
         function openLoginModal() {
-            document.getElementById('loginModal')?.classList.remove('hidden');
-            document.getElementById('loginModal')?.classList.add('flex');
+            const m = document.getElementById('loginModal');
+            if (!m) return;
+            if (typeof m.showModal === 'function' && m.tagName === 'DIALOG') {
+                try { m.showModal(); return; } catch(e) {}
+            }
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+            m.style.setProperty('display', 'flex', 'important');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => m.querySelector('input[type="email"], input[type="text"]')?.focus(), 50);
         }
         function closeLoginModal() {
-            document.getElementById('loginModal')?.classList.add('hidden');
-            document.getElementById('loginModal')?.classList.remove('flex');
+            const m = document.getElementById('loginModal');
+            if (!m) return;
+            if (typeof m.close === 'function' && m.tagName === 'DIALOG' && m.open) {
+                try { m.close(); return; } catch(e) {}
+            }
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+            m.style.setProperty('display', 'none', 'important');
+            document.body.style.overflow = '';
         }
-        document.getElementById('loginModal')?.addEventListener('click', e => {
-            if (e.target.id === 'loginModal') closeLoginModal();
+        window.openLoginModal = openLoginModal;
+        window.closeLoginModal = closeLoginModal;
+
+        document.addEventListener('click', function(e) {
+            const m = document.getElementById('loginModal');
+            if (m && e.target === m) {
+                closeLoginModal();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+            }
         });
 
         function openSearch() {

@@ -90,9 +90,18 @@
   });
 
   // Login tab → modal
-  document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
-    const m = document.getElementById('loginModal');
-    if (m) m.classList.remove('hidden');
+  document.getElementById('tabLoginBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openLoginModal === 'function') {
+      openLoginModal();
+    } else {
+      const m = document.getElementById('loginModal');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        m.style.setProperty('display', 'flex', 'important');
+      }
+    }
   });
 
   // Keep tab-bar cart badge in sync

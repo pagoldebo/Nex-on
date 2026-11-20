@@ -15,8 +15,8 @@
       - Triggered via Alpine event 'open-login-modal'
       - Automatically reloads active cart upon authentication
 --}}
-<div id="loginModal" class="hidden fixed inset-0 z-[210] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
-    <div class="w-full max-w-md p-10 relative shadow-2xl border-2" style="background:#1A1A1D;border-color:#FF3D5A;">
+<div id="loginModal" class="hidden fixed inset-0 z-[210] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" style="display: none;">
+    <div class="w-full max-w-md p-8 sm:p-10 relative shadow-2xl border-2 m-auto" style="background:#1A1A1D;border-color:#FF3D5A;">
         <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-2xl font-light opacity-40 hover:opacity-80 transition-opacity" style="color:#F2F0EC" aria-label="Close">&times;</button>
         <h3 class="text-2xl font-semibold text-center mb-1 uppercase" style="color:#F2F0EC">Welcome Back</h3>
         <p class="text-center text-sm opacity-50 mb-8 uppercase tracking-wide" style="color:#F2F0EC">Sign in to VYRA</p>
@@ -35,3 +35,9 @@
         </p>
     </div>
 </div>
+
+<script nonce="{{ $cspNonce ?? '' }}">
+    document.getElementById('loginModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeLoginModal();
+    });
+</script>

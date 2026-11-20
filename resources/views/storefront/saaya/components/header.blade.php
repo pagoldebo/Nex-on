@@ -144,8 +144,17 @@
 
   // Wire desktop login to modal
   const dlb = document.getElementById('desktopLoginBtn');
-  if (dlb) dlb.addEventListener('click', () => {
-    const m = document.getElementById('loginModal');
-    if (m) m.classList.remove('hidden');
+  if (dlb) dlb.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openLoginModal === 'function') {
+      openLoginModal();
+    } else {
+      const m = document.getElementById('loginModal');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        m.style.setProperty('display', 'flex', 'important');
+      }
+    }
   });
 </script>

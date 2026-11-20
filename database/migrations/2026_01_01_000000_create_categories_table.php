@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');     // Bra, Panty, Camisole
+            $table->string('name');
             $table->string('slug')->unique();
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();

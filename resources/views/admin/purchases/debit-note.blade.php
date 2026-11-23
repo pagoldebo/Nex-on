@@ -18,34 +18,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GST Debit Note #{{ $purchaseReturn->debit_note_number }} - {{ $storeInfo['name'] }}</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; padding: 20px; }
-        .voucher-card { max-width: 820px; margin: 0 auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 36px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .toolbar { max-width: 820px; margin: 0 auto 16px auto; display: flex; justify-content: space-between; align-items: center; }
-        .btn { background: #4f46e5; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; }
-        .btn:hover { background: #4338ca; }
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 24px; }
-        .title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #0f172a; letter-spacing: 0.5px; }
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 6px; background: #fee2e2; color: #991b1b; }
-        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
-        .party-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; font-size: 12px; }
-        .party-box h4 { font-size: 11px; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
-        .table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
-        .table th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-weight: 700; border-bottom: 1px solid #cbd5e1; }
-        .table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
-        .totals { margin-left: auto; width: 300px; font-size: 12px; }
-        .totals-row { display: flex; justify-content: space-between; padding: 4px 0; }
-        .totals-row.grand { border-top: 2px solid #0f172a; padding-top: 8px; font-weight: 900; font-size: 14px; color: #b91c1c; }
-        .signatory { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; font-size: 11px; }
-        .sign-box { width: 220px; border-top: 1px solid #94a3b8; text-align: center; padding-top: 6px; }
-        @media print {
-            body { background: #fff; padding: 0; }
-            .toolbar { display: none; }
-            .voucher-card { border: none; box-shadow: none; padding: 0; }
-            @page { margin: 15mm; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin/print.css') }}">
 </head>
 <body>
     <div class="toolbar">

@@ -361,6 +361,14 @@ class AdminSettingController extends Controller
                 if (in_array($key, $richContentKeys, true)) {
                     $value = \App\Services\HtmlSanitizerService::clean($value);
                 }
+
+                // Link settings must be stored relative (e.g. '/search'), never pinned to the
+                // host the admin panel happened to be open on (e.g. 'https://nexon.test/search'),
+                // otherwise the link keeps pointing at that host after the store moves domain.
+                if (str_ends_with($key, '_url') && is_string($value)) {
+                    $value = $this->relativizeInternalUrl($value);
+                }
+
                 Setting::set($key, $value);
             }
         }
@@ -377,6 +385,9 @@ class AdminSettingController extends Controller
         } elseif (isset($data['organic_returns_info']) && !Setting::get('product_returns_info')) {
             Setting::set('product_returns_info', $data['organic_returns_info']);
         }
+
+        // Synchronize PWA Manifest & App Icons with uploaded branding logo
+        \App\Services\PwaManifestService::sync();
 
         return redirect()->route('admin.settings.index')->with('success', 'Store settings, brand identity, and hero banners updated successfully.');
     }
@@ -441,5 +452,13 @@ class AdminSettingController extends Controller
     {
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         return back()->with('success', 'System cache, views, routes, and config cleared successfully.');
+    }
+
+    /**
+     * Rewrite an absolute link that points at this store into a host-less path.
+     */
+    private function relativizeInternalUrl(string $value): string
+    {
+        return Setting::relativizeUrl($value) ?? $value;
     }
 }

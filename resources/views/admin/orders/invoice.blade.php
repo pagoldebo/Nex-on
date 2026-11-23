@@ -22,38 +22,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f1f5f9;
-            color: #0f172a;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        @media print {
-            body {
-                background-color: #ffffff;
-                color: #000000;
-                margin: 0;
-                padding: 0;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .invoice-card {
-                box-shadow: none !important;
-                border: none !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            @page {
-                size: A4 portrait;
-                margin: 12mm 15mm;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin/print.css') }}">
 </head>
 <body class="min-h-screen py-8 px-4 sm:px-6">
 

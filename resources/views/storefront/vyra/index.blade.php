@@ -35,36 +35,36 @@
       'title'    => \App\Models\Setting::get('vyra_hero_title', "Wear Your\nPower"),
       'subtitle' => \App\Models\Setting::get('vyra_hero_subtitle', "Bold cuts. Mesh, lace, and second-skin fabrics built for a generation that doesn't ask permission."),
       'btn_text' => \App\Models\Setting::get('vyra_hero_btn_text', 'Shop Drop 03'),
-      'btn_url'  => \App\Models\Setting::get('vyra_hero_btn_url', route('home').'#products'),
+      'btn_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('vyra_hero_btn_url', '#products')),
       'btn2_text'=> \App\Models\Setting::get('vyra_hero_btn2_text', 'Explore'),
-      'btn2_url' => \App\Models\Setting::get('vyra_hero_btn2_url', route('search')),
+      'btn2_url' => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('vyra_hero_btn2_url', '/search')),
     ],
     [
       'badge'    => \App\Models\Setting::get('vyra_slide_2_badge', 'High Voltage / New In'),
       'title'    => \App\Models\Setting::get('vyra_slide_2_title', "Raw Noir\nAllure"),
       'subtitle' => \App\Models\Setting::get('vyra_slide_2_subtitle', "Sculptural silhouettes that turn heads. Precision laser cutouts engineered for fearless statement dressing."),
       'btn_text' => \App\Models\Setting::get('vyra_slide_2_btn_text', 'Explore Noir'),
-      'btn_url'  => \App\Models\Setting::get('vyra_slide_2_btn_url', route('home').'#products'),
+      'btn_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('vyra_slide_2_btn_url', '#products')),
       'btn2_text'=> 'View Lookbook',
-      'btn2_url' => route('featured.products'),
+      'btn2_url' => '/featured-products',
     ],
     [
       'badge'    => \App\Models\Setting::get('vyra_slide_3_badge', 'Street Lingerie Edition'),
       'title'    => \App\Models\Setting::get('vyra_slide_3_title', "Second Skin\nConfidence"),
       'subtitle' => \App\Models\Setting::get('vyra_slide_3_subtitle', "Ultra-soft compression tulle and subversive tailoring. Built to feel completely invisible under every fit."),
       'btn_text' => \App\Models\Setting::get('vyra_slide_3_btn_text', 'Shop The Edit'),
-      'btn_url'  => \App\Models\Setting::get('vyra_slide_3_btn_url', route('home').'#products'),
+      'btn_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('vyra_slide_3_btn_url', '#products')),
       'btn2_text'=> 'Discover More',
-      'btn2_url' => route('search'),
+      'btn2_url' => '/search',
     ],
     [
       'badge'    => \App\Models\Setting::get('vyra_slide_4_badge', 'Limited Capsule 2026'),
       'title'    => \App\Models\Setting::get('vyra_slide_4_title', "Futuristic\nEdge"),
       'subtitle' => \App\Models\Setting::get('vyra_slide_4_subtitle', "Where intimate craft meets industrial streetwear. Designed for bodies that command attention."),
       'btn_text' => \App\Models\Setting::get('vyra_slide_4_btn_text', 'Shop Capsule'),
-      'btn_url'  => \App\Models\Setting::get('vyra_slide_4_btn_url', route('home').'#products'),
+      'btn_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('vyra_slide_4_btn_url', '#products')),
       'btn2_text'=> 'Explore All',
-      'btn2_url' => route('featured.products'),
+      'btn2_url' => '/featured-products',
     ],
   ];
 @endphp
@@ -211,8 +211,9 @@
      CATEGORY STRIP (Slideable Square Boxes like Saaya)
 ═══════════════════════════════════════════════ --}}
 @php
-  $parentCategories = $categories->filter(fn($c) => is_null($c->parent_id));
+  $parentCategories = isset($categories) ? $categories->filter(fn($c) => is_null($c->parent_id)) : collect();
 @endphp
+@if($parentCategories && $parentCategories->count())
 <section class="pt-10 pb-6 lg:pt-12 lg:pb-8 px-6 lg:px-10" style="background:#0E0E10"
          x-data="{
            canScrollLeft: false,
@@ -292,7 +293,7 @@
          @scroll.passive="checkScroll()"
          class="flex items-stretch gap-3 sm:gap-3.5 lg:gap-4 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
          style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
-      @forelse($parentCategories as $cat)
+      @foreach($parentCategories as $cat)
         <a href="{{ route('category.show', $cat->slug) }}"
            class="category-item group relative overflow-hidden shrink-0 w-[170px] sm:w-[200px] md:w-[220px] lg:w-[230px] xl:w-[245px] transition-transform duration-300 shadow-md hover:shadow-2xl border border-[#FF3D5A]/20 hover:border-[#FF3D5A]/60"
            style="aspect-ratio: 3/4; scroll-snap-align: start; scroll-snap-stop: normal;">
@@ -324,41 +325,7 @@
           <div class="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#FF3D5A] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           <div class="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#D4FF3D] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
         </a>
-      @empty
-        @php
-          $defaultVyraCats = [
-            'Power Bodysuits',
-            'Sculpt Corsets',
-            'Second-Skin Mesh',
-            'Cut-Out Sets',
-            'Neon Latex',
-            'Statement Bras',
-          ];
-        @endphp
-        @foreach($defaultVyraCats as $fallbackName)
-          <a href="{{ route('featured.products') }}"
-             class="category-item group relative overflow-hidden shrink-0 w-[170px] sm:w-[200px] md:w-[220px] lg:w-[230px] xl:w-[245px] transition-transform duration-300 shadow-md hover:shadow-2xl border border-[#FF3D5A]/20 hover:border-[#FF3D5A]/60"
-             style="aspect-ratio: 3/4; scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="card-img-wrap absolute inset-0">
-              <div class="w-full h-full bg-gradient-to-b from-[#1A1A1D] via-[#242429] to-[#0E0E10] flex items-center justify-center">
-                <svg viewBox="0 0 60 60" class="w-12 h-12 text-[#FF3D5A]/30" fill="currentColor">
-                  <circle cx="30" cy="30" r="18"/>
-                </svg>
-              </div>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0E0E10] via-[#0E0E10]/40 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-4 lg:p-5">
-              <p class="font-display uppercase text-[#F2F0EC] text-base sm:text-lg lg:text-xl leading-tight line-clamp-2">{{ $fallbackName }}</p>
-              <p class="font-mono text-[#D4FF3D] text-[10px] sm:text-xs tracking-widest uppercase mt-1 flex items-center gap-1 font-bold">
-                Shop Now
-                <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
-              </p>
-            </div>
-            <div class="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#FF3D5A] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            <div class="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#D4FF3D] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-          </a>
-        @endforeach
-      @endforelse
+      @endforeach
     </div>
 
   </div>
@@ -368,6 +335,7 @@
 <div class="bg-[#1A1A1D] py-3 flex justify-center">
   <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-[#D4FF3D]/40 to-transparent"></div>
 </div>
+@endif
 
 {{-- ===== CURATED FEATURED PICKS ===== --}}
 @php

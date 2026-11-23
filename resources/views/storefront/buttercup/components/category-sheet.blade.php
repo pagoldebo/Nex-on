@@ -25,7 +25,7 @@
                 <button onclick="closeCategorySheet()" style="color:#4A3B3A" aria-label="Close">&times;</button>
             </div>
             <div class="space-y-3">
-                @foreach ($categories ?? [] as $cat)
+                @forelse ($categories ?? [] as $cat)
                     <div class="border-b pb-2" style="border-color:#D89AA022;">
                         <div class="flex items-center justify-between py-2">
                             <a href="{{ route('category.show', $cat->slug) }}" onclick="closeCategorySheet()"
@@ -50,27 +50,11 @@
                             </div>
                         @endif
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-xs text-center py-6" style="color:#4A3B3A;opacity:0.5;">No categories available.</p>
+                @endforelse
             </div>
             <a href="{{ route('search') }}" onclick="closeCategorySheet()" class="block text-center mt-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#D89AA0] text-[#FFFAF5]">View All Products</a>
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const overlay = document.getElementById('sheetOverlay');
-        window.openCategorySheet = function() {
-            overlay.style.background = 'rgba(0,0,0,0.5)';
-            overlay.style.visibility = 'visible';
-            overlay.style.pointerEvents = 'auto';
-            overlay.querySelector('.bottom-sheet').style.transform = 'translateY(0)';
-            document.body.style.overflow = 'hidden';
-        };
-        window.closeCategorySheet = function() {
-            overlay.style.background = 'rgba(0,0,0,0)';
-            overlay.querySelector('.bottom-sheet').style.transform = 'translateY(100%)';
-            setTimeout(() => { overlay.style.visibility = 'hidden'; overlay.style.pointerEvents = 'none'; }, 350);
-            document.body.style.overflow = '';
-        };
-    });
-</script>

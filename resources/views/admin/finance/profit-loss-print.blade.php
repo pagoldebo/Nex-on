@@ -18,29 +18,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P&L Statement - {{ $storeName }} ({{ $startDate->format('d M Y') }} to {{ $endDate->format('d M Y') }})</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1e293b; background: #fff; margin: 0; padding: 24px; font-size: 13px; line-height: 1.5; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 16px; margin-bottom: 20px; }
-        .logo-title { font-size: 24px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge { display: inline-block; padding: 3px 8px; font-size: 11px; font-weight: 700; background: #f1f5f9; border-radius: 4px; color: #475569; margin-top: 4px; }
-        .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .meta-table td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
-        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .table th { background: #f8fafc; border-top: 1px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; }
-        .table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
-        .amount { text-align: right; font-family: "Courier New", Courier, monospace; font-weight: 600; }
-        .section-header { font-weight: 700; background: #f1f5f9; color: #0f172a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
-        .highlight-row { font-weight: 800; background: #f8fafc; border-top: 1px solid #0f172a; border-bottom: 1px solid #0f172a; }
-        .net-profit-box { background: #0f172a; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-radius: 6px; margin-top: 20px; font-size: 14px; }
-        .net-profit-box .amount { font-size: 20px; font-weight: 800; }
-        .signatures { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 20px; }
-        .sig-block { width: 200px; text-align: center; border-top: 1px solid #64748b; padding-top: 8px; font-size: 11px; font-weight: 600; color: #475569; }
-        @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin/print.css') }}">
 </head>
 <body>
     <div class="container">

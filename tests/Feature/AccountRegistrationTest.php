@@ -110,4 +110,45 @@ class AccountRegistrationTest extends TestCase
         $response->assertSessionHasErrors(['email', 'password']);
         $this->assertGuest();
     }
+
+    public function test_login_with_wrong_password_returns_errors_and_redirects_back(): void
+    {
+        $user = User::factory()->create([
+            'email'    => 'patron@example.com',
+            'password' => bcrypt('CorrectPassword123!'),
+        ]);
+
+        $response = $this->from(route('home'))->post(route('login'), [
+            'email'    => 'patron@example.com',
+            'password' => 'WrongPassword999!',
+        ]);
+
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHasErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_with_wrong_password_via_ajax_returns_422_json_error(): void
+    {
+        $user = User::factory()->create([
+            'email'    => 'ajaxpatron@example.com',
+            'password' => bcrypt('CorrectPassword123!'),
+        ]);
+
+        $response = $this->postJson(route('login'), [
+            'email'    => 'ajaxpatron@example.com',
+            'password' => 'WrongPassword999!',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'The provided credentials do not match our records.',
+            'errors'  => [
+                'email' => ['The provided credentials do not match our records.'],
+            ],
+        ]);
+        $this->assertGuest();
+    }
 }

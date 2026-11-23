@@ -1,0 +1,44 @@
+/* ======================================================================
+   THEME: LUMIÈRE — COMMON THEME STYLESHEET
+   Archetype: Minimalist French Pure Silk Atelier, Editorial & Modern Luxury
+   ====================================================================== */
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #FFFAF5;
+    color: #1f2937;
+    --color-accent: #DB2777;
+}
+
+.font-display {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Size pill active styling */
+.size-pill.active,
+.size-pill[aria-selected="true"],
+.pdp-size-pill.active,
+.pdp-size-pill[aria-selected="true"],
+.qv-size.active,
+.qv-size[aria-selected="true"] {
+    background-color: #DB2777 !important;
+    color: #FFFFFF !important;
+    border-color: #DB2777 !important;
+    font-weight: 700 !important;
+}
+
+.qv-size:not(.active):not(:disabled) {
+    color: #374151 !important;
+    border-color: #FCE7F3 !important;
+    background-color: transparent !important;
+}
+
+/* Hide scrollbars for thumbnail strips while allowing smooth touch/wheel scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

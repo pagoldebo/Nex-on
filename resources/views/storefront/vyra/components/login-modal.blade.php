@@ -22,7 +22,12 @@
         <p class="text-center text-sm opacity-50 mb-8 uppercase tracking-wide" style="color:#F2F0EC">Sign in to VYRA</p>
         <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-4">
             @csrf
-            <input type="email" name="email" placeholder="Email Address" required
+
+            <div id="loginModalAlert" class="@if(isset($errors) && ($errors->has('email') || $errors->has('password'))) @else hidden @endif p-3.5 text-xs bg-[#FF3D5A]/15 border border-[#FF3D5A] text-[#FF3D5A] font-bold uppercase tracking-wide">
+                <span id="loginModalAlertText">{{ isset($errors) ? ($errors->first('email') ?: $errors->first('password')) : '' }}</span>
+            </div>
+
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required
                    class="border px-5 py-3.5 text-sm outline-none transition-colors"
                    style="background:transparent;border-color:#FF3D5A55;color:#F2F0EC;">
             <input type="password" name="password" placeholder="Password" required

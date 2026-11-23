@@ -18,13 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payslip - {{ $item->payslip_number }} - {{ $item->user?->name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @media print {
-            body { background: #fff !important; }
-            .no-print { display: none !important; }
-            .print-container { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin/print.css') }}">
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8">
     <div class="no-print max-w-3xl mx-auto mb-4 flex justify-between items-center">

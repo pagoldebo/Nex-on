@@ -127,6 +127,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
 
       {{-- Departments Dropdown Button --}}
+      @if(isset($categories) && $categories->isNotEmpty())
       <div class="relative" x-data="{ open: false }" @click.outside="open = false">
         <button type="button" @click="open = !open" class="flex items-center gap-2.5 bg-organic-500 hover:bg-organic-600 text-white font-bold px-5 py-3 transition tracking-wide text-xs cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h7"/></svg>
@@ -173,6 +174,7 @@
           @endforelse
         </div>
       </div>
+      @endif
 
       {{-- Navigation Links --}}
       <nav class="flex items-center gap-6 py-2.5 relative z-10">

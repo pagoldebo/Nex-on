@@ -54,22 +54,5 @@
     @endauth
   </div>
 </div>
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const serverOrder = @json(isset($orderModel) && $orderModel ? true : false);
-  if (!serverOrder) {
-    const o = JSON.parse(sessionStorage.getItem('lc_last_order') || 'null');
-    if (!o) return;
-    document.getElementById('orderId').textContent = o.id || o.reference || '—';
-    document.getElementById('orderTotal').textContent = '₹' + Number(o.total || 0).toLocaleString('en-IN');
-    if (o.items?.length) {
-      document.getElementById('orderItems').innerHTML = o.items.map(i =>
-        `<div class="flex justify-between opacity-80 py-1"><span>${i.name} (${i.colorName}/${i.size}) ×${i.qty}</span><span class="font-bold">₹${(i.price*i.qty).toLocaleString('en-IN')}</span></div>`
-      ).join('');
-    }
-  }
-});
-</script>
-@endpush
+
 </x-storefront-layout>

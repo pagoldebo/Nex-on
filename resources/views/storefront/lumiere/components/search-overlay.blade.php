@@ -15,23 +15,23 @@
       - Queries route('api.search') or route('search')
       - Input strings sanitized against SQL wildcard injection
 --}}
-<div id="searchOverlay" class="hidden fixed inset-0 z-[205] backdrop-blur-md flex-col p-6 md:p-12 bg-white/95">
+<div id="searchOverlay" class="hidden fixed inset-0 z-[205] backdrop-blur-sm flex-col p-6 md:p-12" style="background: rgba(255, 255, 255, 0.15); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);">
     <div class="max-w-2xl mx-auto w-full">
         <div class="flex items-center justify-between mb-8">
-            <span class="font-bold text-xl text-gray-900">Search</span>
-            <button onclick="closeSearch()" class="text-2xl font-light text-gray-300 hover:text-gray-600 transition-colors" aria-label="Close search">&times;</button>
+            <span class="font-bold text-xl text-gray-900 font-display">Search</span>
+            <button onclick="closeSearch()" class="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 text-2xl font-light text-gray-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs" aria-label="Close search">&times;</button>
         </div>
         <form method="GET" action="{{ route('search') }}">
             <input id="searchInput" name="q" type="text" placeholder="Search for silk sets, bralettes, sleepwear..."
                    value="{{ request('q') }}"
-                   class="w-full border-b-2 border-pink-100 text-xl py-4 outline-none transition-colors focus:border-pink-400 bg-transparent text-gray-800">
+                   class="w-full border-b-2 border-pink-200 text-xl py-4 outline-none transition-colors focus:border-pink-500 bg-white/40 px-4 rounded-xl text-gray-900 font-body">
         </form>
         <div id="liveResults" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 hidden"></div>
         <div class="mt-10">
-            <p class="text-xs uppercase tracking-widest font-semibold text-gray-400 mb-4">Popular</p>
-            <div class="flex flex-wrap gap-2">
+            <p class="text-xs uppercase tracking-widest font-extrabold text-gray-700 mb-4 font-body">Popular</p>
+            <div class="flex flex-wrap gap-2.5">
                 @foreach (['Silk Slip', 'Lustre Bralette', 'Lace Set', 'Sleepwear', 'Bridal Edit'] as $term)
-                    <a href="{{ route('search') }}?q={{ $term }}" class="text-xs px-4 py-2 rounded-full border border-pink-100 text-gray-700 transition-colors hover:border-pink-400">{{ $term }}</a>
+                    <a href="{{ route('search') }}?q={{ $term }}" class="text-xs px-4 py-2 rounded-full border border-pink-200 bg-white/85 text-gray-800 transition-all hover:bg-pink-500 hover:text-white hover:border-pink-500 font-medium font-body shadow-xs backdrop-blur-sm">{{ $term }}</a>
                 @endforeach
             </div>
         </div>

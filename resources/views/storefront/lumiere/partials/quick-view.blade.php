@@ -243,8 +243,21 @@
             const on = b.dataset.size === size;
             b.classList.toggle('bg-pink-600', on);
             b.classList.toggle('text-white', on);
+            b.classList.toggle('text-gray-700', !on);
             b.classList.toggle('border-pink-600', on);
+            b.classList.toggle('border-pink-100', !on);
             b.classList.toggle('shadow-xs', on);
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+            if (on) {
+                b.style.setProperty('background-color', '#DB2777', 'important');
+                b.style.setProperty('color', '#FFFFFF', 'important');
+                b.style.setProperty('border-color', '#DB2777', 'important');
+            } else if (!b.disabled) {
+                b.style.removeProperty('background-color');
+                b.style.removeProperty('color');
+                b.style.removeProperty('border-color');
+            }
         });
 
         if (v) {

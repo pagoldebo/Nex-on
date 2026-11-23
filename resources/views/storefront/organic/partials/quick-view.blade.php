@@ -245,8 +245,21 @@
             const on = b.dataset.size === size;
             b.classList.toggle('bg-organic-500', on);
             b.classList.toggle('text-white', on);
+            b.classList.toggle('text-stone-700', !on);
             b.classList.toggle('border-organic-500', on);
+            b.classList.toggle('border-stone-200', !on);
             b.classList.toggle('shadow-xs', on);
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+            if (on) {
+                b.style.setProperty('background-color', '#699E4B', 'important');
+                b.style.setProperty('color', '#FFFFFF', 'important');
+                b.style.setProperty('border-color', '#699E4B', 'important');
+            } else if (!b.disabled) {
+                b.style.removeProperty('background-color');
+                b.style.removeProperty('color');
+                b.style.removeProperty('border-color');
+            }
         });
 
         if (v) {

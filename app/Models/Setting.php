@@ -73,6 +73,9 @@ class Setting extends Model
                             return $raw; // Fallback to raw string if not encrypted yet
                         }
                     }
+                    if (is_string($raw) && (str_ends_with($key, '_url') || str_contains($raw, 'nexon.test'))) {
+                        $raw = static::relativizeUrl($raw);
+                    }
                     return $raw;
                 } catch (\Throwable $e) {
                     return $default;
@@ -228,6 +231,11 @@ class Setting extends Model
                     }
                 }
             }
+            foreach ($settings as $k => $v) {
+                if (is_string($v) && (str_ends_with($k, '_url') || str_contains($v, 'nexon.test'))) {
+                    $settings[$k] = static::relativizeUrl($v);
+                }
+            }
             return $settings;
         });
     }
@@ -312,5 +320,69 @@ class Setting extends Model
         foreach (static::all() as $setting) {
             Cache::forget("setting_{$setting->key}");
         }
+    }
+
+    /**
+     * Rewrite an absolute link that points at this store or a test environment into a host-less path.
+     *
+     * Third-party links are left untouched; URLs pointing to local dev domains (*.test, localhost),
+     * cu.ma, nexon.app, or the configured app URL/request host are relativized.
+     */
+    public static function relativizeUrl(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+        if ($trimmed === '' || str_starts_with($trimmed, '#') || str_starts_with($trimmed, '/')) {
+            return $trimmed;
+        }
+
+        $parts = parse_url($trimmed);
+        if (!is_array($parts) || empty($parts['host'])) {
+            return $trimmed;
+        }
+
+        $host = strtolower($parts['host']);
+
+        // Check if host is internal or development domain
+        $isInternal = $host === 'nexon.test'
+            || str_ends_with($host, '.test')
+            || $host === 'localhost'
+            || $host === '127.0.0.1'
+            || $host === 'nexon.cu.ma'
+            || str_ends_with($host, '.cu.ma')
+            || $host === 'nexon.app'
+            || str_ends_with($host, '.nexon.app');
+
+        if (!$isInternal) {
+            try {
+                $appHost = parse_url((string) config('app.url'), PHP_URL_HOST);
+                if (is_string($appHost) && strtolower($appHost) === $host) {
+                    $isInternal = true;
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+
+            try {
+                if (request()->hasHeader('Host') && strtolower(request()->getHost()) === $host) {
+                    $isInternal = true;
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+        }
+
+        if (!$isInternal) {
+            return $trimmed;
+        }
+
+        $path = ($parts['path'] ?? '') !== '' ? $parts['path'] : '/';
+
+        return $path
+            . (($parts['query'] ?? '') !== '' ? '?' . $parts['query'] : '')
+            . (($parts['fragment'] ?? '') !== '' ? '#' . $parts['fragment'] : '');
     }
 }

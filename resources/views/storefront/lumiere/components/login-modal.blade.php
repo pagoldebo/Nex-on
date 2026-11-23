@@ -22,7 +22,12 @@
         <p class="text-center text-sm text-gray-400 mb-8">Sign in to your Lumière account</p>
         <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-4">
             @csrf
-            <input type="email" name="email" placeholder="Email Address" required
+
+            <div id="loginModalAlert" class="@if(isset($errors) && ($errors->has('email') || $errors->has('password'))) @else hidden @endif p-3.5 rounded-2xl text-xs bg-pink-50 border border-pink-200 text-pink-700 font-medium">
+                <span id="loginModalAlertText">{{ isset($errors) ? ($errors->first('email') ?: $errors->first('password')) : '' }}</span>
+            </div>
+
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required
                    class="rounded-2xl border border-pink-100 px-5 py-3.5 text-sm outline-none transition-colors focus:border-pink-400 text-gray-800">
             <input type="password" name="password" placeholder="Password" required
                    class="rounded-2xl border border-pink-100 px-5 py-3.5 text-sm outline-none transition-colors focus:border-pink-400 text-gray-800">

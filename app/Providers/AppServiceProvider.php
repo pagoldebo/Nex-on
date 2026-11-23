@@ -28,7 +28,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (config('app.url')) {
+        if (!app()->runningInConsole() && request()->getHost()) {
+            $host = request()->getHost();
+            $currentHost = request()->getSchemeAndHttpHost();
+            $appUrl = config('app.url');
+            if ($host === 'localhost' || $host === '127.0.0.1' || str_contains($host, '.test')) {
+                \Illuminate\Support\Facades\URL::forceRootUrl($currentHost);
+            } elseif ($appUrl && !str_contains($appUrl, '.test') && !str_contains($appUrl, 'localhost') && !str_contains($appUrl, '127.0.0.1')) {
+                \Illuminate\Support\Facades\URL::forceRootUrl($appUrl);
+            } else {
+                \Illuminate\Support\Facades\URL::forceRootUrl($currentHost);
+            }
+        } elseif (config('app.url')) {
             \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
         }
 

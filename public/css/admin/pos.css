@@ -1,0 +1,32 @@
+/* ==========================================================================
+   NEXON ADMIN PANEL — POS TERMINAL STYLESHEET
+   Touch Controls, Custom Cart Scrollbar, Grid & Receipt Layouts
+   ========================================================================== */
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Custom scrollbar for POS cart and catalog */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

@@ -15,60 +15,32 @@
 @extends('admin.layout')
 
 @section('content')
-<div class="space-y-6" x-data="{
-    step: 1,
-    periodMonth: '{{ $selectedMonth }}',
-    items: [
-        @foreach($staffMembers as $index => $staff)
-        {
-            user_id: {{ $staff->id }},
-            name: '{{ addslashes($staff->name) }}',
-            email: '{{ addslashes($staff->email) }}',
-            role: '{{ $staff->role ?? "Staff" }}',
-            designation: '{{ $staff->role === "admin" ? "Store General Manager" : ($staff->role === "delivery" ? "Logistics Specialist" : "Senior Retail Associate") }}',
-            department: '{{ $staff->role === "admin" ? "Store Management & Admin" : ($staff->role === "delivery" ? "Warehouse & Logistics" : "Retail Store Sales") }}',
-            working_days: 30,
-            present_days: 30,
-            basic_salary: {{ $staff->role === "admin" ? 65000 : ($staff->role === "delivery" ? 22000 : 28000) }},
-            hra: {{ $staff->role === "admin" ? 18000 : ($staff->role === "delivery" ? 5000 : 7000) }},
-            transport_allowance: 2500,
-            performance_bonus: 0,
-            tds_tax: {{ $staff->role === "admin" ? 4500 : 0 }},
-            bank_name: 'HDFC Bank',
-            bank_account_no: '50100{{ rand(1000000, 9999999) }}',
-            bank_ifsc: 'HDFC0000123'
-        },
-        @endforeach
-    ],
-    get gross(i) {
-        let it = this.items[i];
-        return (parseFloat(it.basic_salary) || 0) + (parseFloat(it.hra) || 0) + (parseFloat(it.transport_allowance) || 0) + (parseFloat(it.performance_bonus) || 0);
-    },
-    get pf(i) {
-        let it = this.items[i];
-        return Math.round((parseFloat(it.basic_salary) || 0) * 0.12 * 100) / 100;
-    },
-    get esi(i) {
-        let g = this.gross(i);
-        return (g <= 21000 && g > 0) ? Math.round(g * 0.0075 * 100) / 100 : 0;
-    },
-    get totalDeductions(i) {
-        let it = this.items[i];
-        return this.pf(i) + this.esi(i) + (parseFloat(it.tds_tax) || 0);
-    },
-    get net(i) {
-        return Math.max(0, this.gross(i) - this.totalDeductions(i));
-    },
-    get totalNetAll() {
-        return this.items.reduce((acc, _, idx) => acc + this.net(idx), 0);
-    },
-    get totalGrossAll() {
-        return this.items.reduce((acc, _, idx) => acc + this.gross(idx), 0);
-    },
-    get totalDeductionsAll() {
-        return this.items.reduce((acc, _, idx) => acc + this.totalDeductions(idx), 0);
-    }
-}">
+@php
+    $staffPayload = $staffMembers->map(function($staff) {
+        return [
+            'user_id' => $staff->id,
+            'name' => $staff->name,
+            'email' => $staff->email,
+            'role' => $staff->role ?? 'Staff',
+            'designation' => $staff->role === 'admin' ? 'Store General Manager' : ($staff->role === 'delivery' ? 'Logistics Specialist' : 'Senior Retail Associate'),
+            'department' => $staff->role === 'admin' ? 'Store Management & Admin' : ($staff->role === 'delivery' ? 'Warehouse & Logistics' : 'Retail Store Sales'),
+            'working_days' => 30,
+            'present_days' => 30,
+            'basic_salary' => $staff->role === 'admin' ? 65000 : ($staff->role === 'delivery' ? 22000 : 28000),
+            'hra' => $staff->role === 'admin' ? 18000 : ($staff->role === 'delivery' ? 5000 : 7000),
+            'transport_allowance' => 2500,
+            'performance_bonus' => 0,
+            'tds_tax' => $staff->role === 'admin' ? 4500 : 0,
+            'bank_name' => 'HDFC Bank',
+            'bank_account_no' => '50100' . rand(1000000, 9999999),
+            'bank_ifsc' => 'HDFC0000123',
+        ];
+    });
+@endphp
+<script id="payrollStaffData" type="application/json">@json($staffPayload)</script>
+<script src="{{ asset('js/admin/payroll.js') }}"></script>
+
+<div class="space-y-6" x-data="payrollWizard([], '{{ $selectedMonth }}')">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>

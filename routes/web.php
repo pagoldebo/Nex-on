@@ -83,37 +83,11 @@ Route::get('/robots.txt',                       [StorefrontController::class, 'r
 
 // PWA Mobile App Manifest
 Route::get('/manifest.json', function () {
-    $storeName = \App\Models\Setting::get('store_name');
-    if (empty($storeName) || $storeName === 'Nexon') {
-        $storeName = config('app.name', 'Nex-on');
-    }
-    return response()->json([
-        'name' => $storeName . ' – Online Store',
-        'short_name' => $storeName,
-        'description' => 'Shop apparel, bridal trousseau, and signature edits at ' . $storeName,
-        'start_url' => '/',
-        'scope' => '/',
-        'display' => 'standalone',
-        'background_color' => '#fdfbf7',
-        'theme_color' => '#7f1d1d',
-        'orientation' => 'portrait-primary',
-        'icons' => [
-            [
-                'src' => '/icons/icon-192x192.png',
-                'sizes' => '192x192',
-                'type' => 'image/png',
-                'purpose' => 'any maskable',
-            ],
-            [
-                'src' => '/icons/icon-512x512.png',
-                'sizes' => '512x512',
-                'type' => 'image/png',
-                'purpose' => 'any maskable',
-            ],
-        ],
-        'categories' => ['shopping', 'lifestyle'],
-        'prefer_related_applications' => false,
-    ], 200, ['Content-Type' => 'application/manifest+json']);
+    return response()->json(
+        \App\Services\PwaManifestService::getManifestData(),
+        200,
+        ['Content-Type' => 'application/manifest+json']
+    );
 })->name('pwa.manifest');
 
 Route::get('/cart',                       [StorefrontController::class, 'cart'])->name('cart');

@@ -16,31 +16,33 @@
       - Input strings sanitized against SQL wildcard injection
 --}}
 <div id="searchOverlay"
-     class="hidden fixed inset-0 z-[65] bg-ivory/97 backdrop-blur-md flex flex-col"
+     class="hidden fixed inset-0 z-[65] backdrop-blur-sm flex flex-col"
+     style="background-color: rgba(247, 241, 230, 0.15); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);"
      role="search" aria-label="Search">
 
   {{-- Search bar --}}
-  <div class="flex items-center gap-4 border-b border-gold/30 px-6 lg:px-12 py-5">
-    <svg class="w-5 h-5 text-maroon/40 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
+  <div class="flex items-center gap-4 border-b border-[#C9A24B]/30 px-6 lg:px-12 py-5 bg-white/40 backdrop-blur-md">
+    <svg class="w-5 h-5 text-[#3D0C11]/70 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
     <input id="searchInput"
            type="search"
            autocomplete="off"
            placeholder="Search bras, panties, nightwear…"
-           class="flex-1 bg-transparent text-maroon text-lg font-body placeholder-maroon/30 focus:outline-none">
-    <button id="searchClose" class="p-2 text-maroon/40 hover:text-maroon transition-colors flex-shrink-0" aria-label="Close search">
+           class="flex-1 bg-transparent text-[#3D0C11] text-lg font-body placeholder-[#3D0C11]/60 focus:outline-none font-medium"
+           style="color: #3D0C11;">
+    <button id="searchClose" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white text-[#3D0C11]/70 hover:text-[#3D0C11] transition-all flex items-center justify-center flex-shrink-0 cursor-pointer shadow-2xs" aria-label="Close search">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
   </div>
 
   {{-- Live results --}}
-  <div id="searchResults" class="flex-1 overflow-y-auto px-6 lg:px-12 py-6">
+  <div id="searchResults" class="flex-1 overflow-y-auto px-6 lg:px-12 py-6 bg-transparent">
     {{-- Popular suggestions (shown before typing) --}}
     <div id="searchSuggestions">
-      <p class="text-[10px] uppercase tracking-widest font-semibold text-gold-dark font-body mb-4">Popular Searches</p>
-      <div class="flex flex-wrap gap-2">
+      <p class="text-xs uppercase tracking-widest font-extrabold text-[#9A7A33] font-body mb-4 drop-shadow-2xs">Popular Searches</p>
+      <div class="flex flex-wrap gap-2.5">
         @foreach (['Silk Bra Set', 'Bridal Trousseau', 'Lace Brief', 'Wireless Bra', 'Nightwear', 'Camisole'] as $term)
           <button type="button" data-search-term="{{ $term }}"
-                  class="search-pill border border-gold/40 text-maroon text-xs px-4 py-2 rounded-full hover:border-gold hover:bg-gold/10 transition-colors font-body">
+                  class="search-pill border border-[#C9A24B]/60 bg-white/85 hover:bg-[#C9A24B] hover:text-white text-[#3D0C11] text-xs font-semibold px-4 py-2 rounded-full transition-all shadow-xs backdrop-blur-sm font-body cursor-pointer">
             {{ $term }}
           </button>
         @endforeach
@@ -50,11 +52,11 @@
         $parentCategories = $categories->filter(fn($c) => is_null($c->parent_id));
       @endphp
       @if ($parentCategories->count())
-        <p class="text-[10px] uppercase tracking-widest font-semibold text-gold-dark font-body mt-8 mb-4">Shop by Category</p>
-        <div class="flex flex-wrap gap-2">
+        <p class="text-xs uppercase tracking-widest font-extrabold text-[#9A7A33] font-body mt-8 mb-4 drop-shadow-2xs">Shop by Category</p>
+        <div class="flex flex-wrap gap-2.5">
           @foreach ($parentCategories as $cat)
             <a href="{{ route('category.show', $cat->slug) }}"
-               class="border border-gold/40 text-maroon text-xs px-4 py-2 rounded-full hover:border-gold hover:bg-gold/10 transition-colors font-body">
+               class="border border-[#C9A24B]/60 bg-white/85 hover:bg-[#C9A24B] hover:text-white text-[#3D0C11] text-xs font-semibold px-4 py-2 rounded-full transition-all shadow-xs backdrop-blur-sm font-body">
               {{ $cat->name }}
             </a>
           @endforeach
@@ -67,11 +69,11 @@
   </div>
 
   {{-- Full search link (shown after typing) --}}
-  <div id="searchFooter" class="hidden border-t border-gold/20 px-6 lg:px-12 py-4">
+  <div id="searchFooter" class="hidden border-t border-[#C9A24B]/30 px-6 lg:px-12 py-4 bg-white/40 backdrop-blur-md">
     <a id="searchFullLink" href="{{ route('search') }}"
-       class="flex items-center justify-between text-sm text-maroon hover:text-gold transition-colors font-body group">
-      <span>See all results for <span id="searchFooterTerm" class="font-semibold text-gold"></span></span>
-      <svg class="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+       class="flex items-center justify-between text-sm text-[#3D0C11] hover:text-[#9A7A33] transition-colors font-body group">
+      <span>See all results for <span id="searchFooterTerm" class="font-semibold text-[#9A7A33]"></span></span>
+      <svg class="w-4 h-4 text-[#9A7A33] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
     </a>
   </div>
 </div>
@@ -142,11 +144,11 @@
       } else {
         resultsWrap.innerHTML = '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
           data.map(p => `
-            <a href="${esc(p.url)}" class="flex gap-3 items-center hover:bg-gold/10 p-2 rounded-xl transition-colors group">
-              <img src="${esc(p.image)}" alt="" class="w-14 h-16 object-cover bg-blush/30 flex-shrink-0">
+            <a href="${esc(p.url)}" class="flex gap-3 items-center bg-white/80 hover:bg-white border border-[#C9A24B]/30 hover:border-[#C9A24B] p-2.5 rounded-xl transition-all shadow-2xs group">
+              <img src="${esc(p.image)}" alt="" class="w-14 h-16 object-cover rounded-lg bg-blush/30 flex-shrink-0">
               <div class="min-w-0">
-                <p class="font-display text-sm text-maroon truncate">${esc(p.name)}</p>
-                <p class="text-xs text-gold-dark font-body mt-0.5">₹${Number(p.price).toLocaleString('en-IN')}</p>
+                <p class="font-display text-sm text-[#3D0C11] font-semibold truncate group-hover:text-[#9A7A33] transition-colors">${esc(p.name)}</p>
+                <p class="text-xs text-[#9A7A33] font-bold font-body mt-0.5">₹${Number(p.price).toLocaleString('en-IN')}</p>
               </div>
             </a>`).join('') + '</div>';
       }

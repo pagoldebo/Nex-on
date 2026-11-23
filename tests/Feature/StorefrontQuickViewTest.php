@@ -124,4 +124,22 @@ class StorefrontQuickViewTest extends TestCase
         $response->assertSee('id="sizeOptions"', false);
         $response->assertSee('Quick View');
     }
+
+    public function test_quick_view_active_size_pill_contrast_styling_exists(): void
+    {
+        $saayaCss = file_get_contents(public_path('css/themes/saaya.css'));
+        $this->assertStringContainsString('.qv-size.active', $saayaCss);
+        $this->assertStringContainsString('#F7F1E6', $saayaCss);
+        $this->assertStringContainsString('#3D0C11', $saayaCss);
+
+        foreach (['buttercup', 'lumiere', 'organic', 'vyra'] as $theme) {
+            $css = file_get_contents(public_path("css/themes/{$theme}.css"));
+            $this->assertStringContainsString('.qv-size.active', $css);
+        }
+
+        // Verify Saaya quick-view partial includes dynamic contrast toggling
+        $saayaQuickView = file_get_contents(resource_path('views/storefront/saaya/partials/quick-view.blade.php'));
+        $this->assertStringContainsString("b.classList.toggle('text-maroon', !on)", $saayaQuickView);
+        $this->assertStringContainsString("b.style.setProperty('color', '#F7F1E6', 'important')", $saayaQuickView);
+    }
 }

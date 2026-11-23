@@ -37,7 +37,7 @@
   $lumiereBtnText  = \App\Models\Setting::get('lumiere_hero_btn_text', 'Shop the Edit');
   $lumiereBtnUrl   = \App\Models\Setting::get('lumiere_hero_btn_url', '#curatedPicks');
   $lumiereBtn2Text = \App\Models\Setting::get('lumiere_hero_btn2_text', 'Explore All');
-  $lumiereBtn2Url  = \App\Models\Setting::get('lumiere_hero_btn2_url', route('search'));
+  $lumiereBtn2Url  = \App\Models\Setting::relativizeUrl(\App\Models\Setting::get('lumiere_hero_btn2_url', '/search'));
 @endphp
 
 <section class="relative bg-[#FFE6A5] overflow-hidden min-h-[580px] sm:min-h-[660px] lg:min-h-[760px] flex items-center select-none w-full">
@@ -105,6 +105,10 @@
   <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
 </div>
 
+@php
+  $parentCats = isset($categories) ? $categories->filter(fn($c) => is_null($c->parent_id)) : collect();
+@endphp
+@if($parentCats && $parentCats->count())
 {{-- ===== 2. SHOP BY CATEGORY ===== --}}
 <section class="py-12 lg:py-16 px-6 md:px-12 bg-[#FFF0F3]"
          x-data="{
@@ -171,10 +175,7 @@
            class="flex-1 flex items-start gap-4 sm:gap-6 lg:gap-8 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
            :class="(canScrollLeft || canScrollRight) ? 'justify-start' : 'justify-center'"
            style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
-        @php
-          $parentCats = $categories->filter(fn($c) => is_null($c->parent_id));
-        @endphp
-        @forelse($parentCats as $cat)
+        @foreach($parentCats as $cat)
           <a href="{{ route('category.show', $cat->slug) }}" 
              class="category-item group shrink-0 min-w-[96px] sm:min-w-[110px] max-w-[140px] flex flex-col items-center text-center transition"
              style="scroll-snap-align: start; scroll-snap-stop: normal;">
@@ -192,20 +193,7 @@
               {{ $cat->name }}
             </h3>
           </a>
-        @empty
-          @foreach(['Silk Robes', 'Lace Bralettes', 'Bodysuits', 'Nightwear', 'Bridal Edit', 'Mulberry Sets'] as $fallbackName)
-            <a href="{{ route('featured.products') }}" 
-               class="category-item group shrink-0 min-w-[96px] sm:min-w-[110px] max-w-[140px] flex flex-col items-center text-center transition"
-               style="scroll-snap-align: start; scroll-snap-stop: normal;">
-              <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden mb-3 bg-pink-50 border-2 border-pink-200 group-hover:border-pink-500 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
-                <svg viewBox="0 0 60 60" class="w-9 h-9"><circle cx="30" cy="30" r="20" fill="#DB2777" opacity="0.35"/></svg>
-              </div>
-              <h3 class="font-bold text-xs sm:text-sm text-gray-800 group-hover:text-pink-600 transition-colors leading-snug px-1 line-clamp-2 max-w-[125px]">
-                {{ $fallbackName }}
-              </h3>
-            </a>
-          @endforeach
-        @endforelse
+        @endforeach
       </div>
 
       {{-- Right Arrow (Right Side) --}}
@@ -224,6 +212,7 @@
 <div class="bg-white py-3 flex justify-center">
   <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
 </div>
+@endif
 
 {{-- ===== 3. CURATED FEATURED PICKS ===== --}}
 @php

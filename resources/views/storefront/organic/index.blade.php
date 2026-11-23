@@ -115,6 +115,7 @@
   </section>
 
   {{-- 3. CATEGORY CAROUSEL SECTION (Matches Organic Template Reference) --}}
+  @if(isset($categories) && $categories->count())
   <section class="py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
            x-data="{
              canScrollLeft: false,
@@ -190,7 +191,7 @@
          @scroll.passive="checkScroll()"
          class="flex items-start gap-3 sm:gap-4 lg:gap-5 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
          style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
-      @forelse($categories as $cat)
+      @foreach($categories as $cat)
         <a href="{{ route('category.show', $cat->slug) }}" 
            class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
            style="scroll-snap-align: start; scroll-snap-stop: normal;">
@@ -210,37 +211,14 @@
             {{ $cat->name }}
           </h3>
         </a>
-      @empty
-        @php
-          $defaultCategories = [
-            ['name' => 'Cold-Pressed Oils', 'icon' => '🫒'],
-            ['name' => 'Raw Honey', 'icon' => '🍯'],
-            ['name' => 'A2 Desi Ghee', 'icon' => '🧈'],
-            ['name' => 'Organic Pulses', 'icon' => '🌾'],
-            ['name' => 'Whole Spices', 'icon' => '🌶️'],
-            ['name' => 'Ancient Grains', 'icon' => '🌱'],
-            ['name' => 'Herbal Teas', 'icon' => '🍵'],
-            ['name' => 'Dry Fruits', 'icon' => '🥜'],
-          ];
-        @endphp
-        @foreach($defaultCategories as $defCat)
-          <a href="{{ route('home') }}#products" 
-             class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
-             style="scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-organic-50 border border-organic-200/80 shadow-2xs group-hover:scale-105 group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
-              <span class="text-2xl sm:text-3xl">{{ $defCat['icon'] }}</span>
-            </div>
-            <h3 class="text-xs sm:text-sm font-normal sm:font-medium text-stone-800 group-hover:text-organic-600 transition leading-snug px-1 line-clamp-2 max-w-[125px]">
-              {{ $defCat['name'] }}
-            </h3>
-          </a>
-        @endforeach
-      @endforelse
+      @endforeach
     </div>
 
   </section>
+  @endif
 
   {{-- 4. FEATURED PRODUCTS SECTION --}}
+  @if(($featured && $featured->count()) || ($newArrivals && $newArrivals->count()))
   <section id="products" class="py-12 bg-white border-y border-stone-200/70">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
@@ -268,6 +246,7 @@
 
     </div>
   </section>
+  @endif
 
   {{-- 5. TRIPLE PROMOTIONAL AD BANNERS --}}
   @php
@@ -330,6 +309,7 @@
   </section>
 
   {{-- 6. NEW SEASON ARRIVALS --}}
+  @if($newArrivals && $newArrivals->count())
   <section class="py-12 bg-white border-t border-stone-200/70">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
@@ -352,6 +332,7 @@
 
     </div>
   </section>
+  @endif
 
   {{-- 7. LIMITED HARVEST FLASH DEALS --}}
   @if($saleProducts->isNotEmpty())

@@ -81,6 +81,8 @@
     </div>
 </div>
 
+<script src="{{ asset('js/quick-view.js') }}"></script>
+@if(false)
 <script nonce="{{ $cspNonce ?? '' }}">
 (function() {
     let qvProduct = null, qvColorIdx = 0, qvSize = null;
@@ -243,8 +245,21 @@
             const on = b.dataset.size === size;
             b.classList.toggle('bg-indigo-600', on);
             b.classList.toggle('text-white', on);
+            b.classList.toggle('text-slate-700', !on);
             b.classList.toggle('border-indigo-600', on);
+            b.classList.toggle('border-slate-200', !on);
             b.classList.toggle('shadow-xs', on);
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+            if (on) {
+                b.style.setProperty('background-color', '#4F46E5', 'important');
+                b.style.setProperty('color', '#FFFFFF', 'important');
+                b.style.setProperty('border-color', '#4F46E5', 'important');
+            } else if (!b.disabled) {
+                b.style.removeProperty('background-color');
+                b.style.removeProperty('color');
+                b.style.removeProperty('border-color');
+            }
         });
 
         if (v) {
@@ -329,3 +344,4 @@
     }
 })();
 </script>
+@endif

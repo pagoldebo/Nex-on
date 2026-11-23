@@ -245,8 +245,21 @@
             const on = b.dataset.size === size;
             b.classList.toggle('bg-lime', on);
             b.classList.toggle('text-black', on);
+            b.classList.toggle('text-[#F5F5F7]', !on);
             b.classList.toggle('border-lime', on);
+            b.classList.toggle('border-white/20', !on);
             b.classList.toggle('shadow-xs', on);
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+            if (on) {
+                b.style.setProperty('background-color', '#D4FF3D', 'important');
+                b.style.setProperty('color', '#0E0E10', 'important');
+                b.style.setProperty('border-color', '#D4FF3D', 'important');
+            } else if (!b.disabled) {
+                b.style.removeProperty('background-color');
+                b.style.removeProperty('color');
+                b.style.removeProperty('border-color');
+            }
         });
 
         if (v) {

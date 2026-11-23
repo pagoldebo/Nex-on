@@ -66,6 +66,7 @@
     </a>
   @else
     <button id="tabLoginBtn"
+            onclick="openLoginModal()"
             class="tab-item {{ $active === 'account' ? 'active' : '' }}"
             aria-label="Sign in">
       <span class="tab-dot"></span>

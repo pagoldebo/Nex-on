@@ -18,29 +18,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ strtoupper($reportType) }}-REPORT: Shift {{ $shift->shift_code }}</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Courier New", Courier, monospace, monospace; background: #f1f5f9; color: #000; padding: 15px; }
-        .receipt-card { width: 80mm; max-width: 100%; margin: 0 auto; background: #fff; border: 1px dashed #cbd5e1; padding: 12px 10px; font-size: 11px; line-height: 1.3; }
-        .toolbar { width: 80mm; max-width: 100%; margin: 0 auto 10px auto; display: flex; justify-content: space-between; }
-        .btn { background: #1e293b; color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-family: sans-serif; font-weight: bold; text-decoration: none; border: none; cursor: pointer; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: bold; }
-        .divider { border-top: 1px dashed #000; margin: 6px 0; }
-        .divider-double { border-top: 2px dashed #000; margin: 6px 0; }
-        .row { display: flex; justify-content: space-between; }
-        .header-title { font-size: 14px; font-weight: bold; letter-spacing: 0.5px; }
-        .report-badge { font-size: 13px; font-weight: 900; background: #000; color: #fff; padding: 2px 6px; display: inline-block; margin: 4px 0; }
-        @media print {
-            body { background: #fff; padding: 0; }
-            .toolbar { display: none !important; }
-            .receipt-card { width: 80mm !important; border: none !important; margin: 0 !important; padding: 4px !important; }
-            @page { size: 80mm auto; margin: 0; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin/receipt.css') }}">
 </head>
-<body>
+<body class="auto-print">
     <div class="toolbar">
         <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
         <button class="btn" style="background:#64748b;" onclick="window.close()">Close</button>
@@ -123,11 +103,7 @@
         </div>
     </div>
 
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() { window.print(); }, 400);
-        });
-    </script>
+    <script src="{{ asset('js/admin/print.js') }}"></script>
 </body>
 </html>
 

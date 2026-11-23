@@ -26,7 +26,7 @@
     </div>
 
     <ul class="divide-y divide-gold/15 px-2 pt-2">
-      @foreach ($categories as $cat)
+      @forelse ($categories as $cat)
         <li class="py-1">
           <div class="flex items-center justify-between px-4 py-3 text-maroon hover:bg-gold/10 rounded-xl transition-colors group">
             <a href="{{ route('category.show', $cat->slug) }}" class="font-body text-sm font-medium flex-1">
@@ -47,7 +47,9 @@
             </div>
           @endif
         </li>
-      @endforeach
+      @empty
+        <li class="py-6 text-center text-xs font-body text-maroon/50">No categories available.</li>
+      @endforelse
     </ul>
 
     <div class="px-6 py-5 mt-2 border-t border-gold/20">

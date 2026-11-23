@@ -22,7 +22,12 @@
         <p class="text-center text-sm opacity-50 mb-8" style="color:#4A3B3A">Sign in to your Buttercup account</p>
         <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-4">
             @csrf
-            <input type="email" name="email" placeholder="Email Address" required
+
+            <div id="loginModalAlert" class="@if(isset($errors) && ($errors->has('email') || $errors->has('password'))) @else hidden @endif p-3.5 rounded-2xl text-xs bg-rose-50 border border-rose-200 text-rose-700 font-medium">
+                <span id="loginModalAlertText">{{ isset($errors) ? ($errors->first('email') ?: $errors->first('password')) : '' }}</span>
+            </div>
+
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required
                    class="rounded-2xl border px-5 py-3.5 text-sm outline-none transition-colors"
                    style="background:transparent;border-color:#D89AA055;color:#4A3B3A;">
             <input type="password" name="password" placeholder="Password" required
@@ -35,9 +40,3 @@
         </p>
     </div>
 </div>
-
-<script nonce="{{ $cspNonce ?? '' }}">
-    document.getElementById('loginModal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeLoginModal();
-    });
-</script>

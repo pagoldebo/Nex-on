@@ -27,7 +27,8 @@
     </svg>
 
     <button id="loginModalClose"
-            class="absolute top-4 right-4 text-maroon/40 hover:text-maroon transition-colors"
+            onclick="closeLoginModal()"
+            class="absolute top-4 right-4 text-maroon/40 hover:text-maroon transition-colors cursor-pointer"
             aria-label="Close sign-in">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
@@ -37,7 +38,12 @@
 
     <form method="POST" action="{{ route('login') }}" class="mt-8 flex flex-col gap-4">
       @csrf
-      <input type="email" name="email" required autocomplete="email" placeholder="Email Address"
+
+      <div id="loginModalAlert" class="@if(isset($errors) && ($errors->has('email') || $errors->has('password'))) @else hidden @endif p-3.5 rounded-lg text-xs bg-red-950/15 border border-red-500/40 text-red-700 font-body font-medium">
+        <span id="loginModalAlertText">{{ isset($errors) ? ($errors->first('email') ?: $errors->first('password')) : '' }}</span>
+      </div>
+
+      <input type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Email Address"
              class="border border-gold/40 bg-transparent px-4 py-3 text-sm text-maroon placeholder-maroon/40 focus:border-gold focus:outline-none transition-colors font-body">
       <input type="password" name="password" required autocomplete="current-password" placeholder="Password"
              class="border border-gold/40 bg-transparent px-4 py-3 text-sm text-maroon placeholder-maroon/40 focus:border-gold focus:outline-none transition-colors font-body">

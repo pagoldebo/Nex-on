@@ -1,0 +1,97 @@
+/* ======================================================================
+   THEME: VERDIA (ORGANIC) — COMMON THEME STYLESHEET
+   Archetype: Botanical Luxury, Clean Living & Farm-to-Table Marketplace
+   ====================================================================== */
+
+:root {
+    --color-primary: #699E4B;
+    --color-accent: #699E4B;
+    --color-citrus: #F95F09;
+    --color-gold: #F7A422;
+    --color-bg: #F9F8F3;
+    --color-text: #222222;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F9F8F3;
+    color: #222222;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+}
+
+::selection {
+    background: #699E4B;
+    color: #FFFFFF;
+}
+
+/* Size pill active styling */
+.size-pill.active,
+.size-pill[aria-selected="true"],
+.pdp-size-pill.active,
+.pdp-size-pill[aria-selected="true"],
+.qv-size.active,
+.qv-size[aria-selected="true"] {
+    background-color: #699E4B !important;
+    color: #FFFFFF !important;
+    border-color: #699E4B !important;
+    font-weight: 700 !important;
+}
+
+.qv-size:not(.active):not(:disabled) {
+    color: #44403C !important;
+    border-color: #E7E5E4 !important;
+    background-color: transparent !important;
+}
+
+/* Hide scrollbars for thumbnail strips */
+.scrollbar-hide::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide,
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Organic theme buttons & cards */
+.btn-organic {
+    background-color: #699E4B;
+    color: #FFFFFF;
+    transition: all 0.25s ease;
+}
+
+.btn-organic:hover {
+    background-color: #56843C;
+    color: #FFFFFF;
+    box-shadow: 0 4px 15px rgba(105, 158, 75, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-organic-gold {
+    background-color: #F7A422;
+    color: #FFFFFF;
+    transition: all 0.25s ease;
+}
+
+.btn-organic-gold:hover {
+    background-color: #DE8F16;
+    color: #FFFFFF;
+    box-shadow: 0 4px 15px rgba(247, 164, 34, 0.35);
+    transform: translateY(-1px);
+}
+
+.organic-card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.organic-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.08);
+}

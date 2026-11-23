@@ -53,6 +53,7 @@
         <a href="{{ route('home') }}" class="underline-grow text-maroon {{ request()->routeIs('home') ? 'after:w-full' : '' }}">Home</a>
 
         {{-- Mega menu: categories --}}
+        @if(isset($categories) && $categories->isNotEmpty())
         <div class="menu-wrap relative">
           <button class="underline-grow text-maroon uppercase flex items-center gap-1" aria-haspopup="true">
             Categories
@@ -85,6 +86,7 @@
             </div>
           </div>
         </div>
+        @endif
 
         <a href="{{ route('featured.products') }}" class="underline-grow text-maroon {{ request()->routeIs('featured.products') ? 'after:w-full' : '' }}">Featured</a>
         <a href="{{ route('new.arrivals') }}" class="underline-grow text-maroon {{ request()->routeIs('new.arrivals') ? 'after:w-full' : '' }}">New In</a>
@@ -106,7 +108,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path stroke-linecap="round" d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>
           </a>
         @else
-          <button id="desktopLoginBtn" aria-label="Sign in" class="text-maroon hover:text-gold transition-colors">
+          <button id="desktopLoginBtn" onclick="openLoginModal()" aria-label="Sign in" class="text-maroon hover:text-gold transition-colors cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path stroke-linecap="round" d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>
           </button>
         @endauth

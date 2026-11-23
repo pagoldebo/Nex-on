@@ -11,4 +11,4 @@ Disallow: /wishlist
 Disallow: /compare
 Disallow: /search
 
-Sitemap: http://nexon.test/sitemap.xml
+Sitemap: /sitemap.xml

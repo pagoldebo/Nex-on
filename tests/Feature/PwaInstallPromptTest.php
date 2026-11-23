@@ -34,7 +34,7 @@ class PwaInstallPromptTest extends TestCase
             'theme_color' => '#7f1d1d',
         ]);
         $response->assertJsonFragment([
-            'src' => '/icons/icon-192x192.png',
+            'src' => 'images/branding/logo.png',
         ]);
     }
 
@@ -90,14 +90,14 @@ class PwaInstallPromptTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.settings.update'), [
             'pwa_prompt_enabled'     => '1',
-            'pwa_prompt_title'       => 'Install Nex-on VIP App',
+            'pwa_prompt_title'       => 'Install Nex-on App',
             'pwa_prompt_description' => 'Install our mobile app for member discounts.',
         ]);
 
         $response->assertRedirect(route('admin.settings.index'));
 
         $this->assertEquals('1', Setting::get('pwa_prompt_enabled'));
-        $this->assertEquals('Install Nex-on VIP App', Setting::get('pwa_prompt_title'));
+        $this->assertEquals('Install Nex-on App', Setting::get('pwa_prompt_title'));
         $this->assertEquals('Install our mobile app for member discounts.', Setting::get('pwa_prompt_description'));
     }
 

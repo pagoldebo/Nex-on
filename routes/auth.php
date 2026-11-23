@@ -53,18 +53,34 @@ Route::middleware('guest')->group(function () {
             ])->onlyInput('email');
         }
 
-        $user = User::where('email', $credentials['email'])->first();
+        $normalizedEmail = Str::lower(trim($credentials['email']));
+        $user = User::where('email', $normalizedEmail)->first() 
+            ?? User::where('email', $credentials['email'])->first();
 
         if ($user && $user->isDeactivated()) {
+            $msg = 'Your account has been deactivated. Please contact support.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => $msg,
+                    'errors'  => ['email' => [$msg]],
+                ], 403);
+            }
             return back()->withErrors([
-                'email' => 'Your account has been deactivated. Please contact support.',
+                'email' => $msg,
             ])->onlyInput('email');
         }
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             RateLimiter::hit($throttleKey, 60);
+            $msg = 'The provided credentials do not match our records.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => $msg,
+                    'errors'  => ['email' => [$msg]],
+                ], 422);
+            }
             return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
+                'email' => $msg,
             ])->onlyInput('email');
         }
 

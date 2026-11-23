@@ -41,14 +41,4 @@
     </div>
   @endif
 </div>
-@push('scripts')
-<script>
-function rmWish(id, btn) {
-  let wl = JSON.parse(localStorage.getItem('lc_wishlist') || '[]');
-  wl = wl.filter(x => x !== id);
-  localStorage.setItem('lc_wishlist', JSON.stringify(wl));
-  btn.closest('.relative').remove();
-}
-</script>
-@endpush
 </x-storefront-layout>

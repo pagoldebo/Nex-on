@@ -33,35 +33,35 @@
       'title' => "Draped in\nGold & Grace",
       'desc'  => 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.',
       'btn'   => 'Explore Collection',
-      'url'   => route('search'),
+      'url'   => '/search',
     ],
     2 => [
       'badge' => 'Royal Trousseau Edit',
       'title' => "Zari Silk &\nVelvet Intimates",
       'desc'  => 'Intricate gold wire embroidery and pure mulberry silk, tailored for sacred celebrations and timeless grandeur.',
       'btn'   => 'Shop Bridal Silk',
-      'url'   => route('search'),
+      'url'   => '/search',
     ],
     3 => [
       'badge' => 'Artisanal Heritage',
       'title' => "The Benarasi\nArchive",
       'desc'  => 'Handwoven motifs passed through generations of master ateliers. Where heritage craft meets modern form.',
       'btn'   => 'Discover The Archive',
-      'url'   => route('search'),
+      'url'   => '/search',
     ],
     4 => [
       'badge' => 'Festive Elegance',
       'title' => "Crimson Whisper\nCapsule",
       'desc'  => 'Weightless tulle drenched in ceremonial crimson, edged with delicate antique gota patti work.',
       'btn'   => 'Explore Capsule',
-      'url'   => route('search'),
+      'url'   => '/search',
     ],
     5 => [
       'badge' => 'Bespoke Craft',
       'title' => "Pure Heirloom\nComfort",
       'desc'  => 'Soft uncrushable silk satin crafted to drape seamlessly under royal lehengas and festive silhouettes.',
       'btn'   => 'Shop Collection',
-      'url'   => route('search'),
+      'url'   => '/search',
     ],
   ];
 
@@ -78,7 +78,7 @@
       'title'    => \App\Models\Setting::get("saaya_slide_{$s}_title", $s === 1 ? \App\Models\Setting::get('saaya_hero_title', $def['title']) : $def['title']),
       'subtitle' => \App\Models\Setting::get("saaya_slide_{$s}_subtitle", $s === 1 ? \App\Models\Setting::get('saaya_hero_subtitle', $def['desc']) : $def['desc']),
       'btn_text' => \App\Models\Setting::get("saaya_slide_{$s}_btn_text", $def['btn']),
-      'btn_url'  => \App\Models\Setting::get("saaya_slide_{$s}_btn_url", $def['url']),
+      'btn_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get("saaya_slide_{$s}_btn_url", $def['url'])),
     ];
   }
 @endphp
@@ -237,6 +237,7 @@
 @php
   $parentCategories = $categories->filter(fn($c) => is_null($c->parent_id));
 @endphp
+@if($parentCategories && $parentCategories->count())
 <section class="bg-ivory pt-10 pb-4 lg:pt-12 lg:pb-6"
          x-data="{
            canScrollLeft: false,
@@ -344,41 +345,12 @@
           <div class="absolute top-3 right-3 w-6 h-6 border-t border-r border-gold/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           <div class="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-gold/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
         </a>
-      @empty
-        @php
-          $defaultSaayaCats = [
-            'Bralettes',
-            'Lingerie Sets',
-            'Bodysuits',
-            'Nightwear & Robes',
-            'Bridal Edit',
-            'Everyday Essentials',
-          ];
-        @endphp
-        @foreach($defaultSaayaCats as $fallbackName)
-          <a href="{{ route('featured.products') }}"
-             class="category-item group relative overflow-hidden shrink-0 w-[170px] sm:w-[200px] md:w-[220px] lg:w-[230px] xl:w-[245px] transition-transform duration-300 shadow-sm hover:shadow-xl"
-             style="aspect-ratio: 3/4; scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="card-img-wrap absolute inset-0">
-              <div class="w-full h-full bg-gradient-to-b from-blush/40 to-maroon/70"></div>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-maroon/90 via-maroon/30 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-4 lg:p-5">
-              <p class="font-display text-ivory text-lg sm:text-xl lg:text-2xl leading-tight line-clamp-2">{{ $fallbackName }}</p>
-              <p class="font-body text-gold text-[10px] sm:text-xs tracking-widest uppercase mt-1 flex items-center gap-1 font-semibold">
-                Shop Now
-                <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
-              </p>
-            </div>
-            <div class="absolute top-3 right-3 w-6 h-6 border-t border-r border-gold/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            <div class="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-gold/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-          </a>
-        @endforeach
-      @endforelse
+      @endforeach
     </div>
 
   </div>
 </section>
+@endif
 
 
 {{-- ═══════════════════════════════════════════════

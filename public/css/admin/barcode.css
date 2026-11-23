@@ -1,0 +1,157 @@
+/* ==========================================================================
+   NEXON ADMIN PANEL — THERMAL BARCODE LABELS STYLESHEET
+   Supports 50x25mm, 38x25mm, 100x50mm Thermal Roll Labels
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f3f4f6;
+    color: #000;
+}
+
+.screen-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #1e293b;
+    color: #fff;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 9999;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.btn {
+    background: #4f46e5;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn:hover {
+    background: #4338ca;
+}
+
+.labels-container {
+    margin-top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.thermal-label {
+    background: #fff;
+    width: var(--label-w, 50mm);
+    height: var(--label-h, 25mm);
+    padding: 2mm 3mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border: 1px dashed #cbd5e1;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+}
+
+.label-store {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.label-name {
+    font-size: 7.5pt;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    line-height: 1.1;
+}
+
+.label-barcode {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1px 0;
+}
+
+.label-barcode svg {
+    max-width: 95%;
+    height: var(--barcode-h, 45px);
+}
+
+.label-footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 6.5pt;
+    line-height: 1;
+}
+
+.label-sku {
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.label-meta {
+    font-weight: 600;
+    color: #374151;
+}
+
+.label-price {
+    font-weight: 800;
+    font-size: 7.5pt;
+}
+
+@media print {
+    body {
+        background-color: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .screen-toolbar {
+        display: none !important;
+    }
+    .labels-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+    }
+    .thermal-label {
+        border: none !important;
+        margin: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+    @page {
+        margin: 0;
+        size: auto;
+    }
+}

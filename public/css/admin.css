@@ -1,0 +1,447 @@
+/* ==========================================================================
+   NEXON ADMIN PANEL — CORE SYSTEM STYLESHEET
+   Typography, Dark Theme Engine, Components, Scrollbars & Layout Tokens
+   ========================================================================== */
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+}
+
+/* Sleek clean scrollbar for light sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.6);
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+.sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 rgba(241, 245, 249, 0.6);
+}
+
+/* ==========================================================================
+   ADMIN BLACK / DARK THEME SYSTEM
+   ========================================================================== */
+
+/* Smooth transitions when toggling theme */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *:before,
+html.theme-transitioning *:after {
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.15s ease-in-out !important;
+}
+
+@media screen {
+    /* 1. Base dark background & default text */
+    html.dark {
+        color-scheme: dark;
+    }
+
+    html.dark,
+    html.dark body {
+        background-color: #090d16 !important;
+        color: #e2e8f0 !important;
+    }
+
+    /* Workspace Canvas */
+    html.dark #adminWorkspace {
+        background-color: #090d16 !important;
+    }
+
+    /* 2. Topbar Header & Mobile Nav */
+    html.dark header.bg-white,
+    html.dark div.md\:hidden.bg-white {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+        color: #f8fafc !important;
+    }
+
+    /* 3. Sidebar Navigation */
+    html.dark aside,
+    html.dark aside > div,
+    html.dark #adminSidebarNav {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+        color: #cbd5e1 !important;
+    }
+
+    html.dark #adminSidebarNav a.text-slate-700,
+    html.dark #adminSidebarNav a.text-slate-600,
+    html.dark #adminSidebarNav button.text-slate-700 {
+        color: #94a3b8 !important;
+    }
+
+    html.dark #adminSidebarNav a:hover,
+    html.dark #adminSidebarNav button:hover {
+        color: #f8fafc !important;
+        background-color: #1e293b !important;
+    }
+
+    html.dark #adminSidebarNav a.bg-indigo-50,
+    html.dark #adminSidebarNav button.bg-indigo-50\/50 {
+        background-color: rgba(99, 102, 241, 0.18) !important;
+        color: #818cf8 !important;
+    }
+
+    html.dark #adminSidebarNav div[x-show*="openMenus"] {
+        border-color: #1e293b !important;
+    }
+
+    /* 4. Cards, Containers, Modals & Dropdowns */
+    html.dark .bg-white {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+        color: #e2e8f0;
+    }
+
+    /* 5. Toolbars, Submenu Bars, Filters & Subtle Tinted Backgrounds */
+    html.dark .bg-slate-50,
+    html.dark .bg-gray-50,
+    html.dark [class*="bg-slate-50"],
+    html.dark [class*="bg-gray-50"] {
+        background-color: #0b1120 !important;
+        border-color: #1e293b !important;
+    }
+
+    /* Clean table rows - remove muddy light-slate washes on root categories and rows */
+    html.dark tbody tr[class*="bg-slate-50"],
+    html.dark tbody tr[class*="bg-gray-50"],
+    html.dark tbody tr.bg-slate-50\/30,
+    html.dark tbody tr.bg-slate-50\/20 {
+        background-color: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    html.dark tbody tr:hover,
+    html.dark tbody tr[class*="hover:bg-slate-50"]:hover,
+    html.dark .hover\:bg-slate-50:hover,
+    html.dark .hover\:bg-slate-50\/70:hover,
+    html.dark .hover\:bg-slate-50\/80:hover,
+    html.dark .hover\:bg-slate-100:hover,
+    html.dark .hover\:bg-slate-100\/70:hover,
+    html.dark .hover\:bg-slate-100\/80:hover {
+        background-color: rgba(30, 41, 59, 0.5) !important;
+    }
+
+    html.dark .bg-slate-100,
+    html.dark .bg-gray-100,
+    html.dark [class*="bg-slate-100"],
+    html.dark [class*="bg-gray-100"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #cbd5e1 !important;
+    }
+
+    html.dark .bg-slate-200,
+    html.dark .bg-gray-200,
+    html.dark [class*="bg-slate-200"],
+    html.dark [class*="bg-gray-200"] {
+        background-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+
+    /* 6. Text Contrast & Maximum Readability Across All Submenus */
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-gray-900,
+    html.dark .text-gray-800,
+    html.dark [class*="text-slate-900"],
+    html.dark [class*="text-slate-800"],
+    html.dark [class*="text-gray-900"],
+    html.dark [class*="text-gray-800"] {
+        color: #ffffff !important;
+    }
+
+    html.dark .text-slate-700,
+    html.dark .text-slate-600,
+    html.dark .text-gray-700,
+    html.dark .text-gray-600,
+    html.dark [class*="text-slate-700"],
+    html.dark [class*="text-slate-600"],
+    html.dark [class*="text-gray-700"],
+    html.dark [class*="text-gray-600"] {
+        color: #cbd5e1 !important;
+    }
+
+    html.dark .text-slate-500,
+    html.dark .text-gray-500,
+    html.dark [class*="text-slate-500"],
+    html.dark [class*="text-gray-500"] {
+        color: #94a3b8 !important;
+    }
+
+    html.dark .text-slate-400,
+    html.dark .text-gray-400,
+    html.dark [class*="text-slate-400"],
+    html.dark [class*="text-gray-400"] {
+        color: #94a3b8 !important;
+    }
+
+    html.dark .text-slate-300,
+    html.dark [class*="text-slate-300"] {
+        color: #cbd5e1 !important;
+    }
+
+    /* 7. Borders & Dividers */
+    html.dark .border-slate-200,
+    html.dark .border-slate-100,
+    html.dark .border-slate-300,
+    html.dark .border-gray-200,
+    html.dark .border-gray-100,
+    html.dark [class*="border-slate-200"],
+    html.dark [class*="border-slate-100"],
+    html.dark [class*="border-slate-300"],
+    html.dark [class*="border-gray-200"] {
+        border-color: #1e293b !important;
+    }
+
+    html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+    html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+    html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+    html.dark [class*="divide-slate-100"] > :not([hidden]) ~ :not([hidden]),
+    html.dark [class*="divide-slate-200"] > :not([hidden]) ~ :not([hidden]) {
+        border-color: #1e293b !important;
+    }
+
+    /* 8. Form Controls: Inputs, selects, textareas */
+    html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="range"]):not([type="color"]):not([type="file"]),
+    html.dark select,
+    html.dark textarea {
+        background-color: #0b1120 !important;
+        border: 1px solid #334155 !important;
+        color: #f8fafc !important;
+    }
+
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+        color: #94a3b8 !important;
+    }
+
+    html.dark select option {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+    }
+
+    html.dark input[type="checkbox"],
+    html.dark input[type="radio"] {
+        background-color: #0b1120 !important;
+        border-color: #334155 !important;
+    }
+
+    /* 9. Tables */
+    html.dark table thead,
+    html.dark table thead th,
+    html.dark thead[class*="bg-slate-50"],
+    html.dark thead[class*="bg-gray-50"] {
+        background-color: #0b1120 !important;
+        color: #94a3b8 !important;
+        border-color: #1e293b !important;
+    }
+
+    html.dark table tbody tr {
+        border-color: #1e293b !important;
+    }
+
+    /* 10. Buttons in Bars and Tables */
+    html.dark button[class*="bg-slate-200"],
+    html.dark a[class*="bg-slate-200"],
+    html.dark input[type="submit"][class*="bg-slate-200"],
+    html.dark button[class*="bg-slate-100"],
+    html.dark a[class*="bg-slate-100"],
+    html.dark input[type="submit"][class*="bg-slate-100"],
+    html.dark button[class*="bg-slate-300"],
+    html.dark a[class*="bg-slate-300"] {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    html.dark button[class*="bg-slate-200"]:hover,
+    html.dark a[class*="bg-slate-200"]:hover,
+    html.dark input[type="submit"][class*="bg-slate-200"]:hover,
+    html.dark button[class*="bg-slate-100"]:hover,
+    html.dark a[class*="bg-slate-100"]:hover,
+    html.dark input[type="submit"][class*="bg-slate-100"]:hover,
+    html.dark [class*="hover:bg-slate-200"]:hover,
+    html.dark [class*="hover:bg-slate-300"]:hover {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #ffffff !important;
+    }
+
+    /* Invert light slate-900 buttons so they contrast against dark backgrounds */
+    html.dark button.bg-slate-900,
+    html.dark a.bg-slate-900,
+    html.dark input[type="submit"].bg-slate-900 {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+        color: #f8fafc !important;
+    }
+
+    html.dark button.bg-slate-900:hover,
+    html.dark a.bg-slate-900:hover,
+    html.dark input[type="submit"].bg-slate-900:hover {
+        background-color: #334155 !important;
+    }
+
+    /* 11. Status Badges, Chips & Income Statement Callouts */
+    html.dark [class*="bg-emerald-50"],
+    html.dark [class*="bg-green-50"] {
+        background-color: rgba(6, 78, 59, 0.4) !important;
+        border-color: rgba(16, 185, 129, 0.35) !important;
+        color: #34d399 !important;
+    }
+
+    html.dark [class*="text-emerald-950"],
+    html.dark [class*="text-emerald-900"],
+    html.dark [class*="text-emerald-800"] {
+        color: #34d399 !important;
+    }
+    html.dark [class*="text-emerald-700"],
+    html.dark [class*="text-emerald-600"] {
+        color: #6ee7b7 !important;
+    }
+
+    html.dark [class*="bg-indigo-50"] {
+        background-color: rgba(49, 46, 129, 0.4) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        color: #a5b4fc !important;
+    }
+
+    html.dark [class*="text-indigo-950"],
+    html.dark [class*="text-indigo-900"],
+    html.dark [class*="text-indigo-800"] {
+        color: #818cf8 !important;
+    }
+    html.dark [class*="text-indigo-700"],
+    html.dark [class*="text-indigo-600"] {
+        color: #a5b4fc !important;
+    }
+
+    html.dark [class*="bg-rose-50"],
+    html.dark [class*="bg-red-50"] {
+        background-color: rgba(136, 19, 55, 0.4) !important;
+        border-color: rgba(244, 63, 94, 0.35) !important;
+        color: #fb7185 !important;
+    }
+
+    html.dark [class*="text-rose-950"],
+    html.dark [class*="text-rose-900"],
+    html.dark [class*="text-rose-800"] {
+        color: #fb7185 !important;
+    }
+    html.dark [class*="text-rose-700"],
+    html.dark [class*="text-rose-600"] {
+        color: #fda4af !important;
+    }
+
+    html.dark [class*="bg-amber-50"],
+    html.dark [class*="bg-yellow-50"] {
+        background-color: rgba(120, 53, 15, 0.4) !important;
+        border-color: rgba(245, 158, 11, 0.35) !important;
+        color: #fbbf24 !important;
+    }
+
+    html.dark [class*="text-amber-950"],
+    html.dark [class*="text-amber-900"],
+    html.dark [class*="text-amber-800"] {
+        color: #fbbf24 !important;
+    }
+    html.dark [class*="text-amber-700"],
+    html.dark [class*="text-amber-600"] {
+        color: #fde68a !important;
+    }
+
+    html.dark [class*="bg-purple-50"] {
+        background-color: rgba(88, 28, 135, 0.4) !important;
+        border-color: rgba(168, 85, 247, 0.35) !important;
+        color: #c084fc !important;
+    }
+
+    html.dark [class*="text-purple-950"],
+    html.dark [class*="text-purple-900"],
+    html.dark [class*="text-purple-800"] {
+        color: #c084fc !important;
+    }
+    html.dark [class*="text-purple-700"],
+    html.dark [class*="text-purple-600"] {
+        color: #d8b4fe !important;
+    }
+
+    html.dark [class*="bg-blue-50"],
+    html.dark [class*="bg-sky-50"] {
+        background-color: rgba(30, 58, 138, 0.4) !important;
+        border-color: rgba(59, 130, 246, 0.35) !important;
+        color: #60a5fa !important;
+    }
+
+    html.dark [class*="text-blue-950"],
+    html.dark [class*="text-blue-900"],
+    html.dark [class*="text-blue-800"] {
+        color: #60a5fa !important;
+    }
+    html.dark [class*="text-blue-700"],
+    html.dark [class*="text-blue-600"] {
+        color: #93c5fd !important;
+    }
+
+    /* 12. Subtle Shadows */
+    html.dark .shadow-2xs,
+    html.dark .shadow-xs,
+    html.dark .shadow-sm {
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* 13. Dark Scrollbar */
+    html.dark .sidebar-scroll::-webkit-scrollbar-track {
+        background: #0f172a;
+    }
+    html.dark .sidebar-scroll::-webkit-scrollbar-thumb {
+        background: #334155;
+    }
+    html.dark .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+    }
+    html.dark .sidebar-scroll {
+        scrollbar-color: #334155 #0f172a;
+    }
+
+    html.dark ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    html.dark ::-webkit-scrollbar-track {
+        background: #090d16;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 9999px;
+    }
+    html.dark ::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+    }
+    html.dark {
+        scrollbar-color: #1e293b #090d16;
+    }
+}

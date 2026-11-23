@@ -31,7 +31,7 @@
         <h3 id="loginModalTitle" class="text-lg font-black text-stone-900 font-display">Patron Access</h3>
       </div>
       <form method="dialog">
-        <button type="submit" class="p-1.5 text-stone-400 hover:text-stone-700 rounded-full" aria-label="Close dialog">
+        <button type="button" onclick="closeLoginModal()" class="p-1.5 text-stone-400 hover:text-stone-700 rounded-full" aria-label="Close dialog">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </form>
@@ -41,11 +41,16 @@
     <form action="{{ route('login') }}" method="POST" class="mt-6 space-y-4">
       @csrf
 
+      <div id="loginModalAlert" class="@if(isset($errors) && ($errors->has('email') || $errors->has('password'))) @else hidden @endif p-3.5 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-700 font-medium">
+          <span id="loginModalAlertText">{{ isset($errors) ? ($errors->first('email') ?: $errors->first('password')) : '' }}</span>
+      </div>
+
       <div>
         <label for="modalEmail" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Email Address</label>
         <input type="email" 
                id="modalEmail" 
                name="email" 
+               value="{{ old('email') }}"
                required 
                autofocus
                placeholder="name@example.com" 

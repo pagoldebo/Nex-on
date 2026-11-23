@@ -24,7 +24,7 @@
                 <button onclick="closeCategorySheet()" class="text-gray-400" aria-label="Close">&times;</button>
             </div>
             <div class="space-y-3">
-                @foreach ($categories ?? [] as $cat)
+                @forelse ($categories ?? [] as $cat)
                     <div class="border-b border-pink-50 pb-2">
                         <div class="flex items-center justify-between py-2 text-gray-700">
                             <a href="{{ route('category.show', $cat->slug) }}" onclick="closeCategorySheet()"
@@ -46,7 +46,9 @@
                             </div>
                         @endif
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-xs text-center py-6 text-gray-400">No categories available.</p>
+                @endforelse
             </div>
             <a href="{{ route('search') }}" onclick="closeCategorySheet()" class="block text-center mt-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest bg-[#405549] text-white">View All Products</a>
         </div>

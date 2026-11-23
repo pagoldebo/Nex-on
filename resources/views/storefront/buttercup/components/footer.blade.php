@@ -78,31 +78,6 @@
                 </div>
                 <p class="buttercup-nl-msg text-xs text-[#FFFAF5] hidden font-semibold"></p>
             </form>
-            <script>
-            async function submitButtercupNewsletter(form) {
-                const input = form.querySelector('input[name="email"]');
-                const msg = form.querySelector('.buttercup-nl-msg');
-                const btn = form.querySelector('button');
-                if (!input || !input.value) return;
-                btn.disabled = true;
-                try {
-                    const res = await fetch('{{ route('newsletter.subscribe') }}', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                        body: JSON.stringify({ email: input.value })
-                    });
-                    const data = await res.json();
-                    msg.textContent = data.message || 'Subscribed!';
-                    msg.classList.remove('hidden');
-                    input.value = '';
-                } catch {
-                    msg.textContent = 'Error subscribing. Please try again.';
-                    msg.classList.remove('hidden');
-                } finally {
-                    btn.disabled = false;
-                }
-            }
-            </script>
         </div>
     </div>
     <p class="text-center text-xs text-[#FFFAF5]/40 mt-12">© {{ date('Y') }} {{ config('app.name', 'Nex-on') }}. All rights reserved. <span class="platform-branding-attribution inline-block" data-nexon-platform-branding="verified">{{ $platformBranding ?? '• Powered by Nex-on' }}</span></p>

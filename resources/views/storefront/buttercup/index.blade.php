@@ -31,45 +31,45 @@
       'title'    => "Comfort that\nFeels Like Home",
       'subtitle' => 'Buttery-soft everyday lingerie, made for real bodies and real days — because comfort should never be a compromise.',
       'btn1_text'=> 'Shop Now',
-      'btn1_url' => route('home') . '#products',
+      'btn1_url' => '#products',
       'btn2_text'=> 'Explore',
-      'btn2_url' => route('search'),
+      'btn2_url' => '/search',
     ],
     2 => [
       'badge'    => 'Cloud-Soft Intimates',
       'title'    => "Second-Skin Ease,\nAll Day Long",
       'subtitle' => 'Breathable modal and organic cotton with zero pinch. Gentle, weightless support made to move with you.',
       'btn1_text'=> 'Shop Intimates',
-      'btn1_url' => route('home') . '#products',
+      'btn1_url' => '#products',
       'btn2_text'=> 'View Collection',
-      'btn2_url' => route('featured.products'),
+      'btn2_url' => '/featured-products',
     ],
     3 => [
       'badge'    => 'Pure Indulgence',
       'title'    => "Soft as a Whisper,\nCrafted for You",
       'subtitle' => 'Delicate lace accents meet featherlight silhouettes. Experience the sublime touch of effortless elegance every day.',
       'btn1_text'=> 'Explore Bestsellers',
-      'btn1_url' => route('home') . '#products',
+      'btn1_url' => '#products',
       'btn2_text'=> 'Discover More',
-      'btn2_url' => route('search'),
+      'btn2_url' => '/search',
     ],
     4 => [
       'badge'    => 'Wire-Free Freedom',
       'title'    => "Zero Pinching,\n100% Pure Comfort",
       'subtitle' => 'Say goodbye to painful underwires forever. Our contour bands adapt harmoniously to your natural curves.',
       'btn1_text'=> 'Shop Wire-Free',
-      'btn1_url' => route('home') . '#products',
+      'btn1_url' => '#products',
       'btn2_text'=> 'Our Fit Guide',
-      'btn2_url' => route('search'),
+      'btn2_url' => '/search',
     ],
     5 => [
       'badge'    => 'Lounge & Sleep',
       'title'    => "Dreamy Loungewear\nfor Cozy Evenings",
       'subtitle' => 'From quiet morning coffee to tranquil midnight slumber — wrap yourself in the soothing bliss of buttery loungewear.',
       'btn1_text'=> 'Shop Loungewear',
-      'btn1_url' => route('home') . '#products',
+      'btn1_url' => '#products',
       'btn2_text'=> 'Explore All',
-      'btn2_url' => route('featured.products'),
+      'btn2_url' => '/featured-products',
     ],
   ];
 
@@ -90,9 +90,9 @@
       'title'     => \App\Models\Setting::get("buttercup_slide_{$s}_title", $s === 1 ? \App\Models\Setting::get('buttercup_hero_title', $d['title']) : $d['title']),
       'subtitle'  => \App\Models\Setting::get("buttercup_slide_{$s}_subtitle", $s === 1 ? \App\Models\Setting::get('buttercup_hero_subtitle', $d['subtitle']) : $d['subtitle']),
       'btn1_text' => \App\Models\Setting::get("buttercup_slide_{$s}_btn1_text", $d['btn1_text']),
-      'btn1_url'  => \App\Models\Setting::get("buttercup_slide_{$s}_btn1_url", $d['btn1_url']),
+      'btn1_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get("buttercup_slide_{$s}_btn1_url", $d['btn1_url'])),
       'btn2_text' => \App\Models\Setting::get("buttercup_slide_{$s}_btn2_text", $d['btn2_text']),
-      'btn2_url'  => \App\Models\Setting::get("buttercup_slide_{$s}_btn2_url", $d['btn2_url']),
+      'btn2_url'  => \App\Models\Setting::relativizeUrl(\App\Models\Setting::get("buttercup_slide_{$s}_btn2_url", $d['btn2_url'])),
     ];
   }
 @endphp
@@ -242,6 +242,10 @@
   <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-[#D89AA0]/40 to-transparent"></div>
 </div>
 
+@php
+  $parentCats = isset($categories) ? $categories->filter(fn($c) => is_null($c->parent_id)) : collect();
+@endphp
+@if($parentCats && $parentCats->count())
 {{-- ===== CATEGORIES ===== --}}
 <section class="py-12 lg:py-16 px-6 lg:px-10" 
          style="background:#FFFAF5"
@@ -322,10 +326,7 @@
          @scroll.passive="checkScroll()"
          class="flex items-start gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth scrollbar-none pb-2 pt-1"
          style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
-      @php
-        $parentCats = $categories->filter(fn($c) => is_null($c->parent_id));
-      @endphp
-      @forelse($parentCats as $cat)
+      @foreach($parentCats as $cat)
         <a href="{{ route('category.show', $cat->slug) }}" 
            class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
            style="scroll-snap-align: start; scroll-snap-stop: normal;">
@@ -343,20 +344,7 @@
             {{ $cat->name }}
           </h3>
         </a>
-      @empty
-        @foreach(['Lingerie Sets', 'Bralettes', 'Bodysuits', 'Nightwear', 'Bridal Edit', 'Everyday Essentials'] as $fallbackName)
-          <a href="{{ route('featured.products') }}" 
-             class="category-item group shrink-0 lg:shrink lg:flex-1 min-w-[96px] sm:min-w-[105px] lg:min-w-0 flex flex-col items-center text-center transition"
-             style="scroll-snap-align: start; scroll-snap-stop: normal;">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full overflow-hidden mb-3 bg-[#D89AA0]/15 border-2 border-[#D89AA0]/30 shadow-2xs group-hover:scale-105 group-hover:border-[#D89AA0] group-hover:shadow-md transition-all duration-300 flex items-center justify-center">
-              <svg viewBox="0 0 60 60" class="w-10 h-10"><circle cx="30" cy="30" r="20" fill="#D89AA0" opacity="0.4"/></svg>
-            </div>
-            <h3 class="font-body font-semibold text-xs sm:text-sm text-[#4A3B3A] group-hover:text-[#B97680] transition leading-snug px-1 line-clamp-2 max-w-[125px]">
-              {{ $fallbackName }}
-            </h3>
-          </a>
-        @endforeach
-      @endforelse
+      @endforeach
     </div>
   </div>
 </section>
@@ -365,6 +353,7 @@
 <div class="bg-[#FBE7E4]/50 py-3 flex justify-center">
   <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-[#7F9272]/30 to-transparent"></div>
 </div>
+@endif
 
 {{-- ===== CURATED FEATURED PICKS ===== --}}
 @php
@@ -636,95 +625,5 @@
     </form>
   </div>
 </section>
-
-@push('scripts')
-<script src="{{ asset('js/product-card.js') }}"></script>
-<script>
-(function () {
-  /* ── Sale Section tab filter ── */
-  const saleTabs  = document.querySelectorAll('#saleFilterWrap .sale-tab');
-  const saleCards = document.querySelectorAll('#saleGrid .sale-card');
-  const saleGrid  = document.getElementById('saleGrid');
-
-  saleTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      saleTabs.forEach(t => {
-        t.classList.remove('active', 'border-[#D89AA0]', 'text-[#B97680]', 'bg-[#D89AA0]/15');
-        t.classList.add('border-[#D89AA0]/30', 'text-[#4A3B3A]/60');
-      });
-      tab.classList.add('active', 'border-[#D89AA0]', 'text-[#B97680]', 'bg-[#D89AA0]/15');
-      tab.classList.remove('border-[#D89AA0]/30', 'text-[#4A3B3A]/60');
-
-      const filter = tab.dataset.filter;
-      let visibleCount = 0;
-      saleCards.forEach(card => {
-        const cats = (card.dataset.category || '').split(/\s+/).filter(Boolean);
-        const match = filter === 'all' || cats.includes(filter);
-        card.style.display = match ? '' : 'none';
-        if (match) visibleCount++;
-      });
-
-      let emptyMsg = document.getElementById('saleEmptyMsg');
-      if (visibleCount === 0) {
-        if (!emptyMsg && saleGrid) {
-          emptyMsg = document.createElement('div');
-          emptyMsg.id = 'saleEmptyMsg';
-          emptyMsg.className = 'col-span-full py-16 text-center text-[#4A3B3A]/60 font-body';
-          emptyMsg.innerHTML = '<p class="text-base font-semibold text-[#4A3B3A]/80 mb-1">No items found</p><p class="text-xs text-[#4A3B3A]/50">No promotional deals currently available in this collection.</p>';
-          saleGrid.appendChild(emptyMsg);
-        } else if (emptyMsg) {
-          emptyMsg.style.display = '';
-        }
-      } else if (emptyMsg) {
-        emptyMsg.style.display = 'none';
-      }
-    });
-  });
-
-  /* ── Best Sellers tab filter ── */
-  const tabs   = document.querySelectorAll('.bs-tab');
-  const cards  = document.querySelectorAll('.bs-card');
-  const bsGrid = document.getElementById('bsGrid');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('active','border-[#D89AA0]','text-[#B97680]');
-        t.classList.add('border-[#D89AA0]/30','text-[#4A3B3A]/60');
-      });
-      tab.classList.add('active','border-[#D89AA0]','text-[#B97680]');
-      tab.classList.remove('border-[#D89AA0]/30','text-[#4A3B3A]/60');
-
-      const filter = tab.dataset.filter;
-      let visibleCount = 0;
-      cards.forEach(card => {
-        const cats = (card.dataset.category || '').split(/\s+/).filter(Boolean);
-        const match = filter === 'all' || cats.includes(filter);
-        card.style.display = match ? '' : 'none';
-        if (match) visibleCount++;
-      });
-
-      let emptyMsg = document.getElementById('bsEmptyMsg');
-      if (visibleCount === 0) {
-        if (!emptyMsg && bsGrid) {
-          emptyMsg = document.createElement('div');
-          emptyMsg.id = 'bsEmptyMsg';
-          emptyMsg.className = 'col-span-full py-16 text-center text-[#4A3B3A]/60 font-body';
-          emptyMsg.innerHTML = '<p class="text-base font-semibold text-[#4A3B3A]/80 mb-1">No items found</p><p class="text-xs text-[#4A3B3A]/50">No best-selling items currently available in this collection.</p>';
-          bsGrid.appendChild(emptyMsg);
-        } else if (emptyMsg) {
-          emptyMsg.style.display = '';
-        }
-      } else if (emptyMsg) {
-        emptyMsg.style.display = 'none';
-      }
-    });
-  });
-
-  document.querySelector('.bs-tab.active')?.classList.add('border-[#D89AA0]','text-[#B97680]');
-  document.querySelector('.bs-tab.active')?.classList.remove('border-[#D89AA0]/30','text-[#4A3B3A]/60');
-})();
-</script>
-@endpush
 
 </x-storefront-layout>

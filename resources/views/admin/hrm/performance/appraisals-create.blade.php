@@ -15,17 +15,8 @@
 @extends('admin.layout')
 
 @section('content')
-<div class="space-y-6 max-w-4xl mx-auto" x-data="{
-    selfRating: 4.0,
-    managerRating: 4.5,
-    peerRating: 4.2,
-    get composite() {
-        let s = (parseFloat(this.selfRating) || 0) * 0.30;
-        let m = (parseFloat(this.managerRating) || 0) * 0.50;
-        let p = (parseFloat(this.peerRating) || 0) * 0.20;
-        return Math.round((s + m + p) * 100) / 100;
-    }
-}">
+<script src="{{ asset('js/admin/hrm.js') }}"></script>
+<div class="space-y-6 max-w-4xl mx-auto" x-data="appraisalBuilder(4.0, 4.5, 4.2)">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>

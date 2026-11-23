@@ -5,8 +5,7 @@
 
 const CACHE_NAME = 'nexon-store-pwa-v2';
 const urlsToCache = [
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    '/images/branding/logo.png',
 ];
 
 self.addEventListener('install', event => {

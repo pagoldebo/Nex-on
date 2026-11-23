@@ -44,39 +44,4 @@
     </div>
   </div>
 </div>
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const el = document.getElementById('cartPageItems');
-  if (!cart.length) return;
-  el.innerHTML = '<div class="divide-y" style="border-color:#D89AA022">' + cart.map(i => `
-    <div class="flex gap-4 py-4">
-      <img src="${i.image}" class="w-20 h-20 object-cover rounded-2xl flex-shrink-0 bg-gray-100">
-      <div class="flex-1 min-w-0">
-        <p class="font-body font-semibold text-sm text-[#4A3B3A]">${i.name}</p>
-        <p class="font-body text-xs opacity-50 mt-0.5 text-[#4A3B3A]">${i.colorName} / ${i.size}</p>
-        <div class="flex items-center gap-3 mt-2">
-          <button onclick="adjustQty(${i.productId},'${i.colorName}','${i.size}',-1)" class="w-6 h-6 border rounded-full text-sm flex items-center justify-center" style="border-color:#D89AA044;color:#4A3B3A">−</button>
-          <span class="font-body text-sm text-[#4A3B3A]">${i.qty}</span>
-          <button onclick="adjustQty(${i.productId},'${i.colorName}','${i.size}',1)"  class="w-6 h-6 border rounded-full text-sm flex items-center justify-center" style="border-color:#D89AA044;color:#4A3B3A">+</button>
-        </div>
-      </div>
-      <div class="text-right">
-        <p class="font-display font-bold" style="color:#D89AA0">₹${(i.price*i.qty).toLocaleString('en-IN')}</p>
-        <button onclick="removeFromCart(${i.productId},'${i.colorName}','${i.size}');location.reload()" class="text-xs opacity-40 hover:opacity-80 mt-1 font-body text-[#4A3B3A]">Remove</button>
-      </div>
-    </div>`).join('') + '</div>';
-  const tot = cartTotal();
-  document.getElementById('cartPageSubtotal').textContent = '₹' + tot.toLocaleString('en-IN');
-  document.getElementById('cartPageTotal').textContent = '₹' + tot.toLocaleString('en-IN');
-});
-function adjustQty(pid, cn, sz, d) {
-  const i = cart.find(x => x.productId===pid && x.colorName===cn && x.size===sz);
-  if (!i) return;
-  i.qty = Math.max(1, i.qty + d);
-  persistCart();
-  location.reload();
-}
-</script>
-@endpush
 </x-storefront-layout>

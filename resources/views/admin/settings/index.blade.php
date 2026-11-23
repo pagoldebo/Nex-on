@@ -422,7 +422,7 @@
                                 <div>
                                     <label class="block text-xs text-slate-600 mb-1">Explore Button Link URL</label>
                                     <input type="text" name="vyra_hero_btn2_url" 
-                                           value="{{ $settings['vyra_hero_btn2_url'] ?? route('search') }}" 
+                                           value="{{ $settings['vyra_hero_btn2_url'] ?? '/search' }}" 
                                            placeholder="/search"
                                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-indigo-500 outline-none">
                                 </div>
@@ -551,7 +551,7 @@
                                 'btn1'  => 'Shop Now',
                                 'url1'  => '#products',
                                 'btn2'  => 'Explore',
-                                'url2'  => route('search'),
+                                'url2'  => '/search',
                             ],
                             2 => [
                                 'badge' => 'Cloud-Soft Intimates',
@@ -560,7 +560,7 @@
                                 'btn1'  => 'Shop Intimates',
                                 'url1'  => '#products',
                                 'btn2'  => 'View Collection',
-                                'url2'  => route('featured.products'),
+                                'url2'  => '/featured-products',
                             ],
                             3 => [
                                 'badge' => 'Pure Indulgence',
@@ -569,7 +569,7 @@
                                 'btn1'  => 'Explore Bestsellers',
                                 'url1'  => '#products',
                                 'btn2'  => 'Discover More',
-                                'url2'  => route('search'),
+                                'url2'  => '/search',
                             ],
                             4 => [
                                 'badge' => 'Wire-Free Freedom',
@@ -578,7 +578,7 @@
                                 'btn1'  => 'Shop Wire-Free',
                                 'url1'  => '#products',
                                 'btn2'  => 'Our Fit Guide',
-                                'url2'  => route('search'),
+                                'url2'  => '/search',
                             ],
                             5 => [
                                 'badge' => 'Lounge & Sleep',
@@ -587,7 +587,7 @@
                                 'btn1'  => 'Shop Loungewear',
                                 'url1'  => '#products',
                                 'btn2'  => 'Explore All',
-                                'url2'  => route('featured.products'),
+                                'url2'  => '/featured-products',
                             ],
                         ];
                     @endphp
@@ -920,7 +920,7 @@
                                 <div>
                                     <label class="block text-xs text-slate-600 mb-1 font-medium">Secondary Button Link</label>
                                     <input type="text" name="lumiere_hero_btn2_url" 
-                                           value="{{ $settings['lumiere_hero_btn2_url'] ?? route('search') }}" 
+                                           value="{{ $settings['lumiere_hero_btn2_url'] ?? '/search' }}" 
                                            placeholder="/search"
                                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm font-mono text-xs focus:border-pink-400 outline-none">
                                 </div>
@@ -1047,35 +1047,35 @@
                                 'title' => "Draped in\nGold & Grace",
                                 'desc'  => 'Handcrafted Indian lingerie rooted in tradition, elevated by craft. Each piece is an heirloom waiting to be worn.',
                                 'btn'   => 'Explore Collection',
-                                'url'   => route('search'),
+                                'url'   => '/search',
                             ],
                             2 => [
                                 'badge' => 'Royal Trousseau Edit',
                                 'title' => "Zari Silk &\nVelvet Intimates",
                                 'desc'  => 'Intricate gold wire embroidery and pure mulberry silk, tailored for sacred celebrations and timeless grandeur.',
                                 'btn'   => 'Shop Bridal Silk',
-                                'url'   => route('search'),
+                                'url'   => '/search',
                             ],
                             3 => [
                                 'badge' => 'Artisanal Heritage',
                                 'title' => "The Benarasi\nArchive",
                                 'desc'  => 'Handwoven motifs passed through generations of master ateliers. Where heritage craft meets modern form.',
                                 'btn'   => 'Discover The Archive',
-                                'url'   => route('search'),
+                                'url'   => '/search',
                             ],
                             4 => [
                                 'badge' => 'Festive Elegance',
                                 'title' => "Crimson Whisper\nCapsule",
                                 'desc'  => 'Weightless tulle drenched in ceremonial crimson, edged with delicate antique gota patti work.',
                                 'btn'   => 'Explore Capsule',
-                                'url'   => route('search'),
+                                'url'   => '/search',
                             ],
                             5 => [
                                 'badge' => 'Bespoke Craft',
                                 'title' => "Pure Heirloom\nComfort",
                                 'desc'  => 'Soft uncrushable silk satin crafted to drape seamlessly under royal lehengas and festive silhouettes.',
                                 'btn'   => 'Shop Collection',
-                                'url'   => route('search'),
+                                'url'   => '/search',
                             ],
                         ];
                     @endphp
@@ -3885,45 +3885,5 @@
 
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const logoInput = document.getElementById('siteLogoInput');
-    if (logoInput) {
-        logoInput.addEventListener('change', function(e) {
-            const file = e.target.files && e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const previewEl = document.getElementById('newLogoPreview');
-                    const wrapperEl = document.getElementById('newLogoPreviewWrapper');
-                    if (previewEl && wrapperEl) {
-                        previewEl.src = evt.target.result;
-                        wrapperEl.classList.remove('hidden');
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    const footerLogoInput = document.getElementById('footerLogoInput');
-    if (footerLogoInput) {
-        footerLogoInput.addEventListener('change', function(e) {
-            const file = e.target.files && e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const previewEl = document.getElementById('newFooterLogoPreview');
-                    const wrapperEl = document.getElementById('newFooterLogoPreviewWrapper');
-                    if (previewEl && wrapperEl) {
-                        previewEl.src = evt.target.result;
-                        wrapperEl.classList.remove('hidden');
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-});
-</script>
+<script src="{{ asset('js/admin/settings.js') }}"></script>
 @endsection

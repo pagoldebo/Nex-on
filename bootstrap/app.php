@@ -11,12 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustHosts(at: fn () => array_values(array_filter([
+        $middleware->trustHosts(at: fn () => array_values(array_unique(array_filter([
             config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
+            (!app()->runningInConsole() && request()->getHost()) ? request()->getHost() : null,
+            'nexon.cu.ma',
+            '*.cu.ma',
+            '*.nexon.app',
+            '*.test',
             'localhost',
             '127.0.0.1',
-            '*.test',
-        ])));
+        ]))));
+        $middleware->trustProxies(at: '*');
         $middleware->encryptCookies();
         $middleware->validateCsrfTokens(except: [
             'webhook/*',

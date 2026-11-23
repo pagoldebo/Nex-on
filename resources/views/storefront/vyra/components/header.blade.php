@@ -37,6 +37,7 @@
             <nav class="hidden lg:flex items-center gap-9 font-body font-medium text-sm uppercase tracking-wide" aria-label="Main navigation">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#FF3D5A]' : 'text-[#F2F0EC]/60 hover:text-[#F2F0EC]' }} transition-colors">Home</a>
 
+                @if(isset($categories) && $categories->isNotEmpty())
                 <div class="relative" x-data="{ open: false }" @mouseenter="open=true" @mouseleave="open=false">
                     <button class="flex items-center gap-1.5 uppercase text-[#F2F0EC]/60 hover:text-[#F2F0EC] transition-colors" :aria-expanded="open">
                         Categories
@@ -80,6 +81,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <a href="{{ route('featured.products') }}" class="text-[#F2F0EC]/60 hover:text-[#F2F0EC] transition-colors {{ request()->routeIs('featured.products') ? 'text-[#D4FF3D] font-bold' : '' }}">Featured</a>
                 <a href="{{ route('new.arrivals') }}" class="text-[#F2F0EC]/60 hover:text-[#F2F0EC] transition-colors {{ request()->routeIs('new.arrivals') ? 'text-[#D4FF3D] font-bold' : '' }}">New</a>

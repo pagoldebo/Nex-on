@@ -338,7 +338,7 @@
           <div class="flex-1 min-w-0">
             <p class="font-display text-sm text-maroon truncate">${esc(i.name)}</p>
             <p class="font-body text-[11px] text-maroon/50">${esc(i.colorName)} · ${esc(i.size)} · ×${i.qty}</p>
-            <p class="font-body text-xs text-gold-dark font-semibold mt-0.5">₹${Number(i.price * i.qty).toLocaleString('en-IN')}</p>
+            <p class="font-body text-xs text-gold-dark font-semibold mt-0.5">${typeof window.formatPrice === 'function' ? window.formatPrice(i.price * i.qty) : ('₹' + Number(i.price * i.qty).toLocaleString('en-IN'))}</p>
           </div>
         </div>`).join('');
     }
@@ -357,16 +357,16 @@
       discount = appliedCoupon.discount || 0;
       discountRow?.classList.remove('hidden');
       if (discountCode) discountCode.textContent = appliedCoupon.code;
-      if (discountAmt) discountAmt.textContent = '-₹' + Number(discount).toLocaleString('en-IN');
+      if (discountAmt) discountAmt.textContent = '-' + (typeof window.formatPrice === 'function' ? window.formatPrice(discount) : ('₹' + Number(discount).toLocaleString('en-IN')));
     } else {
       discountRow?.classList.add('hidden');
     }
 
     const total = Math.max(0, sub + shipping + cod - discount);
 
-    if (subtotalEl) subtotalEl.textContent = '₹' + sub.toLocaleString('en-IN');
-    if (shippingEl) shippingEl.textContent = shipping === 0 ? 'Free' : '₹' + shipping;
-    if (totalEl)    totalEl.textContent    = '₹' + total.toLocaleString('en-IN');
+    if (subtotalEl) subtotalEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(sub) : ('₹' + sub.toLocaleString('en-IN'));
+    if (shippingEl) shippingEl.textContent = shipping === 0 ? 'Free' : (typeof window.formatPrice === 'function' ? window.formatPrice(shipping) : ('₹' + shipping));
+    if (totalEl)    totalEl.textContent    = typeof window.formatPrice === 'function' ? window.formatPrice(total) : ('₹' + total.toLocaleString('en-IN'));
     if (codRow)     codRow.style.display   = isCod ? 'flex' : 'none';
   }
 

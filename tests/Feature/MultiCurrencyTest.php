@@ -200,6 +200,57 @@ class MultiCurrencyTest extends TestCase
         $response = $this->get(route('home'));
         $response->assertStatus(200);
         $response->assertSee('window.currencyConfig', false);
+        $response->assertSee('window.formatPrice', false);
         $response->assertSee('Switch Currency');
+    }
+
+    public function test_home_page_and_quick_view_render_selected_currency_and_format_price(): void
+    {
+        $category = \App\Models\Category::create([
+            'name' => 'Bridal Edit',
+            'slug' => 'bridal-edit',
+        ]);
+
+        $product = Product::create([
+            'category_id'  => $category->id,
+            'name'         => 'Heritage Maroon Silk Lehenga',
+            'slug'         => 'heritage-maroon-silk-lehenga',
+            'is_active'    => true,
+            'is_featured'  => true,
+            'is_bestseller'=> true,
+        ]);
+
+        $color = ProductColor::create([
+            'product_id' => $product->id,
+            'name'       => 'Maroon',
+            'hex'        => '#800000',
+        ]);
+
+        ProductVariant::create([
+            'product_id'       => $product->id,
+            'product_color_id' => $color->id,
+            'size'             => 'L',
+            'price'            => 10000,
+            'stock'            => 5,
+            'sku'              => 'LEH-MAR-L',
+        ]);
+
+        // Request Home Page with USD currency in session
+        $response = $this->withSession(['currency' => 'USD'])->get(route('home'));
+        $response->assertStatus(200);
+
+        // 1. window.currencyConfig must reflect USD
+        $response->assertSee('"code":"USD"', false);
+        $response->assertSee('"symbol":"$"', false);
+
+        // 2. window.formatPrice function must be defined in head
+        $response->assertSee('window.formatPrice = function', false);
+
+        // 3. Product card starting price rendered with @currency must be in USD ($116.00)
+        // 10000 * 0.0116 = 116.00
+        $response->assertSee('$116.00');
+
+        // 4. Quick View partial must reference window.formatPrice
+        $response->assertSee('window.formatPrice(price)', false);
     }
 }

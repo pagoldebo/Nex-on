@@ -127,9 +127,21 @@
     <meta property="product:price:currency" content="{{ app(\App\Services\CurrencyService::class)->getUserCurrency() }}">
     @endif
 
-    {{-- Global Currency Runtime Configuration --}}
+    {{-- Global Currency Runtime Configuration & Formatter --}}
     <script>
         window.currencyConfig = @json(app(\App\Services\CurrencyService::class)->getJsConfig());
+        window.formatPrice = function(amount) {
+            const num = Number(amount || 0);
+            const cfg = window.currencyConfig || { code: 'INR', symbol: '₹', rate: 1.0, decimals: 0, locale: 'en-IN' };
+            const rate = typeof cfg.rate === 'number' && cfg.rate > 0 ? cfg.rate : 1.0;
+            const decimals = typeof cfg.decimals === 'number' ? cfg.decimals : 0;
+            const converted = num * rate;
+            const formatted = converted.toLocaleString(cfg.locale || 'en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+            return (cfg.symbol || '₹') + formatted;
+        };
     </script>
 
     {{-- Twitter Cards --}}
@@ -204,7 +216,7 @@
         @include("storefront.common.quick-view")
     @endif
 
-    <script src="/js/storefront.js"></script>
+    <script src="/js/storefront.js?v=2"></script>
     @if(file_exists(public_path("js/themes/{$theme->key}.js")))
         <script src="/js/themes/{{ $theme->key }}.js"></script>
     @endif
@@ -254,7 +266,7 @@
         }
     </script>
     <script src="/js/pwa-install.js?v=1"></script>
-    <script src="/js/product-card.js"></script>
+    <script src="/js/product-card.js?v=2"></script>
     {{-- Client-Side AVIF Converter: Converts JPG/PNG to ultra-compressed AVIF on uploader machine --}}
     <script src="{{ asset('js/avif-converter.js') }}"></script>
 

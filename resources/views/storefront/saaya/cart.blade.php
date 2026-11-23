@@ -161,7 +161,7 @@
                 <p class="font-display text-xl text-maroon">${esc(i.name)}</p>
                 <p class="font-body text-xs text-maroon/50 mt-0.5">${esc(i.colorName)} · ${esc(i.size)}</p>
               </div>
-              <p class="font-body text-sm font-semibold text-maroon flex-shrink-0">₹${Number(i.price * i.qty).toLocaleString('en-IN')}</p>
+              <p class="font-body text-sm font-semibold text-maroon flex-shrink-0">${typeof window.formatPrice === 'function' ? window.formatPrice(i.price * i.qty) : ('₹' + Number(i.price * i.qty).toLocaleString('en-IN'))}</p>
             </div>
             <div class="flex items-center gap-3 mt-4">
               <div class="flex items-center border border-gold/30">
@@ -183,8 +183,8 @@
     const totalQty = bag.reduce((s, i) => s + i.qty, 0);
     const freeShip = sub >= FREE_SHIPPING_THRESHOLD;
     if (countEl)    countEl.textContent  = totalQty;
-    if (subtotalEl) subtotalEl.textContent = '₹' + sub.toLocaleString('en-IN');
-    if (totalEl)    totalEl.textContent  = '₹' + sub.toLocaleString('en-IN');
+    if (subtotalEl) subtotalEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(sub) : ('₹' + sub.toLocaleString('en-IN'));
+    if (totalEl)    totalEl.textContent  = typeof window.formatPrice === 'function' ? window.formatPrice(sub) : ('₹' + sub.toLocaleString('en-IN'));
     if (shippingEl) shippingEl.textContent = freeShip ? 'Free' : '₹99';
     if (promoEl) {
       if (!freeShip) {

@@ -618,7 +618,7 @@
       const finalPrice = activePrice + addonTotal;
       const priceEl = document.getElementById('currentDisplayPrice');
       if (priceEl) {
-        priceEl.textContent = '₹' + finalPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        priceEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(finalPrice) : ('₹' + finalPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
       }
     }
 

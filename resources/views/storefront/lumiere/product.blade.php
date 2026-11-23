@@ -585,10 +585,10 @@ function getSelectedAddonNames() {
 function updateProductAddonPricing(compareAt) {
     const addonTotal = getSelectedAddonsTotal();
     const finalPrice = currentBasePrice + addonTotal;
-    document.getElementById('pdPriceCurrent').textContent = '₹' + Number(finalPrice).toLocaleString('en-IN');
+    document.getElementById('pdPriceCurrent').textContent = typeof window.formatPrice === 'function' ? window.formatPrice(finalPrice) : ('₹' + Number(finalPrice).toLocaleString('en-IN'));
     const cp = document.getElementById('pdPriceCompare');
     if (compareAt) {
-        cp.textContent = '₹' + Number(compareAt).toLocaleString('en-IN');
+        cp.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(compareAt) : ('₹' + Number(compareAt).toLocaleString('en-IN'));
         cp.classList.remove('hidden');
     }
 }
@@ -615,9 +615,9 @@ function pdShowPrice(price, compareAt) {
     currentBasePrice = Number(price);
     const addonTotal = getSelectedAddonsTotal();
     const finalPrice = currentBasePrice + addonTotal;
-    document.getElementById('pdPriceCurrent').textContent = '₹' + Number(finalPrice).toLocaleString('en-IN');
+    document.getElementById('pdPriceCurrent').textContent = typeof window.formatPrice === 'function' ? window.formatPrice(finalPrice) : ('₹' + Number(finalPrice).toLocaleString('en-IN'));
     const cp = document.getElementById('pdPriceCompare');
-    if (compareAt) { cp.textContent = '₹' + Number(compareAt).toLocaleString('en-IN'); cp.classList.remove('hidden'); }
+    if (compareAt) { cp.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(compareAt) : ('₹' + Number(compareAt).toLocaleString('en-IN')); cp.classList.remove('hidden'); }
     else { cp.classList.add('hidden'); }
 }
 

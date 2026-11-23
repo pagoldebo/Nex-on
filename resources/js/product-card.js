@@ -121,11 +121,11 @@ function initProductCard(card) {
         }
 
         if (priceCurrentEl) {
-            priceCurrentEl.textContent = `₹${Number(variant.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+            priceCurrentEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(variant.price) : `₹${Number(variant.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
         }
         if (variant.compareAtPrice) {
             if (priceCompareEl) {
-                priceCompareEl.textContent = `₹${Number(variant.compareAtPrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+                priceCompareEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(variant.compareAtPrice) : `₹${Number(variant.compareAtPrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
                 priceCompareEl.classList.remove('hidden');
             }
         } else if (priceCompareEl) {

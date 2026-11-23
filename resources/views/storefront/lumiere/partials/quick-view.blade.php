@@ -278,12 +278,12 @@
 
     function qvShowPrice(price, compareAt) {
         const curEl = document.getElementById('qvPriceCurrent');
-        if (curEl) curEl.textContent = '₹' + Number(price || 0).toLocaleString('en-IN');
+        if (curEl) curEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(price) : ('₹' + Number(price || 0).toLocaleString('en-IN'));
 
         const cpEl = document.getElementById('qvPriceCompare');
         if (cpEl) {
             if (compareAt && Number(compareAt) > Number(price)) {
-                cpEl.textContent = '₹' + Number(compareAt).toLocaleString('en-IN');
+                cpEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(compareAt) : ('₹' + Number(compareAt).toLocaleString('en-IN'));
                 cpEl.classList.remove('hidden');
             } else {
                 cpEl.classList.add('hidden');

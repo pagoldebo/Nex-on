@@ -105,7 +105,7 @@
           <div class="flex-1 min-w-0">
             <p class="font-display text-base text-maroon truncate">${esc(i.name)}</p>
             <p class="text-xs text-maroon/50 mt-0.5 font-body">${esc(i.colorName)} · ${esc(i.size)}</p>
-            <p class="text-sm text-gold-dark font-semibold mt-1 font-body">₹${Number(i.price * i.qty).toLocaleString('en-IN')}</p>
+            <p class="text-sm text-gold-dark font-semibold mt-1 font-body">${typeof window.formatPrice === 'function' ? window.formatPrice(i.price * i.qty) : ('₹' + Number(i.price * i.qty).toLocaleString('en-IN'))}</p>
             <div class="flex items-center gap-2 mt-2">
               <button type="button" data-act="dec" data-pid="${i.productId}" data-color="${esc(i.colorName)}" data-size="${esc(i.size)}"
                       class="w-7 h-7 border border-gold/30 text-maroon hover:border-gold transition-colors rounded-full text-sm">−</button>
@@ -121,7 +121,7 @@
     }
 
     const total = typeof cartTotal === 'function' ? cartTotal() : 0;
-    if (totalEl) totalEl.textContent = '₹' + total.toLocaleString('en-IN');
+    if (totalEl) totalEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(total) : ('₹' + total.toLocaleString('en-IN'));
   }
 
   // Delegated qty/remove handler

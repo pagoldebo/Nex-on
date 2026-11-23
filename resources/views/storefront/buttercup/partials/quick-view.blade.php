@@ -83,4 +83,4 @@
     </div>
 </div>
 
-<script src="/js/quick-view.js"></script>
+<script src="/js/quick-view.js?v=2"></script>

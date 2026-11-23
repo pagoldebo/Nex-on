@@ -582,7 +582,7 @@ function updateProductAddonPricing() {
   const finalPrice = currentBasePrice + addonTotal;
   const cpEl = document.getElementById('currentPrice');
   if (cpEl && cpEl.firstChild) {
-    cpEl.firstChild.textContent = '₹' + finalPrice.toLocaleString('en-IN') + ' ';
+    cpEl.firstChild.textContent = (typeof window.formatPrice === 'function' ? window.formatPrice(finalPrice) : ('₹' + finalPrice.toLocaleString('en-IN'))) + ' ';
   }
 }
 
@@ -592,7 +592,7 @@ function selectSize(size, price, compareAt, stock) {
   document.getElementById('selectedSizeName').textContent = size;
   updateProductAddonPricing();
   const cp = document.getElementById('comparePrice');
-  compareAt ? (cp.textContent = '₹' + compareAt.toLocaleString('en-IN'), cp.classList.remove('hidden')) : cp.classList.add('hidden');
+  compareAt ? (cp.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(compareAt) : ('₹' + compareAt.toLocaleString('en-IN')), cp.classList.remove('hidden')) : cp.classList.add('hidden');
   const sw = document.getElementById('stockWarning');
   (stock > 0 && stock <= 3) ? (sw.textContent = 'Only ' + stock + ' left!', sw.classList.remove('hidden')) : sw.classList.add('hidden');
   document.querySelectorAll('#sizePills button').forEach(b => {

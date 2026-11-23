@@ -148,7 +148,7 @@
               <img src="${esc(p.image)}" alt="" class="w-14 h-16 object-cover rounded-lg bg-blush/30 flex-shrink-0">
               <div class="min-w-0">
                 <p class="font-display text-sm text-[#3D0C11] font-semibold truncate group-hover:text-[#9A7A33] transition-colors">${esc(p.name)}</p>
-                <p class="text-xs text-[#9A7A33] font-bold font-body mt-0.5">₹${Number(p.price).toLocaleString('en-IN')}</p>
+                <p class="text-xs text-[#9A7A33] font-bold font-body mt-0.5">${typeof window.formatPrice === 'function' ? window.formatPrice(p.price) : ('₹' + Number(p.price).toLocaleString('en-IN'))}</p>
               </div>
             </a>`).join('') + '</div>';
       }

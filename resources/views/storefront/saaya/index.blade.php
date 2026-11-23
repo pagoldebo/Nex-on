@@ -641,7 +641,7 @@
 </section>
 
 @push('scripts')
-<script src="{{ asset('js/product-card.js') }}"></script>
+<script src="{{ asset('js/product-card.js?v=2') }}"></script>
 <script>
 (function () {
   /* ── Sale Section tab filter ── */

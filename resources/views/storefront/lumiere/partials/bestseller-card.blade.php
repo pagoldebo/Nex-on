@@ -63,9 +63,9 @@
             <button onclick="event.stopPropagation(); openQuickView({{ \Illuminate\Support\Js::from($cardData) }})"
                     class="bg-pink text-white font-bold text-[9px] uppercase py-2.5 px-4 rounded-xl shadow-lg hover:bg-pink-dark transition-colors flex items-center gap-1.5">
                 @if(!empty($cardData['startingCompareAt']) && $cardData['startingCompareAt'] > $cardData['startingPrice'])
-                    <span class="line-through opacity-70 text-[8px] font-normal">₹{{ number_format($cardData['startingCompareAt'], 0) }}</span>
+                    <span class="line-through opacity-70 text-[8px] font-normal">@currency($cardData['startingCompareAt'])</span>
                 @endif
-                <span>₹{{ number_format($cardData['startingPrice'], 0) }}</span>
+                <span>@currency($cardData['startingPrice'])</span>
             </button>
         </div>
     </div>

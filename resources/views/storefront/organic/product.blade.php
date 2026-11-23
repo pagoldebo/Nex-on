@@ -140,14 +140,14 @@
         {{-- Price Box --}}
         <div class="p-4 bg-white rounded-2xl border border-stone-200 shadow-2xs flex items-baseline gap-3">
           <span id="currentDisplayPrice" class="text-3xl font-black text-organic-900 font-display">
-            ₹{{ number_format($product->starting_price, 2) }}
+            @currency($product->starting_price)
           </span>
           @if($product->compare_at_price && $product->compare_at_price > $product->starting_price)
             <span id="compareDisplayPrice" class="text-sm text-stone-400 line-through">
-              ₹{{ number_format($product->compare_at_price, 2) }}
+              @currency($product->compare_at_price)
             </span>
             <span class="text-xs font-black text-citrus bg-citrus-light px-2.5 py-0.5 rounded-full">
-              Save ₹{{ number_format($product->compare_at_price - $product->starting_price, 2) }}
+              Save @currency($product->compare_at_price - $product->starting_price)
             </span>
           @endif
         </div>

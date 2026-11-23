@@ -3314,6 +3314,130 @@
             </div>
         </div>
 
+        <!-- Multi-Currency & International Exchange Rates Section -->
+        @php
+            $currencyService = app(\App\Services\CurrencyService::class);
+            $allCurrencies = $currencyService->getAllSupported();
+            $multiEnabled = \App\Models\Setting::isMultiCurrencyEnabled();
+            $baseCurr = \App\Models\Setting::baseCurrency();
+            $enabledCurrs = \App\Models\Setting::enabledCurrencies();
+            $rates = $currencyService->getRates();
+        @endphp
+        <div class="bg-white rounded-2xl shadow-xs border border-slate-200/80 p-6 sm:p-8 space-y-6"
+             x-data="{
+                multiCurrencyEnabled: {{ $multiEnabled ? 'true' : 'false' }},
+                baseCurrency: '{{ $baseCurr }}',
+                rates: {{ json_encode($rates) }},
+                sampleBaseAmount: 1000
+             }">
+            <input type="hidden" name="multi_currency_section_submitted" value="1">
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold shadow-sm shadow-emerald-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Multi-Currency &amp; Exchange Rates</h2>
+                        <p class="text-xs text-slate-500">Configure international storefront currencies, base store currency, and customize live exchange rates.</p>
+                    </div>
+                </div>
+
+                <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input type="checkbox" name="multi_currency_enabled" value="1" x-model="multiCurrencyEnabled" class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <span class="ml-3 text-xs font-bold text-slate-700" x-text="multiCurrencyEnabled ? 'Multi-Currency Active' : 'Multi-Currency Disabled'"></span>
+                </label>
+            </div>
+
+            <div x-show="multiCurrencyEnabled" x-transition class="space-y-6">
+                <!-- Base Currency Selection -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 uppercase tracking-wider block mb-1">Store Base Currency</span>
+                        <p class="text-[11px] text-slate-500">All prices in your catalog and orders database are anchored to this base currency.</p>
+                    </div>
+                    <div class="sm:w-64">
+                        <select name="base_currency" x-model="baseCurrency" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none">
+                            @foreach($allCurrencies as $code => $cur)
+                                <option value="{{ $code }}">
+                                    {{ $cur['flag'] }} {{ $code }} — {{ $cur['name'] }} ({{ $cur['symbol'] }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Rates Table -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Enabled Currencies &amp; Exchange Rates</span>
+                        <span class="text-[11px] text-slate-400">1 <span x-text="baseCurrency"></span> = X Foreign Currency</span>
+                    </div>
+
+                    <div class="divide-y divide-slate-100 overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50/50 text-slate-500 font-semibold border-b border-slate-100">
+                                <tr>
+                                    <th class="py-2.5 px-4 w-12 text-center">Enable</th>
+                                    <th class="py-2.5 px-4">Currency</th>
+                                    <th class="py-2.5 px-4">Symbol</th>
+                                    <th class="py-2.5 px-4">Exchange Rate</th>
+                                    <th class="py-2.5 px-4 text-right">Sample Preview (<span x-text="sampleBaseAmount"></span> <span x-text="baseCurrency"></span>)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach($allCurrencies as $code => $cur)
+                                    @php
+                                        $isEnabled = in_array($code, $enabledCurrs, true);
+                                        $currentRate = $rates[$code] ?? $cur['default_rate'];
+                                    @endphp
+                                    <tr class="hover:bg-slate-50/80 transition-colors" :class="{ 'bg-emerald-50/30': baseCurrency === '{{ $code }}' }">
+                                        <td class="py-3 px-4 text-center">
+                                            <input type="checkbox" 
+                                                   name="enabled_currencies[]" 
+                                                   value="{{ $code }}" 
+                                                   {{ $isEnabled ? 'checked' : '' }}
+                                                   :disabled="baseCurrency === '{{ $code }}'"
+                                                   class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
+                                        </td>
+                                        <td class="py-3 px-4 font-medium text-slate-800">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-base">{{ $cur['flag'] }}</span>
+                                                <span class="font-bold">{{ $code }}</span>
+                                                <span class="text-slate-400 text-[11px]">({{ $cur['name'] }})</span>
+                                                <template x-if="baseCurrency === '{{ $code }}'">
+                                                    <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ml-1">Base</span>
+                                                </template>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 font-mono font-semibold text-slate-600">
+                                            {{ $cur['symbol'] }}
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="relative w-36">
+                                                <input type="number" 
+                                                       step="0.000001" 
+                                                       min="0"
+                                                       name="currency_rates[{{ $code }}]" 
+                                                       x-model="rates['{{ $code }}']"
+                                                       :readonly="baseCurrency === '{{ $code }}'"
+                                                       class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-mono font-medium focus:border-emerald-600 outline-none"
+                                                       :class="{ 'bg-slate-100 text-slate-500 cursor-not-allowed': baseCurrency === '{{ $code }}' }">
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-right font-mono font-semibold text-slate-700">
+                                            <span>{{ $cur['symbol'] }}</span><span x-text="(sampleBaseAmount * (Number(rates['{{ $code }}']) || 0)).toLocaleString('{{ $cur['locale'] }}', { minimumFractionDigits: {{ $cur['decimals'] }}, maximumFractionDigits: {{ $cur['decimals'] }} })"></span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Worldwide Tax & Invoicing Section -->
         @php
             $currentTaxEnabled = \App\Models\Setting::taxEnabled();

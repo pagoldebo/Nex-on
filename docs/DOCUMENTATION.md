@@ -25,22 +25,24 @@
 
 ## 1. Project Overview
 
-A single Laravel application that serves **four completely independent storefront themes** from one codebase. Switching themes in production requires **no code change and no redeployment** — one database row controls which theme is live.
+A single Laravel application that serves **five completely independent storefront themes** from one codebase. Switching themes in production requires **no code change and no redeployment** — one database row controls which theme is live.
 
-### The Four Themes
+### The Five Themes
 
 | Key        | Name      | Personality                        | Primary Font          | Palette               |
 |------------|-----------|------------------------------------|-----------------------|-----------------------|
-| `saaya`    | Saaya     | Bridal / artisanal        | Cormorant Garamond    | Maroon · Gold · Ivory |
+| `saaya`    | Saaya     | Bridal / artisanal                 | Cormorant Garamond    | Maroon · Gold · Ivory |
 | `buttercup`| Buttercup | Soft pastels / everyday wear       | Fraunces              | Rose · Sage · Cream   |
 | `vyra`     | Vyra      | Bold Gen-Z / streetwear            | Archivo Black         | Coral · Lime · Noir   |
 | `lumiere`  | Lumière   | Premium boutique / French-inspired | Playfair Display      | Pink · Cream · Gold   |
+| `organic`  | Verdia    | Botanical living & artisanal farm  | Plus Jakarta Sans     | Forest · Sage · Amber |
 
 ### Each theme ships with
 
 - 10 storefront pages (index, product, category, cart, account, wishlist, checkout, order-confirmation, search, compare)
 - 8 shared components (header, footer, tab-bar, category-sheet, cart-drawer, login-modal, search-overlay, token-injector)
-- 1 product-card partial
+- Dedicated product-card and quick-view partials
+- Embedded multi-currency switcher `<x-currency-switcher />`
 
 ---
 

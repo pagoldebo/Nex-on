@@ -58,16 +58,22 @@ class OrderItem extends Model
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    /** Formatted unit price, e.g. "₹799" */
+    /** Formatted unit price, e.g. "₹799" or "$9.27" */
     public function getFormattedPriceAttribute(): string
     {
-        return '₹' . number_format($this->price, 0);
+        $service = app(\App\Services\CurrencyService::class);
+        $curr = $this->order?->currency ?: $service->getBaseCurrency();
+        $rate = (float) ($this->order?->exchange_rate ?: 1.0);
+        return $service->format($this->price * $rate, $curr);
     }
 
-    /** Formatted line total, e.g. "₹1,598" */
+    /** Formatted line total, e.g. "₹1,598" or "$18.54" */
     public function getFormattedLineTotalAttribute(): string
     {
-        return '₹' . number_format($this->line_total, 0);
+        $service = app(\App\Services\CurrencyService::class);
+        $curr = $this->order?->currency ?: $service->getBaseCurrency();
+        $rate = (float) ($this->order?->exchange_rate ?: 1.0);
+        return $service->format($this->line_total * $rate, $curr);
     }
 
     /** Saving per unit vs compare_at_price (null if no discount) */

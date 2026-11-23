@@ -127,9 +127,9 @@
 
       {{-- Price --}}
       <div class="flex items-baseline gap-3">
-        <span id="pdpPrice" class="font-display text-2xl text-maroon">₹{{ number_format($card['startingPrice'], 0) }}</span>
+        <span id="pdpPrice" class="font-display text-2xl text-maroon">@currency($card['startingPrice'])</span>
         @if($card['startingCompareAt'])
-          <span id="pdpCompare" class="text-maroon/40 line-through text-base font-body">₹{{ number_format($card['startingCompareAt'], 0) }}</span>
+          <span id="pdpCompare" class="text-maroon/40 line-through text-base font-body">@currency($card['startingCompareAt'])</span>
         @endif
         <span id="pdpSavings" class="hidden text-xs font-body text-gold bg-gold/10 px-2 py-0.5 rounded-full"></span>
       </div>
@@ -577,10 +577,10 @@
     const addonTotal = getSelectedAddonsTotal();
     const p = currentBasePrice + addonTotal;
     const c = size?.compareAtPrice ?? productData.startingCompareAt;
-    if (priceEl) priceEl.textContent = '₹' + Number(p).toLocaleString('en-IN');
+    if (priceEl) priceEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(p) : ('₹' + Number(p).toLocaleString('en-IN'));
     if (compareEl) {
       if (c && c > currentBasePrice) {
-        compareEl.textContent = '₹' + Number(c).toLocaleString('en-IN');
+        compareEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(c) : ('₹' + Number(c).toLocaleString('en-IN'));
         compareEl.classList.remove('hidden');
         const pct = Math.round((c - currentBasePrice) / c * 100);
         if (savingsEl) { savingsEl.textContent = pct + '% OFF'; savingsEl.classList.remove('hidden'); }

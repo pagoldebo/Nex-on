@@ -124,8 +124,13 @@
     <meta property="og:locale" content="{{ str_replace('-', '_', app()->getLocale()) }}">
     @if($ogType === 'product' && $product)
     <meta property="product:price:amount" content="{{ $product->starting_price ?? $product->price }}">
-    <meta property="product:price:currency" content="{{ \App\Models\Setting::get('currency_code', 'INR') }}">
+    <meta property="product:price:currency" content="{{ app(\App\Services\CurrencyService::class)->getUserCurrency() }}">
     @endif
+
+    {{-- Global Currency Runtime Configuration --}}
+    <script>
+        window.currencyConfig = @json(app(\App\Services\CurrencyService::class)->getJsConfig());
+    </script>
 
     {{-- Twitter Cards --}}
     <meta name="twitter:card" content="summary_large_image">

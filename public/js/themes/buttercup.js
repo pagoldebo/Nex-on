@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-display font-bold" style="color:#D89AA0">₹${((Number(i.price) || 0) * (Number(i.qty) || 1)).toLocaleString('en-IN')}</p>
+                    <p class="font-display font-bold" style="color:#D89AA0">${typeof window.formatPrice === 'function' ? window.formatPrice((Number(i.price) || 0) * (Number(i.qty) || 1)) : ('₹' + ((Number(i.price) || 0) * (Number(i.qty) || 1)).toLocaleString('en-IN'))}</p>
                     <button onclick="removeFromCart(${i.productId},'${i.colorName}','${i.size}');location.reload()" class="text-xs opacity-40 hover:opacity-80 mt-1 font-body text-[#4A3B3A]">Remove</button>
                 </div>
             </div>`).join('') + '</div>';
@@ -324,8 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const tot = cartTotal();
             const sub = document.getElementById('cartPageSubtotal');
             const total = document.getElementById('cartPageTotal');
-            if (sub) sub.textContent = '₹' + tot.toLocaleString('en-IN');
-            if (total) total.textContent = '₹' + tot.toLocaleString('en-IN');
+            if (sub) sub.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(tot) : ('₹' + tot.toLocaleString('en-IN'));
+            if (total) total.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(tot) : ('₹' + tot.toLocaleString('en-IN'));
         }
     }
 
@@ -336,11 +336,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (o) {
             orderIdEl.textContent = o.id || o.reference || '—';
             const totalEl = document.getElementById('orderTotal');
-            if (totalEl) totalEl.textContent = '₹' + Number(o.total || 0).toLocaleString('en-IN');
+            if (totalEl) totalEl.textContent = typeof window.formatPrice === 'function' ? window.formatPrice(o.total) : ('₹' + Number(o.total || 0).toLocaleString('en-IN'));
             const itemsEl = document.getElementById('orderItems');
             if (itemsEl && o.items?.length) {
                 itemsEl.innerHTML = o.items.map(i =>
-                    `<div class="flex justify-between opacity-80 py-1"><span>${i.name} (${i.colorName}/${i.size}) ×${i.qty}</span><span class="font-bold">₹${((Number(i.price) || 0) * (Number(i.qty) || 1)).toLocaleString('en-IN')}</span></div>`
+                    `<div class="flex justify-between opacity-80 py-1"><span>${i.name} (${i.colorName}/${i.size}) ×${i.qty}</span><span class="font-bold">${typeof window.formatPrice === 'function' ? window.formatPrice((Number(i.price) || 0) * (Number(i.qty) || 1)) : ('₹' + ((Number(i.price) || 0) * (Number(i.qty) || 1)).toLocaleString('en-IN'))}</span></div>`
                 ).join('');
             }
         }

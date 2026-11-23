@@ -304,6 +304,11 @@ class Setting extends Model
             return static::imageUrl($path, $fallback);
         }
 
+        $siteLogo = static::get('site_logo');
+        if (!empty($siteLogo)) {
+            return static::siteLogoUrl($fallback);
+        }
+
         if (file_exists(public_path('images/branding/footer_logo.png'))) {
             return asset('images/branding/footer_logo.png');
         }
@@ -384,5 +389,47 @@ class Setting extends Model
         return $path
             . (($parts['query'] ?? '') !== '' ? '?' . $parts['query'] : '')
             . (($parts['fragment'] ?? '') !== '' ? '#' . $parts['fragment'] : '');
+    }
+
+    /**
+     * Check if multi-currency conversion is enabled.
+     */
+    public static function isMultiCurrencyEnabled(): bool
+    {
+        return static::get('multi_currency_enabled', '1') === '1';
+    }
+
+    /**
+     * Get the store's primary base currency code.
+     */
+    public static function baseCurrency(): string
+    {
+        return strtoupper((string) static::get('base_currency', 'INR'));
+    }
+
+    /**
+     * Get active enabled currency codes.
+     */
+    public static function enabledCurrencies(): array
+    {
+        $raw = static::get('enabled_currencies');
+        if (empty($raw)) {
+            return ['INR', 'USD', 'EUR', 'GBP', 'AED', 'CAD', 'AUD', 'SGD', 'SAR', 'JPY'];
+        }
+        $decoded = is_array($raw) ? $raw : json_decode((string) $raw, true);
+        return is_array($decoded) ? array_map('strtoupper', $decoded) : ['INR', 'USD', 'EUR', 'GBP', 'AED'];
+    }
+
+    /**
+     * Get customized currency exchange rates.
+     */
+    public static function currencyRates(): array
+    {
+        $raw = static::get('currency_rates');
+        if (empty($raw)) {
+            return [];
+        }
+        $decoded = is_array($raw) ? $raw : json_decode((string) $raw, true);
+        return is_array($decoded) ? $decoded : [];
     }
 }

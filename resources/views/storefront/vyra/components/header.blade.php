@@ -91,6 +91,7 @@
             </nav>
 
             <div class="hidden lg:flex items-center gap-5">
+                <x-currency-switcher :dark="true" />
                 <button onclick="openSearch()" class="text-[#F2F0EC]/60 hover:text-[#FF3D5A] transition-colors" aria-label="Search">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
                 </button>
@@ -112,9 +113,12 @@
                 </button>
             </div>
 
-            <button onclick="openSearch()" class="lg:hidden text-[#F2F0EC] p-2 -mr-2" aria-label="Search">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
-            </button>
+            <div class="lg:hidden flex items-center gap-2">
+                <x-currency-switcher variant="select" :dark="true" />
+                <button onclick="openSearch()" class="text-[#F2F0EC] p-2 -mr-2" aria-label="Search">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
+                </button>
+            </div>
         </div>
     </div>
 </header>

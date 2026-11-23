@@ -71,9 +71,9 @@
 
         <div class="flex items-center justify-between mt-1 mb-2.5">
             <p class="product-card-price text-maroon font-bold text-sm flex items-center gap-1.5 flex-wrap">
-                <span class="price-current">₹{{ number_format($cardData['startingPrice'], 0) }}</span>
+                <span class="price-current">@currency($cardData['startingPrice'])</span>
                 @if($cardData['startingCompareAt'])
-                    <span class="price-compare text-maroon/40 line-through text-xs font-normal">₹{{ number_format($cardData['startingCompareAt'], 0) }}</span>
+                    <span class="price-compare text-maroon/40 line-through text-xs font-normal">@currency($cardData['startingCompareAt'])</span>
                 @endif
             </p>
             <button type="button"

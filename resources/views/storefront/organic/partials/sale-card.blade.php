@@ -98,11 +98,11 @@
       <div class="flex items-center justify-between">
         <div class="product-card-price flex items-baseline gap-2">
           <span class="price-current text-xl font-black text-citrus font-display">
-            ₹{{ number_format($cardData['startingPrice'], 2) }}
+            @currency($cardData['startingPrice'])
           </span>
           @if($cardData['startingCompareAt'])
             <span class="price-compare text-xs text-stone-400 line-through">
-              ₹{{ number_format($cardData['startingCompareAt'], 2) }}
+              @currency($cardData['startingCompareAt'])
             </span>
           @endif
         </div>

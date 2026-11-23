@@ -42,6 +42,7 @@
 
       {{-- Mobile search icon --}}
       <div class="lg:hidden flex items-center gap-2">
+        <x-currency-switcher variant="select" />
         <button id="mobileSearchBtn" class="p-2 -mr-2 text-maroon" aria-label="Search">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
         </button>
@@ -97,6 +98,7 @@
 
       {{-- Desktop icons --}}
       <div class="hidden lg:flex items-center gap-5">
+        <x-currency-switcher />
         <button id="desktopSearchBtn" aria-label="Search" class="text-maroon hover:text-gold transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
         </button>

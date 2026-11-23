@@ -149,6 +149,8 @@ Route::post('/newsletter/subscribe',      [StorefrontController::class, 'subscri
 Route::post('/contact/store',                 [ContactController::class, 'submit'])->middleware('throttle:contact')->name('contact.store');
 Route::get('/cart/recover/{hash}',             [AdminAbandonedCartController::class, 'restore'])->name('cart.recover');
 Route::match(['GET', 'POST'], '/locale/{locale}', [StorefrontController::class, 'switchLocale'])->name('locale.switch');
+Route::post('/currency/switch', [\App\Http\Controllers\CurrencyController::class, 'switch'])->name('currency.switch');
+Route::get('/currency/{code}', [\App\Http\Controllers\CurrencyController::class, 'switchGet'])->name('currency.switch.get');
 Route::get('/p/{slug}',                   [StorefrontController::class, 'customPage'])->name('custom-page.show');
 
 // Driver Delivery Web App Portal

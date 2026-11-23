@@ -4,7 +4,7 @@
 > **Location:** `c:\xampp\htdocs\public\Nexon`  
 > **Framework:** Laravel 12 / Blade / TailwindCSS / Alpine.js  
 > **Audit & Reference Baseline:** Enterprise Multi-Channel Automation Benchmark (`ShopKing`)  
-> **Last Updated:** October 30, 2026  
+> **Last Updated:** November 23, 2026  
 
 ---
 
@@ -15,17 +15,18 @@
 │                     SYSTEM MATURITY                         │
 ├──────────────────────────────┬──────────────────────────────┤
 │ ✅ IMPLEMENTED (100% LIVE)    │ ⏳ PENDING (ROADMAP TO BUILD)│
-│ • 4 Switchable Themes │ • None (0 Pending Items)     │
-│ • Advance POS Cashier & Print│   All 43 target modules from │
-│ • Supplier POs & Auto-Reorder│   Phases 1, 2, 3 & 4         │
-│ • Multi-Gateway (Stripe/Rzp) │   completed and verified!    │
-│ • Multi-SMS & OTP Hub        │                              │
-│ • Tally Prime ERP Sync       │ 🚀 PROPOSED NEXT HORIZONS:   │
-│ • Rich Reports Suite (GST/PL)│ • WhatsApp Cloud API Bot     │
-│ • Demand Forecasting Engine  │ • AI Product Styling Engine  │
-│ • Batch & FIFO Expiry Track  │ • B2B Wholesale Order Matrix │
-│ • Dynamic Role-Based RBAC    │ • Multi-Currency Live Forex  │
-│ • Push Notifications (FCM)   │ • Headless Mobile App APIs   │
+│ • 5 Switchable Themes        │ • None (0 Pending Items)     │
+│ • Multi-Currency Live Forex  │   All 45+ target modules from│
+│ • Advance POS Cashier & Print│   Phases 1, 2, 3 & 4         │
+│ • Supplier POs & Auto-Reorder│   completed and verified!    │
+│ • Multi-Gateway (Stripe/Rzp) │                              │
+│ • Multi-SMS & OTP Hub        │ 🚀 PROPOSED NEXT HORIZONS:   │
+│ • Tally Prime ERP Sync       │ • WhatsApp Cloud API Bot     │
+│ • Rich Reports Suite (GST/PL)│ • AI Product Styling Engine  │
+│ • Demand Forecasting Engine  │ • B2B Wholesale Order Matrix │
+│ • Batch & FIFO Expiry Track  │ • Headless Mobile App APIs   │
+│ • Dynamic Role-Based RBAC    │                              │
+│ • Push Notifications (FCM)   │                              │
 │ • Cookie & Analytics Tags    │                              │
 │ • Multi-Language i18n Engine │                              │
 │ • Multi-Outlet & Warehouses  │                              │
@@ -102,6 +103,15 @@ The following modules, subsystems, and features are **100% developed, active in 
 - **Promotional Coupon Engine:** `coupons` table with discount percentage / fixed amount, min purchase requirement, expiry date, usage limit, and instant AJAX validation (`/coupon/apply`, `/coupon/remove`).
 - **Add-on Services:** Custom premium packaging options (`addons` table) such as Premium Gift Wrap, Handwritten Greeting Cards, and Silk Pouches selectable during cart/checkout.
 - **Bulk Catalog Price Adjuster:** Single-transaction price adjuster in `/admin/settings/adjust-bulk-prices` adjusting prices by % or fixed ₹ across an entire category or the whole catalog.
+
+### 7.1 Multi-Currency Engine & Global Forex Conversion (Live)
+- **10 Core ISO Currencies:** INR (`₹`), USD (`$`), EUR (`€`), GBP (`£`), AED (`AED `), CAD (`CA$`), AUD (`AU$`), SGD (`SG$`), SAR (`SAR `), JPY (`¥`) supported out-of-the-box.
+- **Universal Header Currency Switcher:** Responsive `<x-currency-switcher />` integrated into desktop navigation and mobile sheets across all 5 themes.
+- **Session & Cookie Persistence:** Seamless currency state switching with AJAX (`POST /currency/switch`) and direct link (`GET /currency/{code}`).
+- **Order Snapshot Architecture:** Captures patron's active currency and exact conversion rate at checkout time on `orders.currency` and `orders.exchange_rate`, freezing prices for lifetime order audit integrity.
+- **Admin Rate Management:** Dynamic base currency configuration, multi-currency on/off toggle, and custom exchange rate matrix in `/admin/settings`.
+- **Blade & JS Integration:** Native `@currency($amount)` directives and frontend `window.formatPrice(amount)` for quick-views, mini-carts, and product cards.
+- **Automated Verification:** 100% test coverage in `tests/Feature/MultiCurrencyTest.php` (479 total test suite passing).
 
 ### 8. Transactional Email & Broadcast Engine
 - **5 Responsive HTML Email Templates:**

@@ -122,7 +122,7 @@
       </div>
 
       <p class="font-display text-3xl text-[#B97680] font-bold" id="currentPrice">
-        ₹{{ number_format($product->starting_price, 0) }}
+        @currency($product->starting_price)
         <span id="comparePrice" class="font-body text-sm opacity-40 line-through hidden ml-2"></span>
       </p>
 

@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Services\CurrencyService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -45,6 +47,15 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useTailwind();
         $this->configureRateLimiting();
+
+        // Multi-currency Blade Directives
+        Blade::directive('currency', function ($expression) {
+            return "<?php echo app(\\App\\Services\\CurrencyService::class)->formatFromBase($expression); ?>";
+        });
+
+        Blade::directive('currencyRaw', function ($expression) {
+            return "<?php echo app(\\App\\Services\\CurrencyService::class)->convert($expression); ?>";
+        });
 
         // Enforce centralized authorization checks for all system permissions
         Gate::before(function ($user, $ability) {
@@ -100,6 +111,13 @@ class AppServiceProvider extends ServiceProvider
             }
             if (!array_key_exists('supportPhone', $data)) {
                 $view->with('supportPhone', Setting::supportPhone());
+            }
+            if (!array_key_exists('currencyService', $data)) {
+                $currencySvc = app(CurrencyService::class);
+                $view->with('currencyService', $currencySvc);
+                $view->with('currentCurrency', $currencySvc->getUserCurrencyData());
+                $view->with('activeCurrencies', $currencySvc->getEnabledCurrencies());
+                $view->with('isMultiCurrency', $currencySvc->isMultiCurrencyEnabled());
             }
         });
     }

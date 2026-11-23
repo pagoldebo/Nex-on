@@ -128,7 +128,7 @@
       </div>
 
       <p class="text-3xl font-bold text-pink-600" id="pdPrice">
-        <span id="pdPriceCurrent">₹{{ number_format($product->starting_price, 0) }}</span>
+        <span id="pdPriceCurrent">@currency($product->starting_price)</span>
         <span id="pdPriceCompare" class="text-sm font-normal text-gray-300 line-through ml-2 hidden"></span>
       </p>
 

@@ -297,7 +297,7 @@ class AdminSettingController extends Controller
             'vyra_', 'buttercup_', 'lumiere_', 'saaya_', 'organic_',
             'shipping_', 'return_', 'privacy_', 'terms_', 'about_', 'contact_',
             'sizeguide_', 'pwa_prompt_', 'hero_', 'footer_', 'ticker_', 'faq_',
-            'tax_',
+            'tax_', 'currency_',
         ];
 
         $allowedSettingKeys = [
@@ -305,6 +305,7 @@ class AdminSettingController extends Controller
             'gstin', 'store_state', 'invoice_footer', 'free_shipping_threshold', 'shipping_cost',
             'enable_cod', 'cod_charge', 'tax_percentage', 'announcement_bar', 'ticker_enabled',
             'tax_enabled', 'tax_name', 'tax_number', 'tax_number_label', 'tax_type', 'tax_country_preset',
+            'multi_currency_enabled', 'base_currency', 'enabled_currencies', 'currency_rates',
             'pwa_prompt_enabled', 'pwa_prompt_title', 'pwa_prompt_description', 'pwa_prompt_delay',
             'footer_bio', 'footer_badge1', 'footer_badge2',
             'product_delivery_info', 'product_returns_info', 'organic_delivery_info', 'organic_returns_info',
@@ -318,6 +319,24 @@ class AdminSettingController extends Controller
         }
         if (isset($data['tax_number']) && !empty($data['tax_number'])) {
             $data['gstin'] = $data['tax_number'];
+        }
+
+        // Ensure multi_currency_enabled checkbox and array options are handled
+        if ($request->has('multi_currency_section_submitted')) {
+            $data['multi_currency_enabled'] = $request->has('multi_currency_enabled') ? '1' : '0';
+            if ($request->has('base_currency')) {
+                $data['base_currency'] = strtoupper((string) $request->input('base_currency', 'INR'));
+            }
+            if ($request->has('enabled_currencies') && is_array($request->input('enabled_currencies'))) {
+                $data['enabled_currencies'] = json_encode(array_values(array_map('strtoupper', $request->input('enabled_currencies'))));
+            }
+            if ($request->has('currency_rates') && is_array($request->input('currency_rates'))) {
+                $cleanedRates = [];
+                foreach ($request->input('currency_rates') as $cur => $rate) {
+                    $cleanedRates[strtoupper((string) $cur)] = (float) $rate;
+                }
+                $data['currency_rates'] = json_encode($cleanedRates);
+            }
         }
 
         $isSuperAdmin = \Illuminate\Support\Facades\Auth::user()?->isSuperAdmin();

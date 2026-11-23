@@ -53,9 +53,9 @@
         </h3>
         <div class="flex items-center justify-between mb-3">
             <p class="text-pink font-bold text-sm flex items-center gap-1.5 flex-wrap">
-                <span>₹{{ number_format($cardData['startingPrice'], 0) }}</span>
+                <span>@currency($cardData['startingPrice'])</span>
                 @if(!empty($cardData['startingCompareAt']) && $cardData['startingCompareAt'] > $cardData['startingPrice'])
-                    <span class="text-[11px] font-normal text-gray-400 line-through">₹{{ number_format($cardData['startingCompareAt'], 0) }}</span>
+                    <span class="text-[11px] font-normal text-gray-400 line-through">@currency($cardData['startingCompareAt'])</span>
                 @endif
                 @if($hasVariety)
                     <span class="text-[8px] text-gray-400 font-normal">onwards</span>

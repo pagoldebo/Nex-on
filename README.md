@@ -4,8 +4,8 @@
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
-[![Tests Passing](https://img.shields.io/badge/Tests-470%20Passed-brightgreen?style=for-the-badge)](tests)
-[![Release](https://img.shields.io/badge/Release-v0.10-blue?style=for-the-badge)](https://github.com/pagoldebo/Nex-on/releases/tag/v0.10)
+[![Tests Passing](https://img.shields.io/badge/Tests-479%20Passed-brightgreen?style=for-the-badge)](tests)
+[![Release](https://img.shields.io/badge/Release-v0.11-blue?style=for-the-badge)](https://github.com/pagoldebo/Nex-on/releases)
 
 **Nex-on** is an enterprise-grade, multi-theme e-commerce and retail ERP platform built on **Laravel 12**. It pairs five distinct, high-fashion storefront design systems with a full-suite omnichannel back-office (inventory, POS, warehouse batch tracking, worldwide tax & GST accounting, HRM, and patron security).
 
@@ -74,6 +74,17 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * Abandoned cart automated recovery drip campaigns.
 * Tiered VIP Loyalty Rewards program (welcome points, point accrual, and tier upgrades).
 
+### 12. Multi-Currency Engine & Global Forex Conversion
+* **10 Global Currencies Supported**: Native out-of-the-box support for INR (`₹`), USD (`$`), EUR (`€`), GBP (`£`), AED (`AED `), CAD (`CA$`), AUD (`AU$`), SGD (`SG$`), SAR (`SAR `), and JPY (`¥`).
+* **Universal Storefront Currency Switcher**: Accessible `<x-currency-switcher />` dropdown seamlessly integrated into desktop headers and mobile navigation drawers across all 5 themes.
+* **Instant Reactive Switching**: Switches instantly via session (`session('currency')`), cookie, and AJAX (`POST /currency/switch`), updating both Blade directives (`@currency($amount)`) and clientside JavaScript (`window.formatPrice()`).
+* **Order Transactional Snapshotting**: At checkout, each order freezes the patron's active currency and exact exchange rate directly onto the `orders` record (`currency` and `exchange_rate`), guaranteeing permanent historical accuracy for international book-keeping and customer receipts.
+* **Admin Rate & Base Currency Manager**: Configure base currency, toggle multi-currency on/off, and customize exact exchange rates with real-time sample previews in `/admin/settings`.
+
+### 13. Modular Asset Separation & Zero Embedded Scripts
+* **Enterprise Asset Separation**: All procedural `<script>` and `<style>` blocks across all 14 admin domains (Finance, Fleet, HRM, Integrations, Inventory, Invoices, Marketing, Orders, POS, Products, Purchases, Reports, Settings, Staff) are extracted into dedicated versioned static files under `public/js/admin/` and `public/css/admin/`.
+* **Clean Blade Templates**: Blade views contain pure declarative markup, eliminating CSP script-injection vectors and enabling aggressive HTTP browser caching.
+
 ---
 
 ## 🛠 Tech Stack
@@ -82,7 +93,7 @@ Switch between five fully realized lifestyle brand aesthetics in one click witho
 * **Database**: MySQL 8.x / MariaDB
 * **Frontend**: Blade Components, Tailwind CSS, Alpine.js, HTML5 Canvas
 * **Image Engine**: GD / native `imageavif` (PHP 8.5) & Client-side HTML5 Canvas AVIF
-* **Testing**: PHPUnit / Pest (470 tests, 2,677 assertions)
+* **Testing**: PHPUnit / Pest (479 tests, 2,734 assertions)
 * **Auth**: Custom Patron Auth with Two-Factor Email OTP
 * **PWA**: Web App Manifest & service worker readiness
 

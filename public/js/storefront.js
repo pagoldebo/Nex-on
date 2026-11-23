@@ -5,6 +5,45 @@
  * ======================================================================
  */
 
+// ── Multi-currency helpers ─────────────────────────────────────────
+window.formatPrice = function(amount) {
+    const num = Number(amount || 0);
+    const cfg = window.currencyConfig || { code: 'INR', symbol: '₹', rate: 1.0, decimals: 0, locale: 'en-IN' };
+    const rate = typeof cfg.rate === 'number' && cfg.rate > 0 ? cfg.rate : 1.0;
+    const decimals = typeof cfg.decimals === 'number' ? cfg.decimals : 0;
+    const converted = num * rate;
+    const formatted = converted.toLocaleString(cfg.locale || 'en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    });
+    return (cfg.symbol || '₹') + formatted;
+};
+
+window.switchCurrency = async function(code) {
+    if (!code) return;
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch('/currency/switch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || ''
+            },
+            body: JSON.stringify({ currency: code })
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            console.error('Failed to switch currency:', data.message);
+            window.location.href = '/currency/' + encodeURIComponent(code);
+        }
+    } catch (e) {
+        window.location.href = '/currency/' + encodeURIComponent(code);
+    }
+};
+
 // ── Cart state (shared across all pages via sessionStorage) ────────
 let cart = JSON.parse(sessionStorage.getItem('lc_cart') || '[]');
 
@@ -55,8 +94,8 @@ function updateCartUI() {
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
     document.querySelectorAll('.cart-count-badge').forEach(el => el.textContent = count);
     const totalEl = document.getElementById('cartTotal');
-    if (totalEl) totalEl.textContent = '₹' + cartTotal().toLocaleString('en-IN');
-    document.querySelectorAll('.cart-total-amount, #cartDrawerSubtotal').forEach(el => el.textContent = '₹' + cartTotal().toLocaleString('en-IN'));
+    if (totalEl) totalEl.textContent = window.formatPrice(cartTotal());
+    document.querySelectorAll('.cart-total-amount, #cartDrawerSubtotal').forEach(el => el.textContent = window.formatPrice(cartTotal()));
     renderCartItems();
 }
 
@@ -75,7 +114,7 @@ function renderCartItems() {
             <div class="flex-1 min-w-0">
                 <p class="font-semibold text-sm truncate">${escHtml(item.name)}</p>
                 <p class="text-xs opacity-50">${escHtml(item.colorName)} / ${escHtml(item.size)} × ${Number(item.qty) || 1}</p>
-                <p class="font-bold text-sm mt-0.5">₹${((Number(item.price) || 0) * (Number(item.qty) || 1)).toLocaleString('en-IN')}</p>
+                <p class="font-bold text-sm mt-0.5">${window.formatPrice((Number(item.price) || 0) * (Number(item.qty) || 1))}</p>
             </div>
             <button type="button" onclick="removeFromCartByIndex(${idx})" class="opacity-40 hover:opacity-100 text-lg leading-none" aria-label="Remove item">&times;</button>
         </div>
@@ -349,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <img src="${escHtml(p.cover_image || p.image || '/images/placeholder.jpg')}" class="w-10 h-10 object-cover rounded-lg" alt="">
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs font-bold truncate">${escHtml(p.name)}</p>
-                                    <p class="text-[11px] font-bold" style="color:var(--color-accent,#DB2777)">₹${Number(p.price).toLocaleString('en-IN')}</p>
+                                    <p class="text-[11px] font-bold" style="color:var(--color-accent,#DB2777)">${window.formatPrice(p.price)}</p>
                                 </div>
                             </a>
                         `).join('')

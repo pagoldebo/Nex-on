@@ -29,6 +29,8 @@ class Order extends Model
         'discount',
         'tax_amount',
         'total',
+        'currency',
+        'exchange_rate',
         'tendered_amount',
         'change_amount',
         'payment_method',
@@ -138,16 +140,29 @@ class Order extends Model
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    /** Formatted subtotal, e.g. "₹1,499" */
+    /** Formatted subtotal respecting snapshot currency, e.g. "₹1,499" or "$17.39" */
     public function getFormattedSubtotalAttribute(): string
     {
-        return '₹' . number_format($this->subtotal, 0);
+        $service = app(\App\Services\CurrencyService::class);
+        $currency = $this->currency ?: $service->getBaseCurrency();
+        $rate = (float) ($this->exchange_rate ?: 1.0);
+        return $service->format($this->subtotal * $rate, $currency);
     }
 
-    /** Formatted total, e.g. "₹1,648" */
+    /** Formatted total respecting snapshot currency, e.g. "₹1,648" or "$19.12" */
     public function getFormattedTotalAttribute(): string
     {
-        return '₹' . number_format($this->total, 0);
+        $service = app(\App\Services\CurrencyService::class);
+        $currency = $this->currency ?: $service->getBaseCurrency();
+        $rate = (float) ($this->exchange_rate ?: 1.0);
+        return $service->format($this->total * $rate, $currency);
+    }
+
+    /** Currency symbol for order display */
+    public function getCurrencySymbolAttribute(): string
+    {
+        $service = app(\App\Services\CurrencyService::class);
+        return $service->getSymbol($this->currency ?: $service->getBaseCurrency());
     }
 
     /** Human-readable status label */
@@ -347,6 +362,12 @@ class Order extends Model
                 $total = max(0, $verifiedSubtotal + $shippingCharge + $codCharge - $verifiedDiscount);
             }
 
+            $currencyService = app(\App\Services\CurrencyService::class);
+            $orderCurrency   = !empty($data['currency']) && array_key_exists(strtoupper($data['currency']), \App\Services\CurrencyService::SUPPORTED_CURRENCIES)
+                ? strtoupper($data['currency'])
+                : $currencyService->getUserCurrency();
+            $exchangeRate    = $currencyService->getRate($orderCurrency);
+
             // 4. Create the verified Order record
             $order = static::create([
                 'user_id'          => $userId,
@@ -358,6 +379,8 @@ class Order extends Model
                 'coupon_code'      => $couponCode,
                 'tax_amount'       => $taxAmount,
                 'total'            => $total,
+                'currency'         => $orderCurrency,
+                'exchange_rate'    => $exchangeRate,
                 'payment_method'   => $method,
                 'payment_status'   => self::PAYMENT_PENDING,
                 'shipping_name'    => $shipping['name']     ?? $data['customer_name']    ?? '',

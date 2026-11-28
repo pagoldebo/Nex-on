@@ -59,7 +59,10 @@ class CurrencyController extends Controller
     public function switchGet(string $code): RedirectResponse
     {
         $code = strtoupper(trim($code));
-        $this->currencyService->setUserCurrency($code);
+        if (! $this->currencyService->setUserCurrency($code)) {
+            return back()->with('error', "Currency [{$code}] is currently not available.");
+        }
+
         $cookie = cookie('currency', $code, 60 * 24 * 30);
 
         return back()->withCookie($cookie);

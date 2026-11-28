@@ -109,11 +109,12 @@ class AdminPosController extends Controller
         }
 
         if (!empty($query)) {
-            $variantQuery->where(function ($q) use ($query) {
-                $q->where('sku', 'LIKE', "%{$query}%")
-                  ->orWhereHas('product', function ($pq) use ($query) {
-                      $pq->where('name', 'LIKE', "%{$query}%")
-                         ->orWhere('sku', 'LIKE', "%{$query}%");
+            $safeQuery = \App\Services\SqlSafetyService::escapeLike($query);
+            $variantQuery->where(function ($q) use ($safeQuery) {
+                $q->where('sku', 'LIKE', "%{$safeQuery}%")
+                  ->orWhereHas('product', function ($pq) use ($safeQuery) {
+                      $pq->where('name', 'LIKE', "%{$safeQuery}%")
+                         ->orWhere('sku', 'LIKE', "%{$safeQuery}%");
                   });
             });
         }
@@ -231,21 +232,23 @@ class AdminPosController extends Controller
         return DB::transaction(function () use ($validated) {
             $subtotal = 0;
             $orderItemsData = [];
+            $requestedQtyByVariant = [];
 
             // 1. Verify and lock variants for atomic stock decrement
             foreach ($validated['items'] as $itemInput) {
                 $variant = ProductVariant::with(['product', 'color'])->lockForUpdate()->findOrFail($itemInput['variant_id']);
+                $qty = (int) $itemInput['qty'];
+                $requestedQtyByVariant[$variant->id] = ($requestedQtyByVariant[$variant->id] ?? 0) + $qty;
 
-                if ($variant->stock < $itemInput['qty']) {
+                if ($variant->stock < $requestedQtyByVariant[$variant->id]) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Insufficient stock for SKU [{$variant->sku}]. Available: {$variant->stock}, Requested: {$itemInput['qty']}",
+                        'message' => "Insufficient stock for SKU [{$variant->sku}]. Available: {$variant->stock}, Requested: {$requestedQtyByVariant[$variant->id]}",
                     ], 422);
                 }
 
                 // Load genuinely verified price from database, ignoring client-supplied price
                 $unitPrice = (int) round($variant->price ?? $variant->product?->price ?? 0);
-                $qty = (int) $itemInput['qty'];
                 $lineTotal = $unitPrice * $qty;
                 $subtotal += $lineTotal;
 

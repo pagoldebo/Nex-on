@@ -44,12 +44,14 @@ class AdminCommercialInvoiceController extends Controller
 
         $invoices = $query->orderBy('invoice_date', 'desc')->orderBy('id', 'desc')->paginate(15)->withQueryString();
 
-        // High-level summary metrics
-        $allInvoices = CommercialInvoice::all();
-        $totalInvoiced = $allInvoices->where('type', 'tax_invoice')->sum('total_amount');
-        $totalCollected = $allInvoices->sum('amount_paid');
-        $totalOutstanding = $allInvoices->where('type', 'tax_invoice')->whereIn('status', ['draft', 'issued', 'partial'])->sum(fn($i) => $i->balance_due);
-        $totalCreditNotes = $allInvoices->where('type', 'credit_note')->sum('total_amount');
+        // High-level summary metrics via database queries
+        $totalInvoiced = (float) CommercialInvoice::where('type', 'tax_invoice')->sum('total_amount');
+        $totalCollected = (float) CommercialInvoice::sum('amount_paid');
+        $totalOutstanding = (float) CommercialInvoice::where('type', 'tax_invoice')
+            ->whereIn('status', ['draft', 'issued', 'partial'])
+            ->selectRaw('COALESCE(SUM(CASE WHEN total_amount > amount_paid THEN total_amount - amount_paid ELSE 0 END), 0) as aggregate')
+            ->value('aggregate');
+        $totalCreditNotes = (float) CommercialInvoice::where('type', 'credit_note')->sum('total_amount');
 
         return view('admin.invoices.index', compact(
             'invoices',

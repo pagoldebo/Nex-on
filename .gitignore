@@ -51,3 +51,9 @@ Thumbs.db
 .gsd/STATE.md
 .gsd/JOURNAL.md
 .gsd/TODO.md
+
+# Local Agent & AI Assistant folders
+/.agent/
+/.agents/
+/.freebuff/
+/.gemini/

@@ -18,7 +18,8 @@ class AdminNewsletterController extends Controller
         $query  = Subscriber::latest();
 
         if ($search !== '') {
-            $query->where('email', 'like', "%{$search}%");
+            $safeSearch = \App\Services\SqlSafetyService::escapeLike($search);
+            $query->where('email', 'like', "%{$safeSearch}%");
         }
 
         $subscribers = $query->paginate(20)->withQueryString();

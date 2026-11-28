@@ -48,13 +48,18 @@ class AdminReviewController extends Controller
             'is_approved'   => 'nullable|boolean',
         ]);
 
+        $sanitizedCustomerName = strip_tags(\App\Services\HtmlSanitizerService::clean($validated['customer_name']));
+        $sanitizedCity         = !empty($validated['city']) ? strip_tags(\App\Services\HtmlSanitizerService::clean($validated['city'])) : null;
+        $sanitizedTitle        = !empty($validated['title']) ? \App\Services\HtmlSanitizerService::clean($validated['title']) : null;
+        $sanitizedComment      = \App\Services\HtmlSanitizerService::clean($validated['comment']);
+
         ProductReview::create([
             'product_id'    => $validated['product_id'],
-            'customer_name' => $validated['customer_name'],
-            'city'          => $validated['city'] ?? null,
+            'customer_name' => $sanitizedCustomerName,
+            'city'          => $sanitizedCity,
             'rating'        => $validated['rating'],
-            'title'         => $validated['title'] ?? null,
-            'comment'       => $validated['comment'],
+            'title'         => $sanitizedTitle,
+            'comment'       => $sanitizedComment,
             'is_approved'   => $request->boolean('is_approved', true),
         ]);
 

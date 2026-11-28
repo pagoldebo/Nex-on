@@ -29,14 +29,15 @@ class ProductController extends Controller
         $query = Product::with(['category', 'brand', 'addons', 'tags', 'collections', 'colors.variants', 'colors.images'])->latest();
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%")
-                  ->orWhere('badge', 'like', "%{$search}%")
-                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
-                  ->orWhereHas('collections', fn ($col) => $col->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
-                  ->orWhereHas('variants', fn ($v) => $v->where('sku', 'like', "%{$search}%"));
+            $safeSearch = \App\Services\SqlSafetyService::escapeLike($search);
+            $query->where(function ($q) use ($safeSearch) {
+                $q->where('name', 'like', "%{$safeSearch}%")
+                  ->orWhere('sku', 'like', "%{$safeSearch}%")
+                  ->orWhere('slug', 'like', "%{$safeSearch}%")
+                  ->orWhere('badge', 'like', "%{$safeSearch}%")
+                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$safeSearch}%")->orWhere('slug', 'like', "%{$safeSearch}%"))
+                  ->orWhereHas('collections', fn ($col) => $col->where('name', 'like', "%{$safeSearch}%")->orWhere('slug', 'like', "%{$safeSearch}%"))
+                  ->orWhereHas('variants', fn ($v) => $v->where('sku', 'like', "%{$safeSearch}%"));
             });
         }
 

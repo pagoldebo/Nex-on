@@ -87,5 +87,22 @@ class HtmlSanitizerServiceTest extends TestCase
         $this->assertStringNotContainsString('alert', $clean);
         $this->assertStringContainsString('<circle', $clean);
     }
+
+    public function test_strips_dangerous_css_styles_from_style_attributes(): void
+    {
+        $inputFixed = '<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999;">Malicious Overlay</div>';
+        $cleanFixed = HtmlSanitizerService::clean($inputFixed);
+        $this->assertStringNotContainsString('style=', $cleanFixed);
+        $this->assertStringContainsString('Malicious Overlay', $cleanFixed);
+
+        $inputExfil = '<span style="background-image: url(\'https://attacker.com/leak\');">Text</span>';
+        $cleanExfil = HtmlSanitizerService::clean($inputExfil);
+        $this->assertStringNotContainsString('style=', $cleanExfil);
+        $this->assertStringContainsString('Text', $cleanExfil);
+
+        $inputSafe = '<p style="color: red; font-weight: bold; text-align: center;">Safe styled text</p>';
+        $cleanSafe = HtmlSanitizerService::clean($inputSafe);
+        $this->assertStringContainsString('style="color: red; font-weight: bold; text-align: center;"', $cleanSafe);
+    }
 }
 

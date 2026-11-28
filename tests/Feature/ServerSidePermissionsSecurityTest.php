@@ -122,6 +122,9 @@ class ServerSidePermissionsSecurityTest extends TestCase
 
         // Store Manager CANNOT access Roles & Permissions (403 Forbidden)
         $this->actingAs($manager)->get(route('admin.roles.index'))->assertStatus(403);
+
+        // Store Manager CAN access Payroll (has payroll.manage permission)
+        $this->actingAs($manager)->get(route('admin.hrm.payroll.overview'))->assertStatus(200);
     }
 
     public function test_inventory_clerk_can_access_inventory_but_is_forbidden_from_settings_and_roles(): void
@@ -394,5 +397,123 @@ class ServerSidePermissionsSecurityTest extends TestCase
 
         $response->assertStatus(403);
         $this->assertEquals('finance.clerk@nexon.test', $victimStaff->fresh()->email);
+    }
+
+    public function test_unauthenticated_user_cannot_access_address_book_endpoints(): void
+    {
+        $responsePost = $this->post(route('account.addresses.store'), [
+            'name'     => 'Eve Hacker',
+            'phone'    => '9876543210',
+            'address1' => '123 Fake Street',
+            'city'     => 'Mumbai',
+            'state'    => 'Maharashtra',
+            'pincode'  => '400001',
+        ]);
+        $responsePost->assertRedirect(route('login'));
+
+        $responseDelete = $this->delete(route('account.addresses.destroy', 9999));
+        $responseDelete->assertRedirect(route('login'));
+    }
+
+    public function test_apply_coupon_enforces_user_usage_limit_on_client_check(): void
+    {
+        $user = User::create([
+            'name'     => 'Coupon User',
+            'email'    => 'coupon.user@nexon.test',
+            'phone'    => '9988776655',
+            'password' => bcrypt('Password123!'),
+            'role'     => 'customer',
+        ]);
+
+        $coupon = \App\Models\Coupon::create([
+            'code'       => 'ONCEPERUSER',
+            'type'       => 'fixed',
+            'value'      => 100,
+            'is_active'  => true,
+            'max_uses'   => 1,
+            'starts_at'  => now()->subDay(),
+            'expires_at' => now()->addDay(),
+        ]);
+
+        // Prior order using this coupon by this user
+        \App\Models\Order::create([
+            'reference'         => 'ORD-COUPON-USED-1',
+            'user_id'           => $user->id,
+            'subtotal'          => 1000,
+            'shipping_charge'   => 0,
+            'discount'          => 100,
+            'coupon_code'       => 'ONCEPERUSER',
+            'total'             => 900,
+            'payment_method'    => 'cod',
+            'status'            => \App\Models\Order::STATUS_DELIVERED,
+            'payment_status'    => \App\Models\Order::PAYMENT_PAID,
+            'shipping_name'     => $user->name,
+            'shipping_email'    => $user->email,
+            'shipping_phone'    => '9988776655',
+            'shipping_address1' => '100 Test St',
+            'shipping_city'     => 'Mumbai',
+            'shipping_state'    => 'Maharashtra',
+            'shipping_pincode'  => '400001',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('coupon.apply'), [
+            'code'     => 'ONCEPERUSER',
+            'subtotal' => 1500,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'You have already redeemed this single-use coupon.',
+        ]);
+    }
+
+    public function test_admin_review_creation_sanitizes_html_script_and_style_tags(): void
+    {
+        $superAdmin = $this->createSuperAdmin();
+        $cat = \App\Models\Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+        $product = \App\Models\Product::firstOrCreate(
+            ['slug' => 'review-test-prod'],
+            [
+                'category_id'    => $cat->id,
+                'name'           => 'Review Test Product',
+                'sku'            => 'REV-TEST-01',
+                'starting_price' => 500,
+                'is_active'      => true,
+            ]
+        );
+
+        $response = $this->actingAs($superAdmin)->post(route('admin.reviews.store'), [
+            'product_id'    => $product->id,
+            'customer_name' => '<b>Bold Customer</b>',
+            'city'          => '<script>alert("city")</script>Mumbai',
+            'rating'        => 5,
+            'title'         => 'Great <script>alert("xss")</script>Item',
+            'comment'       => 'Wonderful quality <style>body{display:none}</style><b>Loved it!</b>',
+            'is_approved'   => true,
+        ]);
+
+        $response->assertRedirect();
+
+        $review = \App\Models\ProductReview::where('product_id', $product->id)->latest('id')->firstOrFail();
+        $this->assertEquals('Bold Customer', $review->customer_name);
+        $this->assertEquals('Mumbai', $review->city);
+        $this->assertStringNotContainsString('<script>', $review->title);
+        $this->assertStringNotContainsString('<style>', $review->comment);
+        $this->assertStringContainsString('Loved it!', $review->comment);
+    }
+
+    public function test_deactivated_or_inactive_staff_is_immediately_blocked_from_admin(): void
+    {
+        $manager = $this->createStaffWithRole('store-manager', 'Inactive Manager');
+        $this->actingAs($manager)->get(route('admin.dashboard'))->assertStatus(200);
+
+        // Deactivate via deactivated_at
+        $manager->forceFill(['deactivated_at' => now()])->save();
+        $this->actingAs($manager)->get(route('admin.dashboard'))->assertRedirect(route('login'));
+
+        // Re-activate deactivated_at, but mark employment_status inactive
+        $manager->forceFill(['deactivated_at' => null, 'employment_status' => 'inactive'])->save();
+        $this->actingAs($manager)->getJson(route('admin.dashboard'))->assertStatus(403);
     }
 }

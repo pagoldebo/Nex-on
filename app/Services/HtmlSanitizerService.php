@@ -132,12 +132,19 @@ class HtmlSanitizerService
 
                         if ($name === 'style') {
                             $normalizedStyle = strtolower($value);
-                            if (
-                                str_contains($normalizedStyle, 'expression') ||
-                                str_contains($normalizedStyle, 'javascript:') ||
-                                str_contains($normalizedStyle, 'behavior') ||
-                                str_contains($normalizedStyle, '-moz-binding')
-                            ) {
+                            $dangerousCss = [
+                                'expression', 'javascript:', 'behavior', '-moz-binding', 'vbscript:',
+                                'position', 'fixed', 'absolute', 'z-index', 'top', 'bottom', 'left', 'right',
+                                'url(', '@import', 'binding', '-webkit-binding'
+                            ];
+                            $hasDangerous = false;
+                            foreach ($dangerousCss as $pattern) {
+                                if (str_contains($normalizedStyle, $pattern)) {
+                                    $hasDangerous = true;
+                                    break;
+                                }
+                            }
+                            if ($hasDangerous) {
                                 $attrsToRemove[] = $name;
                                 continue;
                             }

@@ -95,10 +95,12 @@ Route::get('/account',                    [StorefrontController::class, 'account
 Route::put('/account', function (\Illuminate\Http\Request $request) {
     $user = \Illuminate\Support\Facades\Auth::user();
     if (! $user) return redirect()->route('login');
+    $emailChanged = $request->filled('email') && strtolower(trim((string) $request->input('email'))) !== strtolower((string) $user->email);
+    $passwordChanged = $request->filled('password');
     $validated = $request->validate([
         'name'             => ['required', 'string', 'max:255'],
         'email'            => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
-        'current_password' => ['nullable', 'required_with:password', 'current_password'],
+        'current_password' => [($emailChanged || $passwordChanged) ? 'required' : 'nullable', 'current_password'],
         'password'         => ['nullable', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
     ]);
     $user->name  = $validated['name'];
@@ -108,7 +110,7 @@ Route::put('/account', function (\Illuminate\Http\Request $request) {
     }
     $user->save();
     return back()->with('profile_success', 'Profile updated successfully.');
-})->middleware('auth')->name('account.update');
+})->middleware(['auth', 'throttle:10,1'])->name('account.update');
 
 Route::get('/account/orders/{order}/invoice', [StorefrontController::class, 'customerInvoice'])->middleware('auth')->name('account.orders.invoice');
 Route::get('/wishlist',                   [StorefrontController::class, 'wishlist'])->name('wishlist');
@@ -143,8 +145,8 @@ Route::post('/coupon/remove',             [StorefrontController::class, 'removeC
 Route::post('/pincode/check',             [StorefrontController::class, 'checkPincode'])->middleware('throttle:pincode_check')->name('pincode.check');
 Route::post('/products/{product:slug}/review', [StorefrontController::class, 'submitReview'])->middleware('throttle:reviews')->name('products.review');
 Route::post('/orders/{order}/request',    [StorefrontController::class, 'submitOrderRequest'])->middleware('throttle:order_request')->name('orders.request');
-Route::post('/account/addresses',         [StorefrontController::class, 'saveAddress'])->name('account.addresses.store');
-Route::delete('/account/addresses/{address}', [StorefrontController::class, 'deleteAddress'])->name('account.addresses.destroy');
+Route::post('/account/addresses',         [StorefrontController::class, 'saveAddress'])->middleware('auth')->name('account.addresses.store');
+Route::delete('/account/addresses/{address}', [StorefrontController::class, 'deleteAddress'])->middleware('auth')->name('account.addresses.destroy');
 Route::post('/newsletter/subscribe',      [StorefrontController::class, 'subscribeNewsletter'])->middleware('throttle:newsletter')->name('newsletter.subscribe');
 Route::post('/contact/store',                 [ContactController::class, 'submit'])->middleware('throttle:contact')->name('contact.store');
 Route::get('/cart/recover/{hash}',             [AdminAbandonedCartController::class, 'restore'])->name('cart.recover');
@@ -206,7 +208,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::get('/pos', [AdminPosController::class, 'index'])->name('pos.index');
         Route::get('/pos/products/search', [AdminPosController::class, 'searchProducts'])->name('pos.products.search');
         Route::post('/pos/customers/quick-store', [AdminPosController::class, 'quickStoreCustomer'])->name('pos.customers.quickStore');
-        Route::post('/pos/checkout', [AdminPosController::class, 'checkout'])->name('pos.checkout');
+        Route::post('/pos/checkout', [AdminPosController::class, 'checkout'])->middleware('permission:pos.checkout')->name('pos.checkout');
         Route::get('/pos/orders/{order}/receipt', [AdminPosController::class, 'receipt'])->name('pos.receipt');
 
         // POS Shift Reconciliation & Tender Analytics
@@ -370,10 +372,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
 
         // Financial & Operational Analytics Reports Suite
         Route::get('/reports',                  [AdminReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export/sales',     [AdminReportController::class, 'exportSalesCsv'])->name('reports.export.sales');
-        Route::get('/reports/export/products',  [AdminReportController::class, 'exportProductsCsv'])->name('reports.export.products');
-        Route::get('/reports/export/inventory', [AdminReportController::class, 'exportInventoryCsv'])->name('reports.export.inventory');
-        Route::get('/reports/export/gst',       [AdminReportController::class, 'exportGstCsv'])->name('reports.export.gst');
+        Route::middleware('permission:reports.export')->group(function () {
+            Route::get('/reports/export/sales',     [AdminReportController::class, 'exportSalesCsv'])->name('reports.export.sales');
+            Route::get('/reports/export/products',  [AdminReportController::class, 'exportProductsCsv'])->name('reports.export.products');
+            Route::get('/reports/export/inventory', [AdminReportController::class, 'exportInventoryCsv'])->name('reports.export.inventory');
+            Route::get('/reports/export/gst',       [AdminReportController::class, 'exportGstCsv'])->name('reports.export.gst');
+        });
     });
 
     // Store Settings, Themes, ERP Integrations & Marketing
@@ -438,6 +442,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::get('/marketing/loyalty', [AdminLoyaltyController::class, 'index'])->name('marketing.loyalty');
         Route::put('/marketing/loyalty/tiers/{tier}', [AdminLoyaltyController::class, 'updateTier'])->name('marketing.loyalty.tier.update');
         Route::post('/marketing/loyalty/accounts/{account}/adjust', [AdminLoyaltyController::class, 'adjustPoints'])->name('marketing.loyalty.account.adjust');
+    });
 
     // Customers & Customer Groups Management
     Route::middleware('permission:customers.view|customers.manage')->group(function () {
@@ -458,13 +463,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::delete('/customer-groups/{customerGroup}/customers/{user}', [AdminCustomerGroupController::class, 'removeCustomer'])->name('customer-groups.remove-customer');
     });
 
-        // Product Reviews Moderation
+    // Product Reviews Moderation & Custom Page Builder
+    Route::middleware('permission:products.manage|settings.manage')->group(function () {
         Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews', [AdminReviewController::class, 'store'])->name('reviews.store');
         Route::patch('/reviews/{review}/toggle', [AdminReviewController::class, 'toggle'])->name('reviews.toggle');
         Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
-        // Visual Block Page Builder
         Route::patch('/pages/{page}/toggle', [AdminPageBuilderController::class, 'togglePublish'])->name('pages.toggle');
         Route::resource('pages', AdminPageBuilderController::class);
     });
@@ -491,48 +496,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
         Route::delete('/roles/{role}',                  [AdminRoleController::class, 'destroy'])->name('roles.destroy');
         Route::post('/roles/assign-user',               [AdminRoleController::class, 'assignUser'])->name('roles.assignUser');
 
-        // HRM: Payroll Management
-        Route::prefix('hrm/payroll')->as('hrm.payroll.')->middleware('permission:payroll.manage|payroll.export')->group(function () {
-            Route::get('/overview', [AdminPayrollController::class, 'overview'])->name('overview');
-            Route::get('/run', [AdminPayrollController::class, 'run'])->name('run');
-            Route::post('/run', [AdminPayrollController::class, 'processRun'])->name('run.process');
-            Route::get('/review', [AdminPayrollController::class, 'reviewLatest'])->name('review.latest');
-            Route::get('/payslips', [AdminPayrollController::class, 'payslips'])->name('payslips');
-            Route::get('/payslip/{item}/print', [AdminPayrollController::class, 'printPayslip'])->name('payslip.print');
-            Route::get('/{payroll}/review', [AdminPayrollController::class, 'review'])->name('review');
-            Route::post('/{payroll}/status', [AdminPayrollController::class, 'updateStatus'])->name('status');
-            Route::get('/{payroll}/bank-file', [AdminPayrollController::class, 'exportBankFile'])->middleware('permission:payroll.export')->name('bank-file');
-        });
-
-        // HRM: Performance Management & Appraisals
-        Route::prefix('hrm/performance')->as('hrm.performance.')->group(function () {
-            Route::get('/goals', [AdminPerformanceController::class, 'goals'])->name('goals');
-            Route::get('/goals/create', [AdminPerformanceController::class, 'createGoal'])->name('goals.create');
-            Route::post('/goals', [AdminPerformanceController::class, 'storeGoal'])->name('goals.store');
-            Route::post('/goals/{goal}/progress', [AdminPerformanceController::class, 'updateGoalProgress'])->name('goals.update-progress');
-            Route::get('/appraisals', [AdminPerformanceController::class, 'appraisals'])->name('appraisals');
-            Route::get('/appraisals/create', [AdminPerformanceController::class, 'createAppraisal'])->name('appraisals.create');
-            Route::post('/appraisals', [AdminPerformanceController::class, 'storeAppraisal'])->name('appraisals.store');
-            Route::get('/cycles', [AdminPerformanceController::class, 'cycles'])->name('cycles');
-            Route::post('/cycles', [AdminPerformanceController::class, 'storeCycle'])->name('cycles.store');
-            Route::get('/feedback', [AdminPerformanceController::class, 'feedback'])->name('feedback');
-            Route::post('/feedback', [AdminPerformanceController::class, 'storeFeedback'])->name('feedback.store');
-        });
-
-        // Organization & Staff Management
+        // Staff Directory Administration
         Route::prefix('staff')->as('staff.')->group(function () {
-            Route::get('/departments', [AdminDepartmentController::class, 'index'])->name('departments');
-            Route::post('/departments', [AdminDepartmentController::class, 'store'])->name('departments.store');
-            Route::put('/departments/{department}', [AdminDepartmentController::class, 'update'])->name('departments.update');
-            Route::post('/departments/{department}/assign', [AdminDepartmentController::class, 'assignStaff'])->name('departments.assign');
-            Route::post('/departments/shifts', [AdminDepartmentController::class, 'scheduleShift'])->name('departments.shifts');
-            Route::delete('/departments/shifts/{shift}', [AdminDepartmentController::class, 'deleteShift'])->name('departments.shifts.destroy');
-
-            Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance');
-            Route::post('/attendance/punch', [AdminAttendanceController::class, 'punch'])->name('attendance.punch');
-            Route::put('/attendance/{attendance}/adjust', [AdminAttendanceController::class, 'adjust'])->name('attendance.adjust');
-            Route::get('/attendance/export', [AdminAttendanceController::class, 'export'])->name('attendance.export');
-
             Route::get('/', [AdminStaffController::class, 'index'])->name('index');
             Route::post('/', [AdminStaffController::class, 'store'])->name('store');
             Route::post('/bulk', [AdminStaffController::class, 'bulkAction'])->name('bulk');
@@ -540,6 +505,49 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware
             Route::put('/{user}', [AdminStaffController::class, 'update'])->name('update')->whereNumber('user');
             Route::delete('/{user}', [AdminStaffController::class, 'destroy'])->name('destroy')->whereNumber('user');
         });
+    });
+
+    // HRM: Payroll Management
+    Route::prefix('hrm/payroll')->as('hrm.payroll.')->middleware('permission:payroll.manage|payroll.export')->group(function () {
+        Route::get('/overview', [AdminPayrollController::class, 'overview'])->name('overview');
+        Route::get('/run', [AdminPayrollController::class, 'run'])->name('run');
+        Route::post('/run', [AdminPayrollController::class, 'processRun'])->name('run.process');
+        Route::get('/review', [AdminPayrollController::class, 'reviewLatest'])->name('review.latest');
+        Route::get('/payslips', [AdminPayrollController::class, 'payslips'])->name('payslips');
+        Route::get('/payslip/{item}/print', [AdminPayrollController::class, 'printPayslip'])->name('payslip.print');
+        Route::get('/{payroll}/review', [AdminPayrollController::class, 'review'])->name('review');
+        Route::post('/{payroll}/status', [AdminPayrollController::class, 'updateStatus'])->name('status');
+        Route::get('/{payroll}/bank-file', [AdminPayrollController::class, 'exportBankFile'])->middleware('permission:payroll.export')->name('bank-file');
+    });
+
+    // HRM: Performance Management & Appraisals
+    Route::prefix('hrm/performance')->as('hrm.performance.')->middleware('permission:roles.manage|payroll.manage')->group(function () {
+        Route::get('/goals', [AdminPerformanceController::class, 'goals'])->name('goals');
+        Route::get('/goals/create', [AdminPerformanceController::class, 'createGoal'])->name('goals.create');
+        Route::post('/goals', [AdminPerformanceController::class, 'storeGoal'])->name('goals.store');
+        Route::post('/goals/{goal}/progress', [AdminPerformanceController::class, 'updateGoalProgress'])->name('goals.update-progress');
+        Route::get('/appraisals', [AdminPerformanceController::class, 'appraisals'])->name('appraisals');
+        Route::get('/appraisals/create', [AdminPerformanceController::class, 'createAppraisal'])->name('appraisals.create');
+        Route::post('/appraisals', [AdminPerformanceController::class, 'storeAppraisal'])->name('appraisals.store');
+        Route::get('/cycles', [AdminPerformanceController::class, 'cycles'])->name('cycles');
+        Route::post('/cycles', [AdminPerformanceController::class, 'storeCycle'])->name('cycles.store');
+        Route::get('/feedback', [AdminPerformanceController::class, 'feedback'])->name('feedback');
+        Route::post('/feedback', [AdminPerformanceController::class, 'storeFeedback'])->name('feedback.store');
+    });
+
+    // Organization & Attendance Operations (Roster, Clock-in, Adjustments)
+    Route::prefix('staff')->as('staff.')->group(function () {
+        Route::get('/departments', [AdminDepartmentController::class, 'index'])->name('departments');
+        Route::post('/departments', [AdminDepartmentController::class, 'store'])->name('departments.store');
+        Route::put('/departments/{department}', [AdminDepartmentController::class, 'update'])->name('departments.update');
+        Route::post('/departments/{department}/assign', [AdminDepartmentController::class, 'assignStaff'])->name('departments.assign');
+        Route::post('/departments/shifts', [AdminDepartmentController::class, 'scheduleShift'])->name('departments.shifts');
+        Route::delete('/departments/shifts/{shift}', [AdminDepartmentController::class, 'deleteShift'])->name('departments.shifts.destroy');
+
+        Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance');
+        Route::post('/attendance/punch', [AdminAttendanceController::class, 'punch'])->name('attendance.punch');
+        Route::put('/attendance/{attendance}/adjust', [AdminAttendanceController::class, 'adjust'])->name('attendance.adjust');
+        Route::get('/attendance/export', [AdminAttendanceController::class, 'export'])->name('attendance.export');
     });
 
     // Support & Helpdesk

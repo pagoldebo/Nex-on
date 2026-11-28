@@ -29,8 +29,12 @@
                                 {{ $block['subheadline'] ?? '' }}
                             </p>
                             @if(!empty($block['cta_text']))
+                                @php
+                                    $rawCta = trim((string)($block['cta_link'] ?? '#'));
+                                    $safeCta = (!preg_match('/^(javascript|data|vbscript):/i', $rawCta)) ? $rawCta : '#';
+                                @endphp
                                 <div class="pt-4">
-                                    <a href="{{ $block['cta_link'] ?? '#' }}"
+                                    <a href="{{ $safeCta }}"
                                        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-slate-950 font-bold hover:bg-slate-100 transition shadow-lg text-xs tracking-wider uppercase">
                                         <span>{{ $block['cta_text'] }}</span>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -82,8 +86,12 @@
 
             {{-- 3. Countdown Timer Block --}}
             @elseif(($block['type'] ?? '') === 'countdown')
+                @php
+                    $safeDate = preg_replace('/[^0-9\-:\sT]/', '', (string)($block['target_date'] ?? '2026-12-31'));
+                    if (empty($safeDate)) $safeDate = '2026-12-31';
+                @endphp
                 <section class="max-w-7xl mx-auto px-6 lg:px-10" x-data="{
-                    target: new Date('{{ $block['target_date'] ?? '2026-12-31' }}').getTime(),
+                    target: new Date('{{ $safeDate }}').getTime(),
                     days: '00', hours: '00', minutes: '00', seconds: '00',
                     init() {
                         const update = () => {

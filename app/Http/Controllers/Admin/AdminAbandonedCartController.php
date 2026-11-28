@@ -38,13 +38,12 @@ class AdminAbandonedCartController extends Controller
 
         $carts = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
-        // High-level KPI aggregations
-        $allCarts = AbandonedCart::all();
-        $totalAbandoned = $allCarts->count();
-        $totalRecovered = $allCarts->where('is_recovered', true)->count();
+        // High-level KPI aggregations via database queries
+        $totalAbandoned = AbandonedCart::count();
+        $totalRecovered = AbandonedCart::where('is_recovered', true)->count();
         $recoveryRate = $totalAbandoned > 0 ? round(($totalRecovered / $totalAbandoned) * 100, 1) : 0;
-        $unrecoveredPipeline = $allCarts->where('is_recovered', false)->sum('total_amount');
-        $recoveredRevenue = $allCarts->where('is_recovered', true)->sum('total_amount');
+        $unrecoveredPipeline = (float) AbandonedCart::where('is_recovered', false)->sum('total_amount');
+        $recoveredRevenue = (float) AbandonedCart::where('is_recovered', true)->sum('total_amount');
 
         return view('admin.marketing.abandoned-carts', compact(
             'carts',

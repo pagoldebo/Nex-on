@@ -44,14 +44,15 @@ class AdminBatchController extends Controller
 
         $batches = $query->paginate(20)->withQueryString();
 
-        // Calculate summary KPI stats
-        $allBatches = ProductBatch::all();
-        $expiredCount   = $allBatches->filter(fn($b) => $b->expiry_date->isPast())->count();
-        $expiring30d    = $allBatches->filter(fn($b) => !$b->expiry_date->isPast() && $b->days_until_expiry <= 30);
-        $expiring30dCount = $expiring30d->count();
-        $valueAtRisk30d = $expiring30d->sum(fn($b) => $b->remaining_qty * ($b->cost_price ?: 0));
-        $totalActiveBatches = $allBatches->where('status', 'active')->count();
-        $totalRemainingQty = $allBatches->sum('remaining_qty');
+        // Calculate summary KPI stats via database queries
+        $now = now();
+        $in30Days = now()->addDays(30);
+        $expiredCount = ProductBatch::where('expiry_date', '<', $now)->count();
+        $expiring30dQuery = ProductBatch::where('expiry_date', '>=', $now)->where('expiry_date', '<=', $in30Days);
+        $expiring30dCount = (clone $expiring30dQuery)->count();
+        $valueAtRisk30d = (float) (clone $expiring30dQuery)->selectRaw('COALESCE(SUM(remaining_qty * COALESCE(cost_price, 0)), 0) as aggregate')->value('aggregate');
+        $totalActiveBatches = ProductBatch::where('status', 'active')->count();
+        $totalRemainingQty = (int) ProductBatch::sum('remaining_qty');
 
         $variants = ProductVariant::with(['product', 'color'])->get();
 

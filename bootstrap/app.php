@@ -13,7 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustHosts(at: fn () => array_values(array_unique(array_filter([
             config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
-            (!app()->runningInConsole() && request()->getHost()) ? request()->getHost() : null,
             'nexon.cu.ma',
             '*.cu.ma',
             '*.nexon.app',

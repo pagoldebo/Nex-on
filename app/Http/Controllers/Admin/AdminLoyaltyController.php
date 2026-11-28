@@ -54,12 +54,11 @@ class AdminLoyaltyController extends Controller
 
         $accounts = $query->orderBy('points_balance', 'desc')->paginate(15)->withQueryString();
 
-        // High-level KPI aggregations
-        $allAccounts = LoyaltyAccount::all();
-        $totalMembers = $allAccounts->count();
-        $totalPointsCirculation = (int) $allAccounts->sum('points_balance');
+        // High-level KPI aggregations via database queries
+        $totalMembers = LoyaltyAccount::count();
+        $totalPointsCirculation = (int) LoyaltyAccount::sum('points_balance');
         $totalPointsLiabilityRupees = $totalPointsCirculation * 0.50; // 1 pt = ₹0.50
-        $totalPointsRedeemed = (int) $allAccounts->sum('points_redeemed_lifetime');
+        $totalPointsRedeemed = (int) LoyaltyAccount::sum('points_redeemed_lifetime');
 
         // Tiers with active member counts
         $tiers = LoyaltyTier::withCount('accounts')->orderBy('min_spend', 'asc')->get();

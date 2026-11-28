@@ -36,7 +36,7 @@ class AdminStaffController extends Controller
 
         // Search query
         if ($request->filled('q')) {
-            $search = trim($request->q);
+            $search = \App\Services\SqlSafetyService::escapeLike(trim($request->q));
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
@@ -268,6 +268,13 @@ class AdminStaffController extends Controller
             $user->roles()->sync([$role->id]);
         }
 
+        if ($validated['employment_status'] === 'inactive') {
+            $user->forceFill(['deactivated_at' => now()])->save();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+        } elseif ($user->deactivated_at !== null) {
+            $user->forceFill(['deactivated_at' => null])->save();
+        }
+
         \Illuminate\Support\Facades\Log::info("Admin ID " . ($actor?->id ?? 'system') . " updated staff record for User ID {$user->id} ({$user->email}) from IP " . $request->ip());
 
         return redirect()->route('admin.staff.index')
@@ -297,7 +304,13 @@ class AdminStaffController extends Controller
         }
 
         $name = $user->name;
-        $user->forceFill(['employment_status' => 'inactive', 'is_staff' => false])->save();
+        $user->forceFill([
+            'employment_status' => 'inactive',
+            'is_staff'          => false,
+            'deactivated_at'    => now(),
+        ])->save();
+
+        DB::table('sessions')->where('user_id', $user->id)->delete();
 
         return redirect()->route('admin.staff.index')
             ->with('success', "Employee '{$name}' deactivated successfully.");
@@ -333,10 +346,18 @@ class AdminStaffController extends Controller
         }
 
         if ($action === 'delete') {
-            User::whereIn('id', $ids)->update(['employment_status' => 'inactive', 'is_staff' => false]);
+            User::whereIn('id', $ids)->update(['employment_status' => 'inactive', 'is_staff' => false, 'deactivated_at' => now()]);
+            DB::table('sessions')->whereIn('user_id', $ids)->delete();
             $msg = count($ids) . ' employees deactivated.';
         } else {
-            User::whereIn('id', $ids)->update(['employment_status' => $action]);
+            $updates = ['employment_status' => $action];
+            if ($action === 'inactive') {
+                $updates['deactivated_at'] = now();
+                DB::table('sessions')->whereIn('user_id', $ids)->delete();
+            } elseif ($action === 'active') {
+                $updates['deactivated_at'] = null;
+            }
+            User::whereIn('id', $ids)->update($updates);
             $msg = count($ids) . ' employees updated to ' . strtoupper(str_replace('_', ' ', $action)) . '.';
         }
 

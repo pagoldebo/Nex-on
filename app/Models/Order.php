@@ -247,6 +247,7 @@ class Order extends Model
 
             $verifiedSubtotal = 0;
             $resolvedItems    = [];
+            $requestedQtyByVariant = [];
 
             // 1. Resolve every item from DB to ensure authentic pricing and prevent tampering
             foreach (($data['items'] ?? []) as $item) {
@@ -278,8 +279,9 @@ class Order extends Model
                 $product = $productId ? Product::find($productId) : null;
 
                 if ($variant) {
-                    if ($variant->stock < $qty) {
-                        throw new \InvalidArgumentException("Insufficient stock for SKU [{$variant->sku}]. Available: {$variant->stock}, Requested: {$qty}");
+                    $requestedQtyByVariant[$variant->id] = ($requestedQtyByVariant[$variant->id] ?? 0) + $qty;
+                    if ($variant->stock < $requestedQtyByVariant[$variant->id]) {
+                        throw new \InvalidArgumentException("Insufficient stock for SKU [{$variant->sku}]. Available: {$variant->stock}, Requested: {$requestedQtyByVariant[$variant->id]}");
                     }
                     $variantId      = $variant->id;
                     $colorId        = $colorId ?? $variant->product_color_id;

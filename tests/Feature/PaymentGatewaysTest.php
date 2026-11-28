@@ -195,4 +195,92 @@ class PaymentGatewaysTest extends TestCase
             'upi_qr'   => ['enabled', 'vpa'],
         ]);
     }
+
+    public function test_paypal_webhook_marks_order_paid()
+    {
+        [$admin, $order] = $this->createAdminAndOrder();
+        $order->update(['currency' => 'USD', 'total' => 2499]);
+        Setting::set('gateway_paypal_webhook_id', 'WH-12345');
+
+        $response = $this->postJson(route('webhook.paypal'), [
+            'event_type' => 'PAYMENT.CAPTURE.COMPLETED',
+            'resource'   => [
+                'id'        => 'PAYPAL-TXN-123',
+                'custom_id' => $order->reference,
+                'amount'    => [
+                    'value'         => '2499.00',
+                    'currency_code' => 'USD',
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $order->refresh();
+        $this->assertEquals(Order::PAYMENT_PAID, $order->payment_status);
+        $this->assertEquals(Order::STATUS_CONFIRMED, $order->status);
+    }
+
+    public function test_stripe_webhook_rejects_currency_mismatch()
+    {
+        [$admin, $order] = $this->createAdminAndOrder();
+        $order->update(['currency' => 'INR']);
+
+        $secret = 'whsec_stripeSecret456';
+        Setting::set('gateway_stripe_webhook_secret', $secret);
+
+        $payload = [
+            'type' => 'checkout.session.completed',
+            'data' => [
+                'object' => [
+                    'id'       => 'cs_test_mismatch123',
+                    'currency' => 'usd', // Mismatch against order currency INR
+                    'amount'   => 249900,
+                    'metadata' => [
+                        'order_reference' => $order->reference,
+                    ],
+                ],
+            ],
+        ];
+
+        $jsonPayload = json_encode($payload);
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp . '.' . $jsonPayload, $secret);
+
+        $response = $this->call(
+            'POST',
+            route('webhook.stripe'),
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_Stripe-Signature' => "t={$timestamp},v1={$signature}",
+            ],
+            $jsonPayload
+        );
+
+        $response->assertStatus(400);
+        $response->assertJson(['error' => 'Currency mismatch']);
+    }
+
+    public function test_razorpay_client_verification_requires_amount_match()
+    {
+        [$admin, $order] = $this->createAdminAndOrder();
+        Setting::set('gateway_razorpay_key_secret', 'rzp_secret');
+
+        $orderId = 'order_123';
+        $paymentId = 'pay_123';
+        $sig = hash_hmac('sha256', $orderId . '|' . $paymentId, 'rzp_secret');
+
+        $response = $this->postJson(route('api.payment.razorpay.verify'), [
+            'order_reference'     => $order->reference,
+            'razorpay_payment_id' => $paymentId,
+            'razorpay_order_id'   => $orderId,
+            'razorpay_signature'  => $sig,
+            'amount'              => 100, // Mismatches order->total * 100 (249900)
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['error' => 'Amount mismatch.']);
+    }
 }

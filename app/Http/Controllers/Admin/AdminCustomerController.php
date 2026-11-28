@@ -28,9 +28,10 @@ class AdminCustomerController extends Controller
             ->latest();
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+            $safeSearch = \App\Services\SqlSafetyService::escapeLike($search);
+            $query->where(function ($q) use ($safeSearch) {
+                $q->where('name', 'like', "%{$safeSearch}%")
+                  ->orWhere('email', 'like', "%{$safeSearch}%");
             });
         }
 
@@ -79,13 +80,14 @@ class AdminCustomerController extends Controller
 
         if ($customer->isDeactivated()) {
             $customer->deactivated_at = null;
+            $customer->save();
             $msg = "Customer account for {$customer->name} has been activated.";
         } else {
             $customer->deactivated_at = now();
+            $customer->save();
+            DB::table('sessions')->where('user_id', $customer->id)->delete();
             $msg = "Customer account for {$customer->name} has been deactivated.";
         }
-
-        $customer->save();
 
         return back()->with('success', $msg);
     }

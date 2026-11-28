@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsAdmin
@@ -20,6 +21,19 @@ class EnsureUserIsAdmin
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
             return redirect()->guest(route('login'));
+        }
+
+        // Immediately terminate access if the account is deactivated or inactive staff
+        if ($user->isDeactivated() || ($user->is_staff && $user->employment_status === 'inactive')) {
+            Auth::logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Account deactivated.'], 403);
+            }
+            return redirect()->route('login')->withErrors(['email' => 'Your account has been deactivated.']);
         }
 
         // Allow access only to users who are system administrators or authorized staff members with assigned RBAC roles

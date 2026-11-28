@@ -106,4 +106,46 @@ class PosTerminalTest extends TestCase
         $this->assertEquals(Order::PAYMENT_PAID, $order->payment_status);
         $this->assertEquals(100, $order->change_amount);
     }
+
+    public function test_pos_checkout_prevents_overselling_via_duplicate_variant_entries(): void
+    {
+        $admin = User::create([
+            'name'              => 'Cashier Admin',
+            'email'             => 'cashier.dup@nexon.test',
+            'password'          => bcrypt('password'),
+            'role'              => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        $cat = Category::create(['name' => 'Intimates', 'slug' => 'intimates-dup']);
+        $product = Product::create([
+            'category_id'    => $cat->id,
+            'name'           => 'Limited Bralette',
+            'slug'           => 'limited-bralette-dup',
+            'sku'            => 'LB-DUP',
+            'starting_price' => 999,
+            'is_active'      => true,
+        ]);
+        $color = ProductColor::create(['product_id' => $product->id, 'name' => 'Rose', 'hex' => '#FF007F']);
+        $variant = ProductVariant::create([
+            'product_id'       => $product->id,
+            'product_color_id' => $color->id,
+            'size'             => 'S',
+            'sku'              => 'LB-DUP-S',
+            'price'            => 999,
+            'stock'            => 4,
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.pos.checkout'), [
+            'items' => [
+                ['variant_id' => $variant->id, 'qty' => 3, 'price' => 999],
+                ['variant_id' => $variant->id, 'qty' => 3, 'price' => 999],
+            ],
+            'payment_method'  => 'cash',
+            'tendered_amount' => 6000,
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertEquals(4, $variant->fresh()->stock);
+    }
 }

@@ -177,4 +177,47 @@ class CheckoutPriceVerificationTest extends TestCase
         // Total: 2000 + 0 + 40 - 200 = 1840
         $this->assertEquals(1840, $order->total);
     }
+
+    public function test_checkout_prevents_overselling_via_duplicate_variant_entries(): void
+    {
+        $category = Category::create(['name' => 'Silk', 'slug' => 'silk-dup', 'sort_order' => 1]);
+        $product  = Product::create([
+            'category_id'    => $category->id,
+            'name'           => 'Limited Silk Gown',
+            'slug'           => 'limited-silk-gown',
+            'starting_price' => 3000,
+            'is_active'      => true,
+        ]);
+        $color   = ProductColor::create(['product_id' => $product->id, 'name' => 'Ivory', 'hex' => '#FFFFF0']);
+        $variant = ProductVariant::create([
+            'product_id'       => $product->id,
+            'product_color_id' => $color->id,
+            'size'             => 'M',
+            'sku'              => 'LSG-M-DUP',
+            'price'            => 3000,
+            'stock'            => 4,
+        ]);
+
+        $payload = [
+            'shipping' => [
+                'name'     => 'Alice',
+                'phone'    => '9123456789',
+                'email'    => 'alice@nexon.test',
+                'address1' => '10 Atelier Lane',
+                'city'     => 'Delhi',
+                'state'    => 'Delhi',
+                'pincode'  => '110001',
+            ],
+            'payment' => 'cod',
+            'items'   => [
+                ['productId' => $product->id, 'productVariantId' => $variant->id, 'qty' => 3, 'price' => 3000],
+                ['productId' => $product->id, 'productVariantId' => $variant->id, 'qty' => 3, 'price' => 3000],
+            ],
+        ];
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Insufficient stock');
+
+        Order::createFromCheckout($payload);
+    }
 }

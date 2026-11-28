@@ -33,11 +33,12 @@ class AdminOrderController extends Controller
         }
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('reference', 'like', "%{$search}%")
-                  ->orWhere('shipping_name', 'like', "%{$search}%")
-                  ->orWhere('shipping_email', 'like', "%{$search}%")
-                  ->orWhere('shipping_phone', 'like', "%{$search}%");
+            $safeSearch = \App\Services\SqlSafetyService::escapeLike($search);
+            $query->where(function ($q) use ($safeSearch) {
+                $q->where('reference', 'like', "%{$safeSearch}%")
+                  ->orWhere('shipping_name', 'like', "%{$safeSearch}%")
+                  ->orWhere('shipping_email', 'like', "%{$safeSearch}%")
+                  ->orWhere('shipping_phone', 'like', "%{$safeSearch}%");
             });
         }
 

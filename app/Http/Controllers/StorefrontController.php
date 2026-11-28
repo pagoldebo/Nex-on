@@ -554,7 +554,9 @@ class StorefrontController extends Controller
 
         RateLimiter::clear($couponThrottleKey);
 
-        $check = $coupon->isValidForAmount($subtotal);
+        $userId = Auth::id();
+        $email  = $request->input('email') ?: (Auth::user()?->email);
+        $check  = $coupon->isValidForAmount($subtotal, $userId, $email);
         if (! $check['valid']) {
             return response()->json(['success' => false, 'message' => $check['message']], 422);
         }
@@ -666,14 +668,16 @@ class StorefrontController extends Controller
             'comment'       => 'required|string|max:1000',
         ]);
 
-        $sanitizedTitle   = !empty($validated['title']) ? \App\Services\HtmlSanitizerService::clean($validated['title']) : null;
-        $sanitizedComment = \App\Services\HtmlSanitizerService::clean($validated['comment']);
+        $sanitizedCustomerName = strip_tags(\App\Services\HtmlSanitizerService::clean($validated['customer_name']));
+        $sanitizedCity         = !empty($validated['city']) ? strip_tags(\App\Services\HtmlSanitizerService::clean($validated['city'])) : null;
+        $sanitizedTitle        = !empty($validated['title']) ? \App\Services\HtmlSanitizerService::clean($validated['title']) : null;
+        $sanitizedComment      = \App\Services\HtmlSanitizerService::clean($validated['comment']);
 
         $review = ProductReview::create([
             'product_id'    => $product->id,
             'user_id'       => Auth::id(),
-            'customer_name' => strip_tags($validated['customer_name']),
-            'city'          => !empty($validated['city']) ? strip_tags($validated['city']) : null,
+            'customer_name' => $sanitizedCustomerName,
+            'city'          => $sanitizedCity,
             'rating'        => $validated['rating'],
             'title'         => $sanitizedTitle,
             'comment'       => $sanitizedComment,
@@ -835,7 +839,7 @@ class StorefrontController extends Controller
      */
     public function deleteAddress(CustomerAddress $address): JsonResponse
     {
-        if ($address->user_id !== Auth::id()) {
+        if (! Auth::check() || $address->user_id !== Auth::id()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
         }
 
@@ -857,12 +861,13 @@ class StorefrontController extends Controller
             'newest'     => 'Newest Arrivals',
         ];
 
-        $base = fn () => $this->productQuery()->when($q !== '', function ($query) use ($q) {
-            $query->where(function ($w) use ($q) {
-                $w->where('name', 'like', "%{$q}%")
-                  ->orWhere('description', 'like', "%{$q}%")
-                  ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$q}%"))
-                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$q}%")->orWhere('slug', 'like', "%{$q}%"));
+        $safeQ = \App\Services\SqlSafetyService::escapeLike($q);
+        $base = fn () => $this->productQuery()->when($q !== '', function ($query) use ($safeQ) {
+            $query->where(function ($w) use ($safeQ) {
+                $w->where('name', 'like', "%{$safeQ}%")
+                  ->orWhere('description', 'like', "%{$safeQ}%")
+                  ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$safeQ}%"))
+                  ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$safeQ}%")->orWhere('slug', 'like', "%{$safeQ}%"));
             });
         })->when($tag !== '', function ($query) use ($tag) {
             $query->withTag($tag);

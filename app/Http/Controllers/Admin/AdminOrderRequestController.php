@@ -44,50 +44,53 @@ class AdminOrderRequestController extends Controller
 
     public function update(Request $request, OrderRequest $orderRequest): RedirectResponse
     {
-        abort_unless($orderRequest->status === OrderRequest::STATUS_PENDING, 422, 'Only pending requests can be processed.');
-
         $validated = $request->validate([
             'action'      => 'required|in:approve,reject',
             'admin_notes' => 'nullable|string|max:500',
         ]);
 
-        $order = $orderRequest->order;
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($orderRequest, $validated) {
+            $lockedRequest = OrderRequest::lockForUpdate()->findOrFail($orderRequest->id);
+            abort_unless($lockedRequest->status === OrderRequest::STATUS_PENDING, 422, 'Only pending requests can be processed.');
 
-        if ($validated['action'] === 'approve') {
-            $orderRequest->update([
-                'status'      => OrderRequest::STATUS_APPROVED,
-                'admin_notes' => $validated['admin_notes'] ?? 'Approved by administrator.',
-            ]);
+            $order = $lockedRequest->order;
 
-            if ($orderRequest->type === OrderRequest::TYPE_CANCEL) {
-                $order->update(['status' => Order::STATUS_CANCELLED]);
-                // Restock items idempotently
-                $alreadyRestocked = \App\Models\InventoryLog::where('type', 'order_cancellation_restock')
-                    ->where('notes', 'like', "%#{$order->reference}%")
-                    ->exists();
+            if ($validated['action'] === 'approve') {
+                $lockedRequest->update([
+                    'status'      => OrderRequest::STATUS_APPROVED,
+                    'admin_notes' => $validated['admin_notes'] ?? 'Approved by administrator.',
+                ]);
 
-                if (! $alreadyRestocked) {
-                    foreach ($order->items as $item) {
-                        if ($item->product_variant_id) {
-                            $variant = ProductVariant::find($item->product_variant_id);
-                            if ($variant) {
-                                $variant->adjustStock($item->qty, 'order_cancellation_restock', "Admin approved cancellation #{$order->reference}", Auth::id());
+                if ($lockedRequest->type === OrderRequest::TYPE_CANCEL) {
+                    $order->update(['status' => Order::STATUS_CANCELLED]);
+                    // Restock items idempotently
+                    $alreadyRestocked = \App\Models\InventoryLog::where('type', 'order_cancellation_restock')
+                        ->where('notes', 'like', "%#{$order->reference}%")
+                        ->exists();
+
+                    if (! $alreadyRestocked) {
+                        foreach ($order->items as $item) {
+                            if ($item->product_variant_id) {
+                                $variant = ProductVariant::find($item->product_variant_id);
+                                if ($variant) {
+                                    $variant->adjustStock($item->qty, 'order_cancellation_restock', "Admin approved cancellation #{$order->reference}", Auth::id());
+                                }
                             }
                         }
                     }
+                } elseif ($lockedRequest->type === OrderRequest::TYPE_RETURN) {
+                    $order->update(['status' => Order::STATUS_REFUND_REQ]);
                 }
-            } elseif ($orderRequest->type === OrderRequest::TYPE_RETURN) {
-                $order->update(['status' => Order::STATUS_REFUND_REQ]);
+
+                return back()->with('success', 'Request approved successfully.');
+            } else {
+                $lockedRequest->update([
+                    'status'      => OrderRequest::STATUS_REJECTED,
+                    'admin_notes' => $validated['admin_notes'] ?? 'Declined by administrator.',
+                ]);
+
+                return back()->with('info', 'Request declined.');
             }
-
-            return back()->with('success', 'Request approved successfully.');
-        } else {
-            $orderRequest->update([
-                'status'      => OrderRequest::STATUS_REJECTED,
-                'admin_notes' => $validated['admin_notes'] ?? 'Declined by administrator.',
-            ]);
-
-            return back()->with('info', 'Request declined.');
-        }
+        });
     }
 }

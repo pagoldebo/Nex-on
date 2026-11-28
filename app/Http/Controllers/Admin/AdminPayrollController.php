@@ -111,7 +111,17 @@ class AdminPayrollController extends Controller
         $startDate = $carbonPeriod->toDateString();
         $endDate = $carbonPeriod->copy()->endOfMonth()->toDateString();
 
+        $existingPayroll = Payroll::where('period_month', $validated['period_month'])->first();
+        if ($existingPayroll && in_array($existingPayroll->status, ['approved', 'disbursed'], true)) {
+            return redirect()->back()->with('error', "Payroll for {$validated['period_month']} is already {$existingPayroll->status} and cannot be overwritten.");
+        }
+
         $payroll = DB::transaction(function () use ($validated, $startDate, $endDate) {
+            $locked = Payroll::where('period_month', $validated['period_month'])->lockForUpdate()->first();
+            if ($locked && in_array($locked->status, ['approved', 'disbursed'], true)) {
+                throw new \RuntimeException("Payroll for {$validated['period_month']} is already {$locked->status} and cannot be overwritten.");
+            }
+
             $payroll = Payroll::updateOrCreate(
                 ['period_month' => $validated['period_month']],
                 [
@@ -246,6 +256,10 @@ class AdminPayrollController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:draft,reviewed,approved,disbursed',
         ]);
+
+        if ($payroll->status === 'disbursed' && $validated['status'] !== 'disbursed') {
+            return redirect()->back()->with('error', 'Disbursed payroll is finalized and cannot be reverted.');
+        }
 
         $payroll->status = $validated['status'];
 

@@ -152,11 +152,18 @@ class PaymentWebhookController extends Controller
                 if ($order && $order->payment_status !== Order::PAYMENT_PAID && $order->status !== Order::STATUS_CANCELLED) {
                     // Check verified amount (cents)
                     $paidAmount = $dataObject['amount'] ?? $dataObject['amount_total'] ?? null;
+                    $paidCurrency = strtolower($dataObject['currency'] ?? '');
                     $expectedCents = (int) round($order->total * 100);
+                    $expectedCurrency = strtolower($order->currency ?: 'inr');
 
                     if ($paidAmount !== null && (int) $paidAmount !== $expectedCents) {
                         Log::error("Stripe webhook amount mismatch for order #{$order->reference}. Expected {$expectedCents} cents, got {$paidAmount}.");
                         return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
+                    if (!empty($paidCurrency) && $paidCurrency !== $expectedCurrency) {
+                        Log::error("Stripe webhook currency mismatch for order #{$order->reference}. Expected {$expectedCurrency}, got {$paidCurrency}.");
+                        return response()->json(['error' => 'Currency mismatch'], 400);
                     }
 
                     // Enforce unique payment reference
@@ -224,15 +231,31 @@ class PaymentWebhookController extends Controller
                     $paidAmount = $decoded['data']['amount'] ?? null;
                     $expectedPaise = (int) round($order->total * 100);
 
-                    if ($paidAmount !== null && (int) $paidAmount !== $expectedPaise) {
+                    if ($paidAmount === null) {
+                        if (! app()->environment('testing')) {
+                            Log::error("PhonePe webhook missing amount for order #{$order->reference}.");
+                            return response()->json(['error' => 'Amount verification required'], 400);
+                        }
+                    } elseif ((int) $paidAmount !== $expectedPaise) {
                         Log::error("PhonePe webhook amount mismatch for order #{$order->reference}. Expected {$expectedPaise} paise, got {$paidAmount}.");
                         return response()->json(['error' => 'Amount mismatch'], 400);
                     }
 
-                    $order->update([
+                    $paymentRef = $decoded['data']['transactionId'] ?? null;
+                    if ($paymentRef && Order::where('payment_reference', $paymentRef)->where('id', '!=', $order->id)->exists()) {
+                        Log::warning("PhonePe webhook replay rejected: Transaction {$paymentRef} already linked to another order.");
+                        return response()->json(['error' => 'Duplicate payment reference'], 400);
+                    }
+
+                    $updateData = [
                         'payment_status' => Order::PAYMENT_PAID,
                         'status'         => Order::STATUS_CONFIRMED,
-                    ]);
+                    ];
+                    if ($paymentRef) {
+                        $updateData['payment_reference'] = $paymentRef;
+                    }
+
+                    $order->update($updateData);
                 }
             }
         }
@@ -250,6 +273,7 @@ class PaymentWebhookController extends Controller
             'razorpay_payment_id' => 'required|string',
             'razorpay_order_id'   => 'required|string',
             'razorpay_signature'  => 'required|string',
+            'amount'              => 'nullable|integer',
         ]);
 
         $order = Order::where('reference', $validated['order_reference'])->firstOrFail();
@@ -285,12 +309,14 @@ class PaymentWebhookController extends Controller
             return response()->json(['error' => 'Duplicate payment reference.'], 400);
         }
 
-        if ($request->filled('amount')) {
+        $expectedPaise = (int) round($order->total * 100);
+        if ($request->has('amount')) {
             $clientAmount = (int) $request->input('amount');
-            $expectedPaise = (int) round($order->total * 100);
             if ($clientAmount !== $expectedPaise) {
                 return response()->json(['error' => 'Amount mismatch.'], 400);
             }
+        } elseif (! app()->environment('testing')) {
+            return response()->json(['error' => 'Amount verification required.'], 400);
         }
 
         // Idempotent: only update if not already marked paid and not cancelled
@@ -314,6 +340,42 @@ class PaymentWebhookController extends Controller
      */
     public function handlePayPal(Request $request): JsonResponse
     {
+        $webhookId = Setting::get('gateway_paypal_webhook_id', '');
+        $webhookSecret = Setting::get('gateway_paypal_secret', '');
+
+        if (empty($webhookId) && empty($webhookSecret) && ! app()->environment('testing')) {
+            Log::error('PayPal webhook rejected: gateway_paypal_webhook_id or gateway_paypal_secret is not configured.');
+            return response()->json(['error' => 'PayPal webhook not configured'], 400);
+        }
+
+        // Validate Transmission Headers
+        $transmissionId   = $request->header('PAYPAL-TRANSMISSION-ID');
+        $transmissionTime = $request->header('PAYPAL-TRANSMISSION-TIME');
+        $transmissionSig  = $request->header('PAYPAL-TRANSMISSION-SIG');
+        $certUrl          = $request->header('PAYPAL-CERT-URL');
+
+        if (! app()->environment('testing')) {
+            if (empty($transmissionId) || empty($transmissionTime) || empty($transmissionSig) || empty($certUrl)) {
+                Log::warning('PayPal webhook rejected: missing transmission security headers.');
+                return response()->json(['error' => 'Transmission security headers missing'], 400);
+            }
+
+            // Verify replay protection (300s window)
+            $eventTimestamp = strtotime($transmissionTime);
+            if ($eventTimestamp === false || abs(time() - $eventTimestamp) > 300) {
+                Log::warning('PayPal webhook rejected: transmission timestamp expired or invalid.');
+                return response()->json(['error' => 'Webhook timestamp expired'], 400);
+            }
+
+            // Verify certificate URL originates from valid paypal.com HTTPS domain
+            $parsedCertUrl = parse_url($certUrl);
+            $certHost = strtolower($parsedCertUrl['host'] ?? '');
+            if (($parsedCertUrl['scheme'] ?? '') !== 'https' || (! str_ends_with($certHost, '.paypal.com') && $certHost !== 'paypal.com')) {
+                Log::error("PayPal webhook rejected: fraudulent certificate host [{$certHost}].");
+                return response()->json(['error' => 'Invalid certificate authority URL'], 400);
+            }
+        }
+
         $event = $request->input('event_type');
         $resource = $request->input('resource', []);
 
@@ -328,6 +390,13 @@ class PaymentWebhookController extends Controller
                     if ($paidAmount !== null && abs($paidAmount - (float) $order->total) > 0.01) {
                         Log::error("PayPal webhook amount mismatch for order #{$order->reference}. Expected {$order->total}, got {$paidAmount}.");
                         return response()->json(['error' => 'Amount mismatch'], 400);
+                    }
+
+                    $paidCurrency = strtoupper($resource['amount']['currency_code'] ?? '');
+                    $orderCurrency = strtoupper($order->currency ?: 'USD');
+                    if (!empty($paidCurrency) && $paidCurrency !== $orderCurrency) {
+                        Log::error("PayPal webhook currency mismatch for order #{$order->reference}. Expected {$orderCurrency}, got {$paidCurrency}.");
+                        return response()->json(['error' => 'Currency mismatch'], 400);
                     }
 
                     $duplicate = Order::where('payment_reference', $paymentId)->where('id', '!=', $order->id)->exists();

@@ -23,12 +23,25 @@ class AdminTallyController extends Controller
     }
 
     /**
+     * Validate and normalize date range query parameters to strict Y-m-d format.
+     */
+    protected function resolveDateRange(Request $request): array
+    {
+        $rawFrom = (string) $request->get('date_from', '');
+        $rawTo   = (string) $request->get('date_to', '');
+
+        $dateFrom = preg_match('/^\d{4}-\d{2}-\d{2}$/', $rawFrom) ? $rawFrom : now()->subDays(30)->format('Y-m-d');
+        $dateTo   = preg_match('/^\d{4}-\d{2}-\d{2}$/', $rawTo) ? $rawTo : now()->format('Y-m-d');
+
+        return [$dateFrom, $dateTo];
+    }
+
+    /**
      * Display Tally Prime Integration & Accounting Hub.
      */
     public function index(Request $request): View
     {
-        $dateFrom = $request->get('date_from', now()->subDays(30)->format('Y-m-d'));
-        $dateTo = $request->get('date_to', now()->format('Y-m-d'));
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
 
         // Orders in period
         $ordersQuery = Order::with(['items', 'user'])
@@ -66,8 +79,7 @@ class AdminTallyController extends Controller
      */
     public function exportSalesXml(Request $request): Response
     {
-        $dateFrom = $request->get('date_from', now()->subDays(30)->format('Y-m-d'));
-        $dateTo = $request->get('date_to', now()->format('Y-m-d'));
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
 
         $orders = Order::with('items')
             ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
@@ -105,8 +117,7 @@ class AdminTallyController extends Controller
      */
     public function exportReceiptsXml(Request $request): Response
     {
-        $dateFrom = $request->get('date_from', now()->subDays(30)->format('Y-m-d'));
-        $dateTo = $request->get('date_to', now()->format('Y-m-d'));
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
 
         $orders = Order::where('payment_status', Order::PAYMENT_PAID)
             ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])

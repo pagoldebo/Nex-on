@@ -165,12 +165,14 @@ class AdminDeliveryPersonnelController extends Controller
             }
 
             session()->forget('driver_pending_phone');
+            $request->session()->regenerate();
             session(['driver_phone' => $driver->phone]);
             return redirect()->route('driver.portal')->with('success', "Welcome back, {$driver->name}!");
         }
 
         // Fast-path bypass for unit/feature test suites without mock SMS delays
         if (app()->environment('testing')) {
+            $request->session()->regenerate();
             session(['driver_phone' => $driver->phone]);
             return redirect()->route('driver.portal')->with('success', "Welcome, {$driver->name}!");
         }
